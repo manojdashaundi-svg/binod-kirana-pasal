@@ -105,7 +105,6 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         
         <input id="customerPhone" type="tel" placeholder="Phone Number (फोन नम्बर)">
         
-        <!-- ठेगाना (Address) राख्ने बक्स ज सधैं देखिने बनाइएको छ -->
         <div id="deliveryAddressBox" style="display:block; margin-top: 10px;">
           <textarea id="customerAddress" placeholder="Delivery Address / Complete Location (ठेगाना लेख्नुहोस्)"></textarea>
         </div>
@@ -226,7 +225,6 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   window.handleZoneChange = function() {
     let zoneSelect = document.getElementById("deliveryZoneSelect");
     let addressBox = document.getElementById("deliveryAddressBox");
-    // ठेगाना बक्स सधैं देखिने बनाइएको छ (Address box will always remain visible)
     if(addressBox) addressBox.style.display = "block";
     window.showCart();
   };
@@ -250,6 +248,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     if(!data || data.length === 0) { 
         html = "<p style='text-align:center; padding:20px; color:#666;'>⚠️ No products found in database yet!</p>"; 
     } else {
+        // status खाली (null) भए पनि लोड हुने गरी मिलाइएको
         var activeItems = data.filter(r => r && String(r.status || "In Stock") !== "Hidden");
         activeItems.forEach(row => {
             const itemPrice = parseFloat(row.price) || 0;
