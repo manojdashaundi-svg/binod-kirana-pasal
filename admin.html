@@ -23,14 +23,10 @@
     td{ padding:10px; border:1px solid #ddd; text-align:center; font-size:14px; }
     select, input{ padding:8px; border-radius:6px; border:1px solid #ccc; margin:3px; box-sizing: border-box; }
     .rcvBtn { background:#4CAF50; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; }
-    .rdyBtn { background:#9C27B0; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; }
     .updateBtn { background:#2196F3; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; }
     .addBtn { background:#1976D2; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; }
-    .editBtn { background:#2196F3; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; }
     .removeBtn { background:#f44336; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; }
     .staff-section, .menu-section, .inventory-section, .salary-section, .invoice-section, .chat-section { background:#fff; padding:20px; border-radius:10px; margin-top:40px; border:1px solid #ddd; display:block; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
-    .excelBtn { background:#1F7246; color:white; border:none; padding:10px 15px; border-radius:6px; font-weight:bold; cursor:pointer; }
-    .pdfBtn { background:#E01A22; color:white; border:none; padding:10px 15px; border-radius:6px; font-weight:bold; cursor:pointer; }
     .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; display:flex; justify-content:center; align-items:center; z-index:99999; }
     .login-card { background:#fff; padding:30px; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1); width:100%; max-width:360px; text-align:center; }
     .login-card input { width:100%; padding:12px; margin:10px 0; border:1px solid #ddd; border-radius:8px; font-size:16px; }
@@ -46,6 +42,7 @@
     .print-box { background:#fff; padding:25px; border-radius:12px; width:360px; max-height:85vh; overflow-y:auto; box-shadow:0 5px 20px rgba(0,0,0,0.3); }
     .print-area { font-family: 'Courier New', Courier, monospace; font-size:14px; color:#000; line-height:1.4; }
 
+    .chart-container { background:#fff; padding:15px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.05); margin:20px 0; border:1px solid #ddd; width:100%; height: 280px; display:block; }
     .menu-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
   </style>
 </head>
@@ -93,6 +90,12 @@
     </div>
   </div>
 
+  <!-- 📊 Monthly Sales Insights & Growth (Active Orders भन्दा माथि) -->
+  <div class="chart-container">
+    <h3 style="color:#1976D2; margin: 0 0 10px 0; font-size: 16px;">📊 Monthly Sales Insights & Growth</h3>
+    <div id="monthlySalesChart" style="width: 100%; height: 220px;"></div>
+  </div>
+
   <!-- 🛒 Active Orders Section -->
   <div id="mainOrdersTableSection">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
@@ -121,7 +124,7 @@
     </div>
   </div>
 
-  <!-- 🚚 Delivery Zone & District Rate Management (77 Districts) - Active Orders पछि राखिएको -->
+  <!-- 🚚 Delivery Zone & District Rate Management -->
   <div class="invoice-section" style="background:#fff; padding:20px; border-radius:10px; margin-top:20px; border:1px solid #ddd;">
     <h3 style="color:#1976D2; margin-bottom:15px;">🚚 Delivery Zone & District Rate Management (77 Districts)</h3>
     <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
@@ -229,7 +232,6 @@
   var myRole = "admin";
   var activeOrdersCache = [];
   var menuItemsCache = [];
-  var selectedChatSession = null;
 
   function playTringTringBell() {
     try {
@@ -317,6 +319,7 @@
         activeOrdersCache = data.sort((a, b) => (b.id || 0) - (a.id || 0));
         calculateDashboardStats(activeOrdersCache);
         renderActiveOrdersTable(activeOrdersCache);
+        drawMonthlySalesChart(activeOrdersCache);
       }
     } catch(err) {}
   };
@@ -405,6 +408,43 @@
     document.getElementById("dashTodaySales").innerText = "Rs. " + todaySales.toFixed(2);
     document.getElementById("dashMonthSales").innerText = "Rs. " + monthSales.toFixed(2);
   };
+
+  function drawMonthlySalesChart(orders) {
+    if (typeof google === 'undefined' || !google.visualization) return;
+    let monthlyTotals = {};
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    orders.forEach(o => {
+      let amount = parseFloat(o.total) || 0;
+      if (o.time) {
+        let d = new Date(o.time);
+        if (!isNaN(d.getTime())) {
+          let mKey = monthNames[d.getMonth()] + " " + d.getFullYear();
+          monthlyTotals[mKey] = (monthlyTotals[mKey] || 0) + amount;
+        }
+      }
+    });
+
+    let chartDataArray = [['Month', 'Sales (Rs.)']];
+    let keys = Object.keys(monthlyTotals);
+    if(keys.length === 0) {
+      chartDataArray.push(['Current', 0]);
+    } else {
+      keys.forEach(k => { chartDataArray.push([k, monthlyTotals[k]]); });
+    }
+
+    let data = google.visualization.arrayToDataTable(chartDataArray);
+    let options = {
+      title: 'Monthly Revenue Growth',
+      colors: ['#1976D2'],
+      legend: { position: 'none' },
+      hAxis: { title: 'Month' },
+      vAxis: { title: 'Amount (Rs.)' },
+      backgroundColor: 'transparent'
+    };
+    let chart = new google.visualization.ColumnChart(document.getElementById('monthlySalesChart'));
+    chart.draw(data, options);
+  }
 
   async function loadMenuList() {
     let { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
