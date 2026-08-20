@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/png" href="https://i.postimg.cc/ry18SGbR/LOGO.png">
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/0QBZjp0P/Chat-GPT-Image-Aug-20-2026-10-44-04-AM.png">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>POOJA EXPORT & IMPORT Admin Panel</title>
+  <title>POOJA EXPORT AND IMPORT - Admin Panel</title>
   <script src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -28,7 +28,7 @@
     .addBtn { background:#1976D2; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; }
     .editBtn { background:#2196F3; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; }
     .removeBtn { background:#f44336; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; }
-    .staff-section, .menu-section, .inventory-section, .salary-section, .invoice-section, .chat-section, .zone-section { background:#fff; padding:20px; border-radius:10px; margin-top:40px; border:1px solid #ddd; display:block; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    .staff-section, .menu-section, .inventory-section, .salary-section, .invoice-section, .chat-section { background:#fff; padding:20px; border-radius:10px; margin-top:40px; border:1px solid #ddd; display:block; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
     .excelBtn { background:#1F7246; color:white; border:none; padding:10px 15px; border-radius:6px; font-weight:bold; cursor:pointer; }
     .pdfBtn { background:#E01A22; color:white; border:none; padding:10px 15px; border-radius:6px; font-weight:bold; cursor:pointer; }
     .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; display:flex; justify-content:center; align-items:center; z-index:99999; }
@@ -60,7 +60,8 @@
 
 <div id="loginScreen" class="login-overlay">
   <div class="login-card">
-    <h2>🔐 ADMIN LOGIN</h2>
+    <img src="https://i.postimg.cc/0QBZjp0P/Chat-GPT-Image-Aug-20-2026-10-44-04-AM.png" style="width:70px; height:70px; object-fit:cover; border-radius:50%; margin-bottom:10px; border:2px solid #1976D2;" alt="Logo">
+    <h2>🔐 STAFF LOGIN</h2>
     <input id="username" type="text" placeholder="Username / Email" autocomplete="off" value="">
     <input id="password" type="password" placeholder="Password" autocomplete="off" value="">
     <button id="loginBtn" type="button" onclick="handleLogin()">Login</button>
@@ -72,9 +73,33 @@
   <button id="globalLogoutBtn" class="logout" onclick="logout()">Logout</button>
   
   <h2>
-    📦 POOJA EXPORT & IMPORT Admin Panel (<span id="userRoleBadge" style="color:#1976D2;">...</span>)
+    📦 POOJA EXPORT & IMPORT - Admin Panel (<span id="userRoleBadge" style="color:#1976D2;">...</span>)
     <span id="emailAutomationStatusBadge" class="automation-badge" style="display: inline-block;">🟢 Active</span>
   </h2>
+
+  <!-- 77 Districts Delivery Zone Management Section -->
+  <div class="invoice-section" style="background:#fff; padding:20px; border-radius:10px; margin-top:20px; border:1px solid #ddd;">
+    <h3 style="color:#1976D2; margin-bottom:15px;">🚚 Delivery Zone & District Rate Management (77 Districts)</h3>
+    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+      <input id="newDistrictName" type="text" placeholder="जिल्लाको नाम (District Name)" style="flex:2; padding:10px;">
+      <input id="newDistrictRate" type="number" placeholder="रेट (Rs.)" style="flex:1; padding:10px;">
+      <button class="addBtn" onclick="addDeliveryZone()" style="background:#1976D2; padding:10px 20px;">+ जिल्ला थप्नुहोस्</button>
+    </div>
+    <div style="overflow-x: auto; max-height: 250px; overflow-y: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>District Name (जिल्ला)</th>
+            <th>Delivery Rate (Rs.)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="deliveryZonesTableList">
+          <tr><td colspan="3" style="padding:15px;">Loading Delivery Zones...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   <div id="salesDashboardBox" style="display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap;">
     <div style="flex: 1; min-width: 140px; background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #2196F3; text-align: center;">
@@ -95,48 +120,24 @@
     </div>
   </div>
 
-  <!-- 🌍 77 Districts Delivery Rate Management Section -->
-  <div id="zoneManagementBox" class="zone-section">
-    <h3 style="color: #1976D2; margin-bottom: 15px;">🚚 77 जिल्ला डेलिभरी रेट व्यवस्थापन (Delivery Zones)</h3>
-    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-      <input id="newZoneName" type="text" placeholder="जिल्लाको नाम (District Name)" style="flex: 2; padding: 10px;">
-      <input id="newZoneRate" type="number" placeholder="रेट (Rs.)" style="flex: 1; padding: 10px;">
-      <button class="addBtn" onclick="addNewDeliveryZone()" style="background:#1976D2; padding: 10px 20px;">+ नयाँ जिल्ला थप्नुहोस्</button>
-    </div>
-    <div style="overflow-x: auto; width:100%; max-height: 300px; overflow-y: auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>District Name (जिल्ला)</th>
-            <th>Delivery Rate (Rs.)</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="zoneTableList">
-          <tr><td colspan="3">Loading Delivery Zones...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div id="mainOrdersTableSection" style="margin-top: 30px;">
+  <div id="mainOrdersTableSection">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
       <h3 style="margin: 0;">🛒 Active Orders</h3>
       <input type="text" id="orderSearchInput" onkeyup="filterActiveOrders()" placeholder="🔍 Search Order No / Customer..." style="padding: 8px 12px; width: 260px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px;">
     </div>
-    <div style="overflow-x: auto; width:100%;">
+    <div style="overflow-x: auto; width:100%; max-height:520px; overflow-y:auto; border:1px solid #ddd; border-radius:6px;">
       <table>
         <thead>
-          <tr>
-            <th>Order Date & Time</th>
-            <th>Order No.</th>
-            <th>Customer</th>
-            <th>Total</th>
-            <th>Payment Slip</th>
-            <th>Delivery District & Address</th>
-            <th>Delivery Proof</th>
-            <th>Status / Change</th>
-            <th>Instant Action</th>
+          <tr style="position:sticky; top:0; z-index:10; background:#1976D2;">
+            <th style="background:#1976D2;">Order Date & Time</th>
+            <th style="background:#1976D2;">Order No.</th>
+            <th style="background:#1976D2;">Customer</th>
+            <th style="background:#1976D2;">Total</th>
+            <th style="background:#1976D2;">Payment Slip</th>
+            <th style="background:#1976D2;">Delivery District & Address</th>
+            <th style="background:#1976D2;">Delivery Proof</th>
+            <th style="background:#1976D2;">Status / Change</th>
+            <th style="background:#1976D2;">Instant Action</th>
           </tr>
         </thead>
         <tbody id="ordersTable">
@@ -147,29 +148,28 @@
   </div>
 
   <div id="menuManagementBox" class="menu-section">
-    <h3>📦 Product Management</h3>
+    <h3 style="color:#1976D2;">📦 Product Management</h3>
     <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd;">
       <h4>+ Add New Product</h4>
-      <input id="prodId" type="text" placeholder="Item ID">
       <input id="prodName" type="text" placeholder="Product Name">
       <input id="prodPrice" type="number" placeholder="Price (Rs.)">
       <input id="prodImg" type="text" placeholder="Image URL">
       <input id="prodDesc" type="text" placeholder="Description">
-      <input id="prodCat" type="text" placeholder="Category">
+      <input id="prodCat" type="text" placeholder="Category (Imports/Exports/Trading/Wholesale)">
       <button id="addProductBtn" class="addBtn" onclick="createNewProduct()">+ Add Product</button>
     </div>
     <h4>Current Products</h4>
-    <div style="overflow-x: auto; width:100%;">
+    <div style="overflow-x: auto; width:100%; max-height:520px; overflow-y:auto; border:1px solid #ddd; border-radius:6px;">
       <table>
         <thead>
-          <tr>
-            <th>ID</th>
-            <th>Product Name</th>
-            <th>Price</th>
-            <th>Image</th>
-            <th>Description</th>
-            <th>Category</th>
-            <th>Action</th>
+          <tr style="position:sticky; top:0; z-index:10; background:#1976D2;">
+            <th style="background:#1976D2;">ID</th>
+            <th style="background:#1976D2;">Product Name</th>
+            <th style="background:#1976D2;">Price</th>
+            <th style="background:#1976D2;">Image</th>
+            <th style="background:#1976D2;">Description</th>
+            <th style="background:#1976D2;">Category</th>
+            <th style="background:#1976D2;">Action</th>
           </tr>
         </thead>
         <tbody id="menuTableList"></tbody>
@@ -200,15 +200,16 @@
       </div>
     </div>
   </div>
+
 </div>
 
 <div id="printModalBox" class="print-modal">
   <div class="print-box">
-     <div id="printableInvoiceArea" class="print-area"></div>
-     <div style="margin-top:20px; text-align:center;">
-        <button class="rcvBtn" onclick="executeSystemPrint()" style="padding:10px 20px;">🖨 Print</button>
-        <button class="close-viewer-btn" onclick="closePrintModal()" style="padding:10px 20px; margin-left:10px;">Close ✕</button>
-     </div>
+    <div id="printableInvoiceArea" class="print-area"></div>
+    <div style="margin-top:20px; text-align:center;">
+       <button class="rcvBtn" onclick="executeSystemPrint()" style="padding:10px 20px;">🖨 Print</button>
+       <button class="close-viewer-btn" onclick="closePrintModal()" style="padding:10px 20px; margin-left:10px;">Close ✕</button>
+    </div>
   </div>
 </div>
 
@@ -221,6 +222,7 @@
 </div>
 
 <script>
+  // तपाईंको बिनोद किराना / पूजा एक्स्पोर्टको Supabase प्रोजेक्ट लिंक र Anon Key (Ugratara सँग कुनै सम्बन्ध छैन)
   const SUPABASE_URL = 'https://odhdrvvgemwgiphipgv.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -232,14 +234,25 @@
 
   function playTringTringBell() {
     try {
-      const audio = document.getElementById("notificationAudio");
-      if (audio) { audio.currentTime = 0; audio.play().catch(e => {}); }
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!window.audioCtx) window.audioCtx = new AudioContext();
+      if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
+      let osc = window.audioCtx.createOscillator();
+      let gain = window.audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1200, window.audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.8, window.audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.3);
+      osc.connect(gain);
+      gain.connect(window.audioCtx.destination);
+      osc.start();
+      osc.stop(window.audioCtx.currentTime + 0.3);
     } catch(e) {}
   };
 
   function testBellSound() {
     playTringTringBell();
-    alert("🔔 डेलिभरी घण्टी बज्यो!");
+    alert("🔔 डेलिभरी घण्टी सुचारु भयो!");
   };
 
   async function handleLogin() {
@@ -247,7 +260,8 @@
     var p = document.getElementById("password").value.trim();
     if(u === "" || p === "") { alert("Enter credentials."); return; }
     
-    if ((u === "admin@poojaexport.com" || u === "admin") && (p === "123456" || p === "123")) {
+    // एडमिन लगइन क्रेडिसियल (तपाईंले परिवर्तन गर्न सक्नुहुन्छ)
+    if ((u === "admin@pooja.com" || u === "admin") && (p === "123456" || p === "123")) {
       sessionStorage.setItem("ADMIN_LOGIN", "true");
       sessionStorage.setItem("USER_ROLE", "admin");
       showAdminPanel();
@@ -256,52 +270,45 @@
     alert("❌ Invalid Username or Password!");
   };
 
-  async function loadDeliveryZonesAdmin() {
-    let tbody = document.getElementById("zoneTableList");
-    if(!tbody) return;
+  async function loadDeliveryZones() {
+    let tbody = document.getElementById("deliveryZonesTableList");
+    if (!tbody) return;
     try {
       let { data, error } = await supabaseClient.from('delivery_zones').select('*').order('district_name', { ascending: true });
-      if(error || !data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3">No delivery zones found in Supabase.</td></tr>`;
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="padding:15px;">No delivery zones found.</td></tr>`;
         return;
       }
       let html = "";
       data.forEach(z => {
-        html += `
-          <tr>
-            <td><b>${z.district_name}</b></td>
-            <td>Rs. <input type="number" id="zone_rate_${z.id}" value="${z.rate}" style="width:100px; text-align:center;"></td>
-            <td>
-              <button class="updateBtn" onclick="updateZoneRate(${z.id})">Update</button>
-              <button class="removeBtn" onclick="deleteZone(${z.id})">Delete</button>
-            </td>
-          </tr>
-        `;
+        html += `<tr>
+          <td><b>${z.district_name}</b></td>
+          <td style="color:#1976D2; font-weight:bold;">Rs. ${z.rate}</td>
+          <td><button class="removeBtn" onclick="deleteDeliveryZone(${z.id})">❌ Delete</button></td>
+        </tr>`;
       });
       tbody.innerHTML = html;
     } catch(e) {
-      tbody.innerHTML = `<tr><td colspan="3">Error loading zones.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="3" style="padding:15px;">Error loading zones.</td></tr>`;
     }
   };
 
-  async function updateZoneRate(id) {
-    let newRate = parseFloat(document.getElementById("zone_rate_" + id).value) || 0;
-    let { error } = await supabaseClient.from('delivery_zones').update({ rate: newRate }).eq('id', id);
-    if(error) { alert("❌ Error: " + error.message); } else { alert("✅ Rate Updated Successfully!"); loadDeliveryZonesAdmin(); }
+  async function addDeliveryZone() {
+    let dName = document.getElementById("newDistrictName").value.trim();
+    let dRate = parseFloat(document.getElementById("newDistrictRate").value);
+    if (!dName || isNaN(dRate)) { alert("कृपया जिल्लाको नाम र रेट सही भर्नुहोस्!"); return; }
+    let { error } = await supabaseClient.from('delivery_zones').insert([{ district_name: dName, rate: dRate }]);
+    if (error) { alert("Error: " + error.message); return; }
+    alert("✅ जिल्ला र रेट सफलतापूर्वक थपियो!");
+    document.getElementById("newDistrictName").value = "";
+    document.getElementById("newDistrictRate").value = "";
+    loadDeliveryZones();
   };
 
-  async function addNewDeliveryZone() {
-    let name = document.getElementById("newZoneName").value.trim();
-    let rate = parseFloat(document.getElementById("newZoneRate").value) || 0;
-    if(!name) { alert("Please enter district name"); return; }
-    let { error } = await supabaseClient.from('delivery_zones').insert([{ district_name: name, rate: rate }]);
-    if(error) { alert("❌ Error: " + error.message); } else { alert("✅ District Added Successfully!"); document.getElementById("newZoneName").value = ""; document.getElementById("newZoneRate").value = ""; loadDeliveryZonesAdmin(); }
-  };
-
-  async function deleteZone(id) {
-    if(confirm("Delete this district?")) {
+  async function deleteDeliveryZone(id) {
+    if (confirm("के तपाई यो जिल्ला हटाउन चाहनुहुन्छ?")) {
       await supabaseClient.from('delivery_zones').delete().eq('id', id);
-      loadDeliveryZonesAdmin();
+      loadDeliveryZones();
     }
   };
 
@@ -310,40 +317,48 @@
       let { data, error } = await supabaseClient.from('orders').select('*');
       if (!error && data) {
         activeOrdersCache = data.sort((a, b) => (b.id || 0) - (a.id || 0));
-        renderActiveOrdersTable(activeOrdersCache);
         calculateDashboardStats(activeOrdersCache);
+        renderActiveOrdersTable(activeOrdersCache);
       }
-    } catch (err) {}
+    } catch(err) {}
   };
 
   function renderActiveOrdersTable(ordersToRender) {
-    var tableBody = document.getElementById("ordersTable");
+    let tableBody = document.getElementById("ordersTable");
     if(!tableBody) return;
     let html = "";
     if(ordersToRender.length === 0) {
       html = `<tr><td colspan="9" style="padding:20px;">No Active Orders Found.</td></tr>`;
     } else {
       ordersToRender.forEach(function(o){
-        let slipHtml = (o.payment_slip && o.payment_slip !== "None") ? `<img src="${o.payment_slip}" class="proof-thumb" onclick="openImageViewer('${o.payment_slip}')">` : `None`;
-        let delivHtml = (o.proof_img && o.proof_img !== "None") ? `<img src="${o.proof_img}" class="proof-thumb" onclick="openImageViewer('${o.proof_img}')">` : `None`;
+        let status = o.status ? String(o.status).trim() : "Pending";
+        let slipHtml = (o.payment_slip && o.payment_slip !== "None") ?  
+          `<img src="${o.payment_slip}" class="proof-thumb" onclick="openImageViewer('${o.payment_slip}')">` : `None`;
+        let delivHtml = (o.proof_img && o.proof_img !== "None") ?  
+          `<img src="${o.proof_img}" class="proof-thumb" onclick="openImageViewer('${o.proof_img}')">` : `None`;
+        
         let statusSelect = `<select id="status_${o.order_no}">
-          <option value="Pending" ${o.status==="Pending"?"selected":""}>Pending</option>
-          <option value="Preparing" ${o.status==="Preparing"?"selected":""}>Preparing</option>
-          <option value="Ready" ${o.status==="Ready"?"selected":""}>Ready</option>
-          <option value="Out for Delivery" ${o.status==="Out for Delivery"?"selected":""}>Out for Delivery</option>
-          <option value="Delivered" ${o.status==="Delivered"?"selected":""}>Delivered</option>
-        </select> <button class="updateBtn" onclick="manualUpdate('${o.order_no}')">Go</button>`;
+          <option value="Pending" ${status==="Pending"?"selected":""}>Pending</option>
+          <option value="Preparing" ${status==="Preparing"?"selected":""}>Preparing</option>
+          <option value="Ready" ${status==="Ready"?"selected":""}>Ready</option>
+          <option value="Out for Delivery" ${status==="Out for Delivery"?"selected":""}>Out for Delivery</option>
+          <option value="Delivered" ${status==="Delivered"?"selected":""}>Delivered</option>
+          <option value="Cancelled" ${status==="Cancelled"?"selected":""} style="color:red; font-weight:bold;">Cancelled</option>
+        </select> 
+        <button class="updateBtn" onclick="manualUpdate('${o.order_no}')">Go</button>`;
+
+        let actionButtons = `<button class="rcvBtn" onclick="updateOrderStatus('${o.order_no}', 'Delivered')">✅ Mark Delivered</button>`;
 
         html += `<tr>
-          <td>${o.time || '-'}</td>
-          <td><b>${o.order_no}</b></td>
-          <td>${o.customer_name || '-'}<br><small>${o.phone || ''}</small></td>
+          <td style="font-size:12px; color:#555;">${o.time || '-'}</td>
+          <td><b>${o.order_no || ''}</b></td>
+          <td>${o.customer_name || '-'}<br><small style="color:#666;">${o.phone || ''}</small></td>
           <td style="color:#1976D2; font-weight:bold;">Rs. ${o.total || '0'}</td>
           <td>${slipHtml}</td>
-          <td>${o.address || '-'}</td>
+          <td style="font-size:13px;">${o.address || '-'}</td>
           <td>${delivHtml}</td>
           <td>${statusSelect}</td>
-          <td><button class="rcvBtn" onclick="updateOrderStatus('${o.order_no}', 'Delivered')">Mark Delivered</button></td>
+          <td>${actionButtons}</td>
         </tr>`;
       });
     }
@@ -353,7 +368,10 @@
   function filterActiveOrders() {
     let query = document.getElementById("orderSearchInput").value.trim().toLowerCase();
     if(!query) { renderActiveOrdersTable(activeOrdersCache); return; }
-    let filtered = activeOrdersCache.filter(o => String(o.order_no || '').toLowerCase().includes(query) || String(o.customer_name || '').toLowerCase().includes(query));
+    let filtered = activeOrdersCache.filter(o => 
+      String(o.order_no || '').toLowerCase().includes(query) || 
+      String(o.customer_name || '').toLowerCase().includes(query)
+    );
     renderActiveOrdersTable(filtered);
   };
 
@@ -375,10 +393,12 @@
     orders.forEach(o => {
       let amount = parseFloat(o.total) || 0;
       totalRevenue += amount;
-      let orderDate = new Date(o.time);
-      if(!isNaN(orderDate.getTime())) {
-        if(orderDate.toDateString() === now.toDateString()) todaySales += amount;
-        if(orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear()) monthSales += amount;
+      if (o.time) {
+        let orderDate = new Date(o.time);
+        if (!isNaN(orderDate.getTime())) {
+          if (orderDate.getDate() === now.getDate() && orderDate.getMonth() === now.getMonth()) todaySales += amount;
+          if (orderDate.getMonth() === now.getMonth()) monthSales += amount;
+        }
       }
     });
 
@@ -402,7 +422,9 @@
         <td>${r.image ? `<img src="${r.image}" class="menu-thumb">` : 'No Image'}</td>
         <td>${r.description || ''}</td>
         <td><b>${r.category || ''}</b></td>
-        <td><button class="removeBtn" onclick="deleteProduct(${r.id})">Delete</button></td>
+        <td>
+          <button class="removeBtn" onclick="deleteProduct(${r.id})">❌ Delete</button>
+        </td>
       </tr>`;
     });
     menuList.innerHTML = html;
@@ -412,8 +434,19 @@
     var name = document.getElementById("prodName").value.trim();
     var price = parseFloat(document.getElementById("prodPrice").value) || 0;
     if(!name || !price) { alert("Enter Name and Price!"); return; }
-    await supabaseClient.from('menu_items').insert([{ name: name, price: price, image: document.getElementById("prodImg").value.trim(), description: document.getElementById("prodDesc").value.trim(), category: document.getElementById("prodCat").value.trim() }]);
+    await supabaseClient.from('menu_items').insert([{ 
+      name: name, 
+      price: price, 
+      image: document.getElementById("prodImg").value.trim(), 
+      description: document.getElementById("prodDesc").value.trim(), 
+      category: document.getElementById("prodCat").value.trim() || "Wholesale" 
+    }]);
     alert("✅ Product Added!");
+    document.getElementById("prodName").value = "";
+    document.getElementById("prodPrice").value = "";
+    document.getElementById("prodImg").value = "";
+    document.getElementById("prodDesc").value = "";
+    document.getElementById("prodCat").value = "";
     loadMenuList();
   };
 
@@ -424,62 +457,25 @@
     }
   };
 
-  async function loadAdminChats() {
-    try {
-      let { data } = await supabaseClient.from('chats').select('*').order('id', { ascending: false });
-      if(!data) return;
-      let sessions = {};
-      data.forEach(m => {
-        if(!sessions[m.session_id]) {
-          sessions[m.session_id] = { session_id: m.session_id, customer_name: m.customer_name || 'Customer', support_type: m.support_type || 'General', last_time: m.time || '' };
-        }
-      });
-      let container = document.getElementById("chatListContainer");
-      let html = "";
-      Object.values(sessions).forEach(s => {
-        html += `<div onclick="selectChatSession('${s.session_id}')" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: #fafafa; cursor: pointer;">
-          <b>${s.session_id} (${s.customer_name})</b><br><small>${s.last_time}</small>
-        </div>`;
-      });
-      container.innerHTML = html || `<div style="padding:10px;">No chats found.</div>`;
-    } catch(e) {}
+  function openImageViewer(imgUrl) {
+    document.getElementById("viewerTargetImage").src = imgUrl;
+    document.getElementById("imageViewerModal").style.display = "flex";
   };
 
-  async function selectChatSession(sessionId) {
-    selectedChatSession = sessionId;
-    let { data } = await supabaseClient.from('chats').select('*').eq('session_id', sessionId).order('id', { ascending: true });
-    let box = document.getElementById("chatMessagesBox");
-    let html = "";
-    if(data) {
-      data.forEach(m => {
-        html += `<div style="background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #eee; margin-bottom:5px;"><b>${m.sender}:</b> ${m.message}</div>`;
-      });
-      box.innerHTML = html;
-    }
+  function closeImageViewer() {
+    document.getElementById("imageViewerModal").style.display = "none";
   };
-
-  async function sendAdminChat() {
-    if(!selectedChatSession) { alert("Select a chat first!"); return; }
-    let msg = document.getElementById("adminChatInput").value.trim();
-    if(!msg) return;
-    await supabaseClient.from('chats').insert([{ session_id: selectedChatSession, customer_name: "Admin", support_type: "General", sender: "Admin", message: msg, time: new Date().toLocaleString() }]);
-    document.getElementById("adminChatInput").value = "";
-    selectChatSession(selectedChatSession);
-  };
-
-  function openImageViewer(url) { document.getElementById("viewerTargetImage").src = url; document.getElementById("imageViewerModal").style.display = "flex"; }
-  function closeImageViewer() { document.getElementById("imageViewerModal").style.display = "none"; }
-  function closePrintModal() { document.getElementById("printModalBox").style.display = "none"; }
-  function logout() { sessionStorage.clear(); window.location.reload(); }
 
   function showAdminPanel() {
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("adminContent").style.display = "block";
-    loadOrders();
+    loadDeliveryZones();
     loadMenuList();
-    loadDeliveryZonesAdmin();
-    loadAdminChats();
+    loadOrders();
+    setInterval(() => { loadOrders(); }, 15000);
   };
+
+  function logout() { sessionStorage.clear(); window.location.reload(); };
 
   if (sessionStorage.getItem("ADMIN_LOGIN") === "true") {
     showAdminPanel();
