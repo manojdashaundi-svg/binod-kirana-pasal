@@ -248,7 +248,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     { district_name: "Solukhumbu", rate: 300 }, { district_name: "Sunsari", rate: 250 },
     { district_name: "Surkhet", rate: 200 }, { district_name: "Syangja", rate: 180 },
     { district_name: "Tanahu", rate: 150 }, { district_name: "Taplejung", rate: 300 },
-    { district_name: "Terhathum", rate: 250 }, { district_name: "Udayapur", rate: 250 }
+    { district_name: "Terhathum", rate: 250 }, { district_name: "Udayapur", rate: 250 ]
   ];
 
   window.cart = []; 
@@ -424,21 +424,25 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
     try {
       if(supabaseClient) {
-        await supabaseClient.from('orders').insert([{
+        let { error: insertError } = await supabaseClient.from('orders').insert([{
           order_no: orderNo,
           time: timeStr,
           customer_name: name,
           phone: phone,
           address: fullAddress,
           items: items,
-          total: Number(grandTotal.toFixed(2)),
+          total: grandTotal.toString(),
           status: "Pending",
           payment_slip: window.base64SlipData,
           proof_img: "None"
         }]);
+
+        if (insertError) {
+          console.error("Supabase Error:", insertError.message);
+        }
       }
     } catch(err) {
-      console.log("Supabase insert bypassed due to network restriction.");
+      console.log("Supabase error caught.");
     }
       
     alert("✅ Order Placed Successfully! Order No: " + orderNo);
