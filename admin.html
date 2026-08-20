@@ -2029,7 +2029,7 @@
   };
 
   async function editProduct(rowId, oldName, oldPrice, oldImg, oldDesc, oldCat) {
-    var newName = prompt("Edit Food Name:", oldName); if(newName === null) return;
+    var newName = prompt("Edit Name:", oldName); if(newName === null) return;
     var newPrice = parseFloat(prompt("Edit Price (RM):", oldPrice)); if(isNaN(newPrice)) newPrice = oldPrice;
     var newImg = prompt("Edit Image URL:", oldImg); if(newImg === null) newImg = oldImg;
     var newDesc = prompt("Edit Description:", oldDesc); if(newDesc === null) newDesc = oldDesc;
