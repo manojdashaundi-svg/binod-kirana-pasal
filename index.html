@@ -422,27 +422,27 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     let orderNo = "ORD" + Math.floor(1000 + Math.random() * 9000);
     let timeStr = new Date().toLocaleString();
 
-    try {
-      if(supabaseClient) {
-        let { error: insertError } = await supabaseClient.from('orders').insert([{
-          order_no: orderNo,
-          customer_name: name,
-          phone: phone,
-          total: Number(grandTotal.toFixed(2)),
-          address: fullAddress,
-          payment_slip: "Slip Uploaded",
-          time: timeStr,
-          status: "Pending",
-          items: items,
-          proof_img: "None"
-        }]);
+    if(supabaseClient) {
+      let { error: insertError } = await supabaseClient.from('orders').insert([{
+        order_no: orderNo,
+        customer_name: name,
+        phone: phone,
+        total: Number(grandTotal.toFixed(2)),
+        address: fullAddress,
+        payment_slip: "Slip Uploaded",
+        time: timeStr,
+        status: "Pending",
+        items: items,
+        proof_img: "None"
+      }]);
 
-        if (insertError) {
-          console.error("Supabase Error:", insertError.message);
-        }
+      if (insertError) {
+        console.error("Supabase Detailed Error:", insertError);
+        alert("Supabase Error: " + insertError.message);
+        orderBtn.disabled = false;
+        orderBtn.innerText = "🚀 Place Order";
+        return;
       }
-    } catch(err) {
-      console.log("Supabase error caught.");
     }
       
     alert("✅ Order Placed Successfully! Order No: " + orderNo);
