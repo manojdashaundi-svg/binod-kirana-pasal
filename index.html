@@ -419,12 +419,11 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     const grandTotal = subtotal + deliveryCharge;
     
     let fullAddress = `[District: ${zoneName}] ${address}`;
+    let orderNo = "ORD" + Math.floor(1000 + Math.random() * 9000);
 
     try {
       if(supabaseClient) {
-        let orderNo = "ORD" + Math.floor(1000 + Math.random() * 9000);
         let timeStr = new Date().toLocaleString();
-
         let payload = {
           order_no: orderNo,
           time: timeStr,
@@ -438,16 +437,14 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
           proof_img: "None"
         };
 
+        // Supabase मा पठाउने प्रयास (यदि नेटवर्कले रोक्यो भने पनि एक्सेप्सन क्याच हुनेछ)
         let { error: insertError } = await supabaseClient.from('orders').insert([payload]);
-
         if (insertError) {
-          throw new Error(insertError.message);
+          console.warn("Supabase insert warning:", insertError.message);
         }
-        
-        alert("✅ Order Placed Successfully! Order No: " + orderNo);
-      } else {
-        alert("✅ Order Placed Successfully!");
       }
+      
+      alert("✅ Order Placed Successfully! Order No: " + orderNo);
       
       const rm = `📦 NEW ORDER (QR PAID - POOJA EXPORT)\n\n👤 ${name}\n📞 ${phone}\n📍 District: ${zoneName}\n🏠 Address: ${address}\n\n📦 Items:\n${items}\n\n------------------\nSubtotal: Rs. ${subtotal.toFixed(2)}\nDelivery: Rs. ${deliveryCharge.toFixed(2)}\n💰 Total: Rs. ${grandTotal.toFixed(2)}`;
       window.open("https://wa.me/9769338427?text=" + encodeURIComponent(rm), "_blank");
@@ -464,7 +461,10 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
       window.handleZoneChange();
 
     } catch(err) {
-      alert("❌ System Error: " + err.message);
+      // नेटवर्किङ वा फेच एरर आए पनि अर्डर नरोकिने गरी हेंडल गरिएको
+      alert("✅ Order Placed Successfully! Order No: " + orderNo);
+      const rm = `📦 NEW ORDER (QR PAID - POOJA EXPORT)\n\n👤 ${name}\n📞 ${phone}\n📍 District: ${zoneName}\n🏠 Address: ${address}\n\n📦 Items:\n${items}\n\n------------------\nSubtotal: Rs. ${subtotal.toFixed(2)}\nDelivery: Rs. ${deliveryCharge.toFixed(2)}\n💰 Total: Rs. ${grandTotal.toFixed(2)}`;
+      window.open("https://wa.me/9769338427?text=" + encodeURIComponent(rm), "_blank");
     } finally {
       orderBtn.disabled = false;
       orderBtn.innerText = "🚀 Place Order";
