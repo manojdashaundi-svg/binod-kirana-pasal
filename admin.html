@@ -14,19 +14,19 @@
   </script>
   <style>
     body{ font-family:Arial,sans-serif; background:#f5f5f5; margin:0; padding:20px; }
-    h2{ color:#1976d2; }
+    h2{ color:#0d47a1; }
     .logout{ position:fixed; top:15px; right:15px; background:#d32f2f; color:#fff; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight: bold; z-index: 1000; }
-    .bell-btn { position:fixed; top:12px; right:125px; background:#fff; border:2px solid #1976d2; font-size:22px; padding:6px 10px; border-radius:50%; cursor:pointer; z-index: 1000; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    .bell-btn { position:fixed; top:12px; right:125px; background:#fff; border:2px solid #0d47a1; font-size:22px; padding:6px 10px; border-radius:50%; cursor:pointer; z-index: 1000; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
     .automation-badge { display: inline-block; background: #fff; border: 1px solid #4CAF50; color: #4CAF50; font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 20px; margin-left: 12px; vertical-align: middle; }
     table { width:100%; border-collapse:collapse; background:#fff; margin-top:20px; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
-    th{ background:#1976d2; color:#fff; padding:12px; font-size:14px; }
+    th{ background:#0d47a1; color:#fff; padding:12px; font-size:14px; }
     td{ padding:10px; border:1px solid #ddd; text-align:center; font-size:14px; }
     select, input{ padding:8px; border-radius:6px; border:1px solid #ccc; margin:3px; box-sizing: border-box; }
     .rcvBtn { background:#4CAF50; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; }
     .rdyBtn { background:#9C27B0; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; }
-    .updateBtn { background:#1976d2; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; }
-    .addBtn { background:#1976d2; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; }
-    .editBtn { background:#1976d2; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; }
+    .updateBtn { background:#1976D2; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; }
+    .addBtn { background:#0d47a1; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; }
+    .editBtn { background:#1976D2; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; }
     .removeBtn { background:#d32f2f; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; }
     .staff-section, .menu-section, .inventory-section, .salary-section, .invoice-section, .chat-section, .zone-section { background:#fff; padding:20px; border-radius:10px; margin-top:40px; border:1px solid #ddd; display:block; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
     .excelBtn { background:#1F7246; color:white; border:none; padding:10px 15px; border-radius:6px; font-weight:bold; cursor:pointer; }
@@ -34,7 +34,7 @@
     .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; display:flex; justify-content:center; align-items:center; z-index:99999; }
     .login-card { background:#fff; padding:30px; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1); width:100%; max-width:360px; text-align:center; }
     .login-card input { width:100%; padding:12px; margin:10px 0; border:1px solid #ddd; border-radius:8px; font-size:16px; }
-    .login-card button { width:100%; padding:12px; background:#1976d2; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; }
+    .login-card button { width:100%; padding:12px; background:#0d47a1; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; }
     .proof-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid #ccc; display: inline-block; }
     
     .image-viewer-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; justify-content:center; align-items:center; z-index:999999; }
@@ -62,7 +62,7 @@
       position: sticky;
       top: 0;
       z-index: 10;
-      background: #1976d2 !important;
+      background: #0d47a1 !important;
     }
 
     /* Stock Alert Table Max 5 items visible with vertical scroll */
@@ -76,7 +76,7 @@
       position: sticky;
       top: 0;
       z-index: 10;
-      background: #1976d2 !important;
+      background: #0d47a1 !important;
     }
 
     /* Current Food Items Table Max 10 items visible with vertical scroll */
@@ -90,7 +90,7 @@
       position: sticky;
       top: 0;
       z-index: 10;
-      background: #1976d2 !important;
+      background: #0d47a1 !important;
     }
 
     /* Current Staff Members Table Max 5 items visible with vertical scroll */
@@ -104,7 +104,7 @@
       position: sticky;
       top: 0;
       z-index: 10;
-      background: #1976d2 !important;
+      background: #0d47a1 !important;
     }
   </style>
 </head>
@@ -129,7 +129,7 @@
   
   <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
     <img src="https://i.postimg.cc/ry18SGbR/LOGO.png" alt="Logo" style="width: 55px; height: 55px; object-fit: contain;">
-    <h2 style="margin: 0; color: #1976d2;">
+    <h2 style="margin: 0; color: #0d47a1;">
       POOJA EXPORT AND IMPORT TRADING PVT. LTD. Admin Panel (<span id="userRoleBadge" style="color:#d32f2f;">...</span>)
       <span id="emailAutomationStatusBadge" class="automation-badge" style="display: inline-block;">Supabase: 🟢 Active</span>
     </h2>
@@ -152,24 +152,24 @@
       <span style="font-size: 13px; color: #777; font-weight: bold;">This Month Sales</span>
       <h2 id="dashMonthSales" style="margin: 5px 0 0 0; color: #9C27B0; font-size: 24px;">RM 0</h2>
     </div>
-    <div style="flex: 1; min-width: 140px; background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #1976d2; text-align: center;">
+    <div style="flex: 1; min-width: 140px; background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #0d47a1; text-align: center;">
       <span style="font-size: 13px; color: #777; font-weight: bold;">Avg Order Value</span>
-      <h2 id="dashAvgOrder" style="margin: 5px 0 0 0; color: #1976d2; font-size: 24px;">RM 0</h2>
+      <h2 id="dashAvgOrder" style="margin: 5px 0 0 0; color: #0d47a1; font-size: 24px;">RM 0</h2>
     </div>
   </div>
 
   <div class="chart-container" id="monthlySalesChartDiv" style="width: 100%; height: 320px; background: #fff; padding: 15px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-    <h3 style="color: #1976d2; margin-bottom: 10px; font-size: 16px;">Monthly Sales Insights & Growth (RM)</h3>
+    <h3 style="color: #0d47a1; margin-bottom: 10px; font-size: 16px;">Monthly Sales Insights & Growth (RM)</h3>
     <div id="monthlySalesChart" style="width: 100%; height: 250px;"></div>
   </div>
   
   <div class="chart-container" id="hourlySalesChartDiv" style="width: 100%; height: 320px; background: #fff; padding: 15px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-    <h3 style="color: #1976d2; margin-bottom: 10px; font-size: 16px;">Today's Hourly Sales Trend (RM)</h3>
+    <h3 style="color: #0d47a1; margin-bottom: 10px; font-size: 16px;">Today's Hourly Sales Trend (RM)</h3>
     <div id="hourlySalesChart" style="width: 100%; height: 250px;"></div>
   </div>
 
   <div id="salesReportBox" style="background: #fff; padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-    <h3 style="color: #1976d2; margin-bottom: 15px; font-size: 18px;">📊 Sales Report Generator & Export</h3>
+    <h3 style="color: #0d47a1; margin-bottom: 15px; font-size: 18px;">📊 Sales Report Generator & Export</h3>
     <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
       <div>
         <label style="display: block; font-size: 13px; font-weight: bold; color: #555; margin-bottom: 5px;">Start Date:</label>
@@ -188,7 +188,7 @@
 
   <div id="mainOrdersTableSection">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
-      <h3 style="margin: 0; color: #1976d2;">🛒 Active Orders</h3>
+      <h3 style="margin: 0; color: #0d47a1;">🛒 Active Orders</h3>
       <input type="text" id="orderSearchInput" onkeyup="filterActiveOrders()" placeholder="🔍 Search Order No / Customer..." style="padding: 8px 12px; width: 260px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px;">
     </div>
     <div style="overflow-x: auto; width:100%;">
@@ -215,7 +215,7 @@
 
   <!-- 🚚 77 जिल्ला डेलिभरी रेट व्यवस्थापन (Delivery Zones) -->
   <div id="zoneManagementBox" class="zone-section">
-    <h3 style="color: #1976d2; margin-bottom: 15px;">🚚 77 जिल्ला डेलिभरी रेट व्यवस्थापन (Delivery Zones)</h3>
+    <h3 style="color: #0d47a1; margin-bottom: 15px;">🚚 77 जिल्ला डेलिभरी रेट व्यवस्थापन (Delivery Zones)</h3>
     <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
       <input id="newZoneName" type="text" placeholder="जिल्लाको नाम (District Name)" style="flex: 2; padding: 10px;">
       <input id="newZoneRate" type="number" placeholder="रेट (RM / Rs.)" style="flex: 1; padding: 10px;">
@@ -238,9 +238,9 @@
   </div>
 
   <div id="menuManagementBox" class="menu-section">
-    <h3 style="color: #1976d2;">📦 Menu & Product Management</h3>
+    <h3 style="color: #0d47a1;">📦 Menu & Product Management</h3>
     <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd;">
-      <h4 style="color: #1976d2;">+ Add New Product</h4>
+      <h4 style="color: #0d47a1;">+ Add New Product</h4>
       <input id="prodId" type="text" placeholder="Item ID">
       <input id="prodName" type="text" placeholder="Product Name">
       <input id="prodPrice" type="number" placeholder="Price">
@@ -249,13 +249,13 @@
       <input id="prodCat" type="text" placeholder="Category">
       <button id="addProductBtn" class="addBtn" onclick="createNewProduct()">+ Add Product</button>
     </div>
-    <h4 style="color: #1976d2;">Current Food Items</h4>
+    <h4 style="color: #0d47a1;">Current Food Items</h4>
     <div style="overflow-x: auto; width:100%;">
       <table>
         <thead>
           <tr>
             <th>ID</th>
-            <th>Name</th>
+            <th>Food Name</th>
             <th>Price</th>
             <th>Image</th>
             <th>Description</th>
@@ -269,7 +269,7 @@
   </div>
 
   <div id="inventoryManagementBox" class="inventory-section">
-    <h3 style="color: #1976d2;">📦 Inventory Management</h3>
+    <h3 style="color: #0d47a1;">📦 Inventory Management</h3>
     <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:20px; border:1px solid #ddd;">
       <div style="margin-bottom: 15px;">
         <select id="inventoryItemSelect" onchange="onInventoryItemSelect()" style="width: 100%; max-width: 450px; padding: 10px; font-size: 14px; font-weight: bold; border-radius: 6px; border: 1px solid #ccc;">
@@ -289,7 +289,7 @@
       <button onclick="saveInventoryStock()" style="background:#4CAF50; color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer; font-size: 15px;">Save Stock</button>
     </div>
 
-    <h3 style="color: #1976d2; margin-top: 25px;">⚠️ Stock Alert Items</h3>
+    <h3 style="color: #0d47a1; margin-top: 25px;">⚠️ Stock Alert Items</h3>
     <div style="overflow-x: auto; width:100%;">
       <table>
         <thead>
@@ -310,19 +310,19 @@
   </div>
 
   <div id="staffManagementBox" class="staff-section" style="background: #fff; padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-    <h3 style="color: #1976d2; margin-bottom: 15px; font-size: 18px;">👥 Staff & Access Management</h3>
+    <h3 style="color: #0d47a1; margin-bottom: 15px; font-size: 18px;">👥 Staff & Access Management</h3>
     
     <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd;">
-      <h4 style="margin-bottom: 10px; color: #1976d2;">+ Add New Staff</h4>
+      <h4 style="margin-bottom: 10px; color: #0d47a1;">+ Add New Staff</h4>
       <div style="display: flex; gap: 10px; flex-wrap: wrap;">
         <input id="staffUsername" type="text" placeholder="Username / Email" style="flex: 1; min-width: 180px; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
         <input id="staffPassword" type="password" placeholder="Password" style="flex: 1; min-width: 150px; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
         <input id="staffRoleInput" type="text" placeholder="Role (e.g. order_taker, delivery, manager)" style="flex: 1; min-width: 150px; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-weight: bold;">
-        <button class="addBtn" onclick="createNewStaff()" style="background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">+ Add Staff</button>
+        <button class="addBtn" onclick="createNewStaff()" style="background: #0d47a1; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">+ Add Staff</button>
       </div>
     </div>
 
-    <h4 style="margin-bottom: 10px; color: #1976d2;">Current Staff Members</h4>
+    <h4 style="margin-bottom: 10px; color: #0d47a1;">Current Staff Members</h4>
     <div style="overflow-x: auto; width: 100%;">
       <table>
        <thead>
@@ -342,18 +342,18 @@
   </div>
 
   <div id="expenseTrackerBox" style="background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 20px;">
-      <h3 style="margin-bottom: 15px; color: #1976d2;">💰 Expense & Profit Tracker</h3>
+      <h3 style="margin-bottom: 15px; color: #0d47a1;">💰 Expense & Profit Tracker</h3>
       
       <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; align-items: center;">
           <input type="date" id="expenseDateInput" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
           <input type="text" id="expenseCategory" placeholder="Category (e.g. Rent, Salary)" style="padding: 8px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
           <input type="number" id="expenseAmount" placeholder="Amount (RM)" style="padding: 8px; width: 130px; border: 1px solid #ccc; border-radius: 4px;">
           <input type="text" id="expenseDescription" placeholder="Description" style="padding: 8px; flex: 2; border: 1px solid #ccc; border-radius: 4px;">
-          <button onclick="addExpense()" style="background: #1976d2; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer;">+ Add Expense</button>
+          <button onclick="addExpense()" style="background: #0d47a1; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer;">+ Add Expense</button>
       </div>
 
       <div style="margin-bottom: 20px;">
-          <h4 style="color: #1976d2; margin-bottom: 10px;">📊 Expense Report Generator & Export</h4>
+          <h4 style="color: #0d47a1; margin-bottom: 10px;">📊 Expense Report Generator & Export</h4>
           <div style="display: flex; gap: 15px; align-items: center; background: #f9f9f9; padding: 15px; border-radius: 6px; flex-wrap: wrap;">
               <div>
                   <label style="font-size: 13px; color: #333; font-weight: bold; display: block; margin-bottom: 5px;">Start Date:</label>
@@ -378,19 +378,19 @@
   </div>
 
   <div id="salarySectionBox" class="salary-section" style="background: #fff; padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-      <h3 style="color: #1976d2; margin-bottom: 15px; font-size: 18px;">💰 Staff Salary Sheet & Voucher System</h3>
+      <h3 style="color: #0d47a1; margin-bottom: 15px; font-size: 18px;">💰 Staff Salary Sheet & Voucher System</h3>
       
       <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd;">
-          <h4 style="margin-bottom: 10px; color: #1976d2;">+ Add New Staff & Designation</h4>
+          <h4 style="margin-bottom: 10px; color: #0d47a1;">+ Add New Staff & Designation</h4>
           <div style="display: flex; gap: 10px; flex-wrap: wrap;">
               <input id="salStaffName" type="text" placeholder="Full Name (e.g. Shova Kumari)" style="flex: 2; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
               <input id="salStaffDesig" type="text" placeholder="Designation (e.g. order_taker, delivery)" style="flex: 2; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
-              <button class="addBtn" onclick="addNewSalaryStaff()" style="background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">+ Add Staff</button>
+              <button class="addBtn" onclick="addNewSalaryStaff()" style="background: #0d47a1; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">+ Add Staff</button>
           </div>
       </div>
 
-      <div style="background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #1976d2;">
-          <h4 style="margin-bottom: 15px; color: #1976d2;">🧾 Create Salary Voucher</h4>
+      <div style="background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #0d47a1;">
+          <h4 style="margin-bottom: 15px; color: #0d47a1;">🧾 Create Salary Voucher</h4>
           
           <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
               <div style="flex: 2; min-width: 250px;">
@@ -423,7 +423,7 @@
           <div style="margin-bottom: 15px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                   <label style="font-weight: bold; color: #333;">Earnings & Allowances:</label>
-                  <button onclick="addEarningRow()" style="background: #1976d2; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px;">+ Add Earnings</button>
+                  <button onclick="addEarningRow()" style="background: #0d47a1; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px;">+ Add Earnings</button>
               </div>
               <div id="earningsContainer" style="display: flex; flex-direction: column; gap: 8px;">
                   <div style="display: flex; gap: 10px; align-items: center;" class="earning-row">
@@ -437,7 +437,7 @@
           <div style="margin-bottom: 15px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                   <label style="font-weight: bold; color: #333;">Deductions:</label>
-                  <button onclick="addDeductionRow()" style="background: #1976d2; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px;">+ Add Deduction</button>
+                  <button onclick="addDeductionRow()" style="background: #0d47a1; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px;">+ Add Deduction</button>
               </div>
               <div id="deductionsContainer" style="display: flex; flex-direction: column; gap: 8px;">
                   <div style="display: flex; gap: 10px; align-items: center;" class="deduction-row">
@@ -457,7 +457,7 @@
               </select>
           </div>
 
-          <div style="background: #e3f2fd; border: 1px dashed #1976d2; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 18px; font-weight: bold; color: #1976d2;">
+          <div style="background: #e3f2fd; border: 1px dashed #0d47a1; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 18px; font-weight: bold; color: #0d47a1;">
               NET Salary: RM <span id="displayNetSalary">0.00</span>
           </div>
 
@@ -465,7 +465,7 @@
       </div>
 
       <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
-          <h4 style="color: #1976d2; margin-bottom: 10px;">📊 Salary Statements Export & Report</h4>
+          <h4 style="color: #0d47a1; margin-bottom: 10px;">📊 Salary Statements Export & Report</h4>
           <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
               <div>
                   <label style="font-size: 13px; color: #333; font-weight: bold; display: block; margin-bottom: 5px;">Start Date:</label>
@@ -484,7 +484,7 @@
   </div>
 
   <div id="extraServiceInvoiceBox" class="invoice-section" style="background: #fff; padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-      <h3 style="color: #1976d2; margin-bottom: 15px; font-size: 18px;">🧾 Extra Service Invoice Generator</h3>
+      <h3 style="color: #0d47a1; margin-bottom: 15px; font-size: 18px;">🧾 Extra Service Invoice Generator</h3>
       
       <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
           <div style="flex: 2; min-width: 250px;">
@@ -500,7 +500,7 @@
       <div style="margin-bottom: 15px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
               <label style="font-weight: bold; color: #333;">Invoice Descriptions & Amounts:</label>
-              <button onclick="addInvoiceItemRow()" style="background: #1976d2; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px;">+ Add Item</button>
+              <button onclick="addInvoiceItemRow()" style="background: #0d47a1; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px;">+ Add Item</button>
           </div>
           <div id="invoiceItemsContainer" style="display: flex; flex-direction: column; gap: 8px;">
               <div style="display: flex; gap: 10px; align-items: center;" class="inv-item-row">
@@ -530,7 +530,7 @@
 
       <div style="background: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
           <h4 style="margin: 0 0 10px 0; color: #333;">Summary Preview:</h4>
-          <div style="display: flex; justify-content: space-between; padding: 5px 0; font-size: 16px; color: #1976d2;">
+          <div style="display: flex; justify-content: space-between; padding: 5px 0; font-size: 16px; color: #0d47a1;">
               <span><b>TOTAL:</b></span>
               <b id="previewTotal">RM 850.00</b>
           </div>
@@ -548,7 +548,7 @@
 
   <!-- 📊 Total Income Report Generator & Export -->
   <div id="totalIncomeReportBox" style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-top: 20px; border: 1px solid #ddd;">
-      <h3 style="margin-bottom: 15px; color: #1976d2; font-size: 18px;">📊 Total Income Report Generator & Export</h3>
+      <h3 style="margin-bottom: 15px; color: #0d47a1; font-size: 18px;">📊 Total Income Report Generator & Export</h3>
       
       <div style="display: flex; gap: 15px; align-items: center; background: #f9f9f9; padding: 15px; border-radius: 8px; flex-wrap: wrap; border: 1px solid #eee;">
           <div>
@@ -567,7 +567,7 @@
   </div>
 
   <div class="chat-section">
-    <h3 style="color: #1976d2; margin-bottom: 15px; font-size: 18px;">💬 Live Support Chat Center</h3>
+    <h3 style="color: #0d47a1; margin-bottom: 15px; font-size: 18px;">💬 Live Support Chat Center</h3>
     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
       <div style="flex: 1; min-width: 280px; border-right: 1px solid #ddd; padding-right: 10px;">
         <h4>Active Chats</h4>
@@ -590,7 +590,7 @@
         </div>
         <div style="display: flex; gap: 10px; margin-top: 10px;">
           <input type="text" id="adminChatInput" placeholder="Type a reply..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
-          <button onclick="sendAdminChat()" style="background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">Send</button>
+          <button onclick="sendAdminChat()" style="background: #0d47a1; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">Send</button>
         </div>
       </div>
     </div>
@@ -1042,7 +1042,7 @@
           <td style="font-size:12px; color:#555;">${o.time || '-'}</td>
           <td><b>${displayOrderNo}</b></td>
           <td>${o.customer_name || '-'}<br><small style="color:#666;">${o.phone || ''}</small></td>
-          <td style="color:#1976d2; font-weight:bold;">RM ${o.total || '0'}</td>
+          <td style="color:#0d47a1; font-weight:bold;">RM ${o.total || '0'}</td>
           <td>${slipHtml}</td>
           <td style="font-size:12px; color:#555; font-weight:bold;">${o.delivery_time || 'N/A'}</td>
           <td>${delivHtml}</td>
@@ -1354,8 +1354,8 @@
         <title>Total Income Report Statement</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
-          .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #1976d2; padding-bottom: 10px; }
-          .header h2 { margin: 0; color: #1976d2; font-size: 24px; }
+          .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #0d47a1; padding-bottom: 10px; }
+          .header h2 { margin: 0; color: #0d47a1; font-size: 24px; }
           .header p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
           .logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 5px; }
           table { width: 100%; border-collapse: collapse; margin-top: 15px; }
@@ -1812,7 +1812,7 @@
         <title>Salary Report Statement</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
-          .header { text-align: center; border-bottom: 2px solid #1976d2; padding-bottom: 10px; margin-bottom: 20px; }
+          .header { text-align: center; border-bottom: 2px solid #0d47a1; padding-bottom: 10px; margin-bottom: 20px; }
           .logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 5px; }
           table { width: 100%; border-collapse: collapse; margin-top: 15px; }
           th { background: #f8f9fa; padding: 10px; border: 1px solid #ddd; text-align: left; }
@@ -1998,7 +1998,7 @@
       html += `<tr>
         <td><b>${index + 1}</b></td>
         <td><b>${r.name || ''}</b></td>
-        <td style="color:#1976d2; font-weight:bold;">RM ${r.price || 0}</td>
+        <td style="color:#0d47a1; font-weight:bold;">RM ${r.price || 0}</td>
         <td>${r.image ? `<img src="${r.image}" class="menu-thumb">` : 'No Image'}</td>
         <td>${r.description || ''}</td>
         <td><b>${r.category || ''}</b></td>
@@ -2029,7 +2029,7 @@
   };
 
   async function editProduct(rowId, oldName, oldPrice, oldImg, oldDesc, oldCat) {
-    var newName = prompt("Edit Name:", oldName); if(newName === null) return;
+    var newName = prompt("Edit Food Name:", oldName); if(newName === null) return;
     var newPrice = parseFloat(prompt("Edit Price (RM):", oldPrice)); if(isNaN(newPrice)) newPrice = oldPrice;
     var newImg = prompt("Edit Image URL:", oldImg); if(newImg === null) newImg = oldImg;
     var newDesc = prompt("Edit Description:", oldDesc); if(newDesc === null) newDesc = oldDesc;
@@ -2169,7 +2169,7 @@
     let chartArray = [['Months (Year-MM)', 'Revenue (RM)']];
     Object.keys(monthlyDataMap).sort().forEach(k => chartArray.push([k, monthlyDataMap[k]]));
     if (chartArray.length === 1) chartArray.push(['No Data', 0]);
-    new google.visualization.ColumnChart(document.getElementById('monthlySalesChart')).draw(google.visualization.arrayToDataTable(chartArray), { legend: { position: 'none' }, colors: ['#1976d2'] });
+    new google.visualization.ColumnChart(document.getElementById('monthlySalesChart')).draw(google.visualization.arrayToDataTable(chartArray), { legend: { position: 'none' }, colors: ['#0d47a1'] });
   };
 
   function drawHourlySalesChart(orders) {
@@ -2191,7 +2191,7 @@
     });
     let chartArray = [['Time (Hours)', 'Revenue (RM)']];
     Object.keys(hourlyMap).sort().forEach(h => chartArray.push([h, hourlyMap[h]]));
-    new google.visualization.LineChart(document.getElementById('hourlySalesChart')).draw(google.visualization.arrayToDataTable(chartArray), { legend: { position: 'none' }, colors: ['#1976d2'], curveType: 'function' });
+    new google.visualization.LineChart(document.getElementById('hourlySalesChart')).draw(google.visualization.arrayToDataTable(chartArray), { legend: { position: 'none' }, colors: ['#d32f2f'], curveType: 'function' });
   };
 
   function exportExcelReport() {
@@ -2249,8 +2249,8 @@
         <title>Sales Report Statement</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
-          .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #1976d2; padding-bottom: 10px; }
-          .header h2 { margin: 0; color: #1976d2; font-size: 24px; }
+          .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #0d47a1; padding-bottom: 10px; }
+          .header h2 { margin: 0; color: #0d47a1; font-size: 24px; }
           .header p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
           .logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 5px; }
           table { width: 100%; border-collapse: collapse; margin-top: 15px; }
@@ -2502,8 +2502,8 @@
             <title>Expense Report Statement</title>
             <style>
                 body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
-                .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #1976d2; padding-bottom: 10px; }
-                .header h2 { margin: 0; color: #1976d2; font-size: 24px; }
+                .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #0d47a1; padding-bottom: 10px; }
+                .header h2 { margin: 0; color: #0d47a1; font-size: 24px; }
                 .header p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
                 .logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 5px; }
                 .table-con { width: 100%; border-collapse: collapse; margin-top: 15px; }
