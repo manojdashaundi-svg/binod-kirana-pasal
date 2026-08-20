@@ -426,14 +426,14 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
       if(supabaseClient) {
         let { error: insertError } = await supabaseClient.from('orders').insert([{
           order_no: orderNo,
-          time: timeStr,
           customer_name: name,
           phone: phone,
-          address: fullAddress,
-          items: items,
           total: Number(grandTotal.toFixed(2)),
+          address: fullAddress,
+          payment_slip: "Slip Uploaded",
+          time: timeStr,
           status: "Pending",
-          payment_slip: "Attached",
+          items: items,
           proof_img: "None"
         }]);
 
