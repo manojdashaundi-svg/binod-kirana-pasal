@@ -162,7 +162,13 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 <script>
   const SUPABASE_URL = 'https://odhdrvvgemwgiphipgv.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k';
-  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  
+  let supabaseClient = null;
+  try {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch(e) {
+    console.error("Supabase init error:", e);
+  }
 
   window.cart = []; 
   window.selectedCategory = "All";
@@ -177,10 +183,14 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   };
 
   async function loadMenuFromSupabase() {
+    if (!supabaseClient) {
+      document.getElementById("menu").innerHTML = "<p style='color:red;'>⚠️ Supabase Client failed to initialize.</p>";
+      return;
+    }
     try {
       let { data, error } = await supabaseClient.from('menu_items').select('*');
       if (error) {
-        document.getElementById("menu").innerHTML = "<p style='color:red;'>⚠️ Supabase Error: " + error.message + "</p>";
+        document.getElementById("menu").innerHTML = "<p style='color:red;'>⚠️ Database Error: " + error.message + "</p>";
         return;
       }
       if (data && data.length > 0) {
@@ -190,7 +200,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         document.getElementById("menu").innerHTML = "<p style='color:red;'>⚠️ No products found in table.</p>";
       }
     } catch(err) {
-      document.getElementById("menu").innerHTML = "<p style='color:red;'>⚠️ Connection Error.</p>";
+      document.getElementById("menu").innerHTML = "<p style='color:red;'>⚠️ Network Error / Failed to fetch (Check your Internet, DNS or Ad-blocker).</p>";
     }
   }
 
@@ -283,6 +293,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   };
 
   window.placeOrder = async function(){
+    if(!supabaseClient) { alert("Database connection not ready."); return; }
     const name = document.getElementById("customerName").value.trim();
     const phone = document.getElementById("customerPhone").value.trim();
     
@@ -337,7 +348,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
       alert("✅ Order Placed Successfully! Order No: " + orderNo);
       
-      const rm = `📦 NEW ORDER (QR PAID - POOJA EXPORT)\n\nOrder No: ${orderNo}\n\n👤 ${name}\n📞 ${phone}\n🚚 Zone: ${zoneName}\n🏠 Address: ${address}\n\n📦 Items:\n${items}\n\n------------------\nSubtotal: Rs. ${subtotal.toFixed(2)}\nDelivery: Rs. ${deliveryCharge.toFixed(2)}\n💰 Total: Rs. ${grandTotal.toFixed(2)}`;
+      const rm = `📦 NEW ORDER (QR PAID - POOJA EXPORT)\n\nOrder No: ${orderNo}\n\n👤 ${name}\n📞 ${phone}\n🚚 Zone: ${zoneName}\n🏠 Address: ${address}\n\n📦 Items:\n${items}\n\n------------------\nSubtotal: Rs. ${subtotal.toFixed(2)}\nDelivery: Rs. ${deliveryCharge.Delivery || deliveryCharge.toFixed(2)}\n💰 Total: Rs. ${grandTotal.toFixed(2)}`;
       window.open("https://wa.me/9769338427?text=" + encodeURIComponent(rm), "_blank");
       
       window.cart = []; 
@@ -360,6 +371,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   };
 
   window.trackMyOrder = async function() { 
+    if(!supabaseClient) return;
     const orderNo = document.getElementById("trackOrderNo").value.trim().toUpperCase(); 
     if (orderNo === "") return; 
     document.getElementById("trackResult").innerHTML = "Searching..."; 
