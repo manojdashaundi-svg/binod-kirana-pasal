@@ -90,10 +90,10 @@
     </div>
   </div>
 
-  <!-- 📊 Monthly Sales Insights & Growth (Active Orders भन्दा माथि) -->
+  <!-- 📈 Today's Hourly Sales Trend (Active Orders भन्दा माथि) -->
   <div class="chart-container">
-    <h3 style="color:#1976D2; margin: 0 0 10px 0; font-size: 16px;">📊 Monthly Sales Insights & Growth</h3>
-    <div id="monthlySalesChart" style="width: 100%; height: 220px;"></div>
+    <h3 style="color:#1976D2; margin: 0 0 10px 0; font-size: 16px;">📈 Today's Hourly Sales Trend (RM)</h3>
+    <div id="hourlySalesChart" style="width: 100%; height: 220px;"></div>
   </div>
 
   <!-- 🛒 Active Orders Section -->
@@ -319,7 +319,7 @@
         activeOrdersCache = data.sort((a, b) => (b.id || 0) - (a.id || 0));
         calculateDashboardStats(activeOrdersCache);
         renderActiveOrdersTable(activeOrdersCache);
-        drawMonthlySalesChart(activeOrdersCache);
+        drawHourlySalesChart(activeOrdersCache);
       }
     } catch(err) {}
   };
@@ -409,40 +409,44 @@
     document.getElementById("dashMonthSales").innerText = "Rs. " + monthSales.toFixed(2);
   };
 
-  function drawMonthlySalesChart(orders) {
+  function drawHourlySalesChart(orders) {
     if (typeof google === 'undefined' || !google.visualization) return;
-    let monthlyTotals = {};
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    
+    let hourlyTotals = {};
+    for(let i=0; i<24; i++) {
+      let hLabel = (i < 10 ? "0" + i : i) + ":00";
+      hourlyTotals[hLabel] = 0;
+    }
+
+    let now = new Date();
     orders.forEach(o => {
       let amount = parseFloat(o.total) || 0;
       if (o.time) {
         let d = new Date(o.time);
         if (!isNaN(d.getTime())) {
-          let mKey = monthNames[d.getMonth()] + " " + d.getFullYear();
-          monthlyTotals[mKey] = (monthlyTotals[mKey] || 0) + amount;
+          if (d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+            let hr = d.getHours();
+            let hLabel = (hr < 10 ? "0" + hr : hr) + ":00";
+            hourlyTotals[hLabel] = (hourlyTotals[hLabel] || 0) + amount;
+          }
         }
       }
     });
 
-    let chartDataArray = [['Month', 'Sales (Rs.)']];
-    let keys = Object.keys(monthlyTotals);
-    if(keys.length === 0) {
-      chartDataArray.push(['Current', 0]);
-    } else {
-      keys.forEach(k => { chartDataArray.push([k, monthlyTotals[k]]); });
-    }
+    let chartDataArray = [['Hour', 'Sales (RM)']];
+    Object.keys(hourlyTotals).forEach(h => {
+      chartDataArray.push([h, hourlyTotals[h]]);
+    });
 
     let data = google.visualization.arrayToDataTable(chartDataArray);
     let options = {
-      title: 'Monthly Revenue Growth',
-      colors: ['#1976D2'],
+      title: "Today's Hourly Sales Trend",
+      colors: ['#2196F3'],
       legend: { position: 'none' },
-      hAxis: { title: 'Month' },
-      vAxis: { title: 'Amount (Rs.)' },
+      hAxis: { title: 'Time (Hour)' },
+      vAxis: { title: 'Sales (RM)' },
       backgroundColor: 'transparent'
     };
-    let chart = new google.visualization.ColumnChart(document.getElementById('monthlySalesChart'));
+    let chart = new google.visualization.LineChart(document.getElementById('hourlySalesChart'));
     chart.draw(data, options);
   }
 
