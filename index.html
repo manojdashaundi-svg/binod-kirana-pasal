@@ -132,7 +132,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     <hr style="margin:25px 0; border:0; border-top:1px solid #ddd; width: 100%;">
     <div style="padding: 0 4px; text-align: left;">
         <h2>📦 Track Your Order</h2>
-        <input id="trackOrderNo" type="text" placeholder="Enter Order No (Example: ORD1001)" style="width:100%; padding:14px; margin:10px 0; border-radius:8px; border:1px solid #ddd; font-size:18px;">
+        <input id="trackOrderNo" type="text" placeholder="Enter Order No (Example: ORD-001)" style="width:100%; padding:14px; margin:10px 0; border-radius:8px; border:1px solid #ddd; font-size:18px;">
         <button class="place-btn" style="background:#1976D2;" onclick="window.trackMyOrder()">Track Order</button>
         <div id="trackResult" style="margin-top:20px;"></div>
     </div>
@@ -160,9 +160,9 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   </div>
 
   <div id="chatActiveWindow" style="display:none; flex-direction:column; height:300px;">
-    <div id="chatMessageArea" style="flex:1; padding:10px; overflow-y:auto; background:#f9f9f9; font-size:13px; display:block;"></div>
+    <div id="chatMessageArea" style="flex:1; padding:10px; overflow-y:auto; background:#f9f9f9; font-size:13px; display:block; min-height: 200px;"></div>
     <div style="display:flex; border-top:1px solid #ddd;">
-      <input id="chatCustomerInput" type="text" placeholder="Type message..." style="flex:1; padding:10px; border:none; outline:none; color:#000; background:#fff;">
+      <input id="chatCustomerInput" type="text" placeholder="Type message..." style="flex:1; padding:10px; border:none; outline:none; color:#000; background:#fff; margin:0;">
       <button onclick="window.sendCustomerMsg()" style="background:#1976D2; color:#fff; border:none; padding:10px 15px; cursor:pointer; font-weight:bold;">Send</button>
     </div>
   </div>
@@ -414,7 +414,6 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
       return; 
     }
 
-    // फोन नम्बर प्रमाणीकरण (Valid Phone Number Check)
     const phoneRegex = /^9[0-9]{9}$/;
     if (!phoneRegex.test(phone)) {
       alert("❌ कृपया सही र वैध मोबाइल नम्बर राख्नुहोस् (१० अंकको, ९ बाट सुरु हुने)।");
@@ -579,9 +578,14 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     if(!window.currentChatOrderNo || !supabaseClient) return;
     try {
       let { data, error } = await supabaseClient.from('chats').select('*').eq('session_id', window.currentChatOrderNo).order('id', { ascending: true });
-      if(error || !data) return;
       var area = document.getElementById("chatMessageArea");
       if(!area) return;
+      
+      if(error || !data || data.length === 0) {
+        area.innerHTML = `<div style="text-align:center; color:#888; margin-top:20px;">No messages yet. Start chatting below!</div>`;
+        return;
+      }
+
       let html = "";
       data.forEach(function(m) {
         let align = (m.sender === "Customer") ? "text-align:right;" : "text-align:left;";
@@ -605,7 +609,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         customer_name: "Customer",
         support_type: window.currentChatCategory || "General",
         sender: "Customer",
-        message: "Customer: " + msg,
+        message: msg,
         time: new Date().toLocaleString()
       }]);
       window.loadChatHistory();
