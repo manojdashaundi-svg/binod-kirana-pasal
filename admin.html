@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" type="image/png" href="https://i.postimg.cc/ry18SGbR/LOGO.png">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>POOJA EXPORT & IMPORT Admin Panel</title>
+  <title>POOJA EXPORT AND IMPORT TRADING PVT. LTD. Admin Panel</title>
   <script src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -14,18 +14,18 @@
   </script>
   <style>
     body{ font-family:Arial,sans-serif; background:#f5f5f5; margin:0; padding:20px; }
-    h2{ color:#1976D2; }
+    h2{ color:#e91e63; }
     .logout{ position:fixed; top:15px; right:15px; background:#f44336; color:#fff; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight: bold; z-index: 1000; }
-    .bell-btn { position:fixed; top:12px; right:125px; background:#fff; border:2px solid #1976D2; font-size:22px; padding:6px 10px; border-radius:50%; cursor:pointer; z-index: 1000; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    .bell-btn { position:fixed; top:12px; right:125px; background:#fff; border:2px solid #e91e63; font-size:22px; padding:6px 10px; border-radius:50%; cursor:pointer; z-index: 1000; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
     .automation-badge { display: inline-block; background: #fff; border: 1px solid #4CAF50; color: #4CAF50; font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 20px; margin-left: 12px; vertical-align: middle; }
     table { width:100%; border-collapse:collapse; background:#fff; margin-top:20px; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
-    th{ background:#1976D2; color:#fff; padding:12px; font-size:14px; }
+    th{ background:#e91e63; color:#fff; padding:12px; font-size:14px; }
     td{ padding:10px; border:1px solid #ddd; text-align:center; font-size:14px; }
     select, input{ padding:8px; border-radius:6px; border:1px solid #ccc; margin:3px; box-sizing: border-box; }
     .rcvBtn { background:#4CAF50; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; }
     .rdyBtn { background:#9C27B0; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; }
     .updateBtn { background:#2196F3; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; }
-    .addBtn { background:#1976D2; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; }
+    .addBtn { background:#e91e63; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; }
     .editBtn { background:#2196F3; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; }
     .removeBtn { background:#f44336; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; }
     .staff-section, .menu-section, .inventory-section, .salary-section, .invoice-section, .chat-section, .zone-section { background:#fff; padding:20px; border-radius:10px; margin-top:40px; border:1px solid #ddd; display:block; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
@@ -34,7 +34,7 @@
     .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; display:flex; justify-content:center; align-items:center; z-index:99999; }
     .login-card { background:#fff; padding:30px; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1); width:100%; max-width:360px; text-align:center; }
     .login-card input { width:100%; padding:12px; margin:10px 0; border:1px solid #ddd; border-radius:8px; font-size:16px; }
-    .login-card button { width:100%; padding:12px; background:#1976D2; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; }
+    .login-card button { width:100%; padding:12px; background:#e91e63; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; }
     .proof-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid #ccc; display: inline-block; }
     
     .image-viewer-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; justify-content:center; align-items:center; z-index:999999; }
@@ -50,6 +50,62 @@
     .inStockBtn { background:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; display: inline-flex; align-items: center; gap: 5px; }
     .outStockBtn { background:#ff9800; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; }
     .menu-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
+
+    /* Active Orders Table Max 10 items visible with vertical scroll */
+    #mainOrdersTableSection div[style*="overflow-x: auto;"] {
+      max-height: 520px;
+      overflow-y: auto !important;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    #mainOrdersTableSection table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #e91e63 !important;
+    }
+
+    /* Stock Alert Table Max 5 items visible with vertical scroll */
+    #inventoryManagementBox div[style*="overflow-x: auto;"] {
+      max-height: 270px;
+      overflow-y: auto !important;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    #inventoryManagementBox table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #e91e63 !important;
+    }
+
+    /* Current Food Items Table Max 10 items visible with vertical scroll */
+    #menuManagementBox div[style*="overflow-x: auto;"] {
+      max-height: 520px;
+      overflow-y: auto !important;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    #menuManagementBox table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #e91e63 !important;
+    }
+
+    /* Current Staff Members Table Max 5 items visible with vertical scroll */
+    #staffManagementBox div[style*="overflow-x: auto;"] {
+      max-height: 270px;
+      overflow-y: auto !important;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    #staffManagementBox table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #e91e63 !important;
+    }
   </style>
 </head>
 <body>
@@ -60,7 +116,7 @@
 
 <div id="loginScreen" class="login-overlay">
   <div class="login-card">
-    <h2>🔐 ADMIN LOGIN</h2>
+    <h2>🔐 STAFF LOGIN</h2>
     <input id="username" type="text" placeholder="Username / Email" autocomplete="off" value="">
     <input id="password" type="password" placeholder="Password" autocomplete="off" value="">
     <button id="loginBtn" type="button" onclick="handleLogin()">Login</button>
@@ -71,10 +127,13 @@
   <button id="systemBellAlertBtn" class="bell-btn" onclick="testBellSound()" title="Test Sound">🔔</button>
   <button id="globalLogoutBtn" class="logout" onclick="logout()">Logout</button>
   
-  <h2>
-    📦 POOJA EXPORT & IMPORT Admin Panel (<span id="userRoleBadge" style="color:#1976D2;">...</span>)
-    <span id="emailAutomationStatusBadge" class="automation-badge" style="display: inline-block;">Supabase: 🟢 Active</span>
-  </h2>
+  <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+    <img src="https://i.postimg.cc/ry18SGbR/LOGO.png" alt="Logo" style="width: 55px; height: 55px; object-fit: contain;">
+    <h2 style="margin: 0;">
+      POOJA EXPORT AND IMPORT TRADING PVT. LTD. Admin Panel (<span id="userRoleBadge" style="color:#e91e63;">...</span>)
+      <span id="emailAutomationStatusBadge" class="automation-badge" style="display: inline-block;">Supabase: 🟢 Active</span>
+    </h2>
+  </div>
 
   <div id="salesDashboardBox" style="display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap;">
     <div style="flex: 1; min-width: 140px; background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #2196F3; text-align: center;">
@@ -83,43 +142,51 @@
     </div>
     <div style="flex: 1; min-width: 140px; background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #4CAF50; text-align: center;">
       <span style="font-size: 13px; color: #777; font-weight: bold;">Total Revenue</span>
-      <h2 id="dashTotalRevenue" style="margin: 5px 0 0 0; color: #4CAF50; font-size: 24px;">Rs. 0</h2>
+      <h2 id="dashTotalRevenue" style="margin: 5px 0 0 0; color: #4CAF50; font-size: 24px;">RM 0</h2>
     </div>
     <div style="flex: 1; min-width: 140px; background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #FF9800; text-align: center;">
       <span style="font-size: 13px; color: #777; font-weight: bold;">Today's Sales</span>
-      <h2 id="dashTodaySales" style="margin: 5px 0 0 0; color: #FF9800; font-size: 24px;">Rs. 0</h2>
+      <h2 id="dashTodaySales" style="margin: 5px 0 0 0; color: #FF9800; font-size: 24px;">RM 0</h2>
     </div>
     <div style="flex: 1; min-width: 140px; background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #9C27B0; text-align: center;">
       <span style="font-size: 13px; color: #777; font-weight: bold;">This Month Sales</span>
-      <h2 id="dashMonthSales" style="margin: 5px 0 0 0; color: #9C27B0; font-size: 24px;">Rs. 0</h2>
+      <h2 id="dashMonthSales" style="margin: 5px 0 0 0; color: #9C27B0; font-size: 24px;">RM 0</h2>
+    </div>
+    <div style="flex: 1; min-width: 140px; background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #E91E63; text-align: center;">
+      <span style="font-size: 13px; color: #777; font-weight: bold;">Avg Order Value</span>
+      <h2 id="dashAvgOrder" style="margin: 5px 0 0 0; color: #E91E63; font-size: 24px;">RM 0</h2>
     </div>
   </div>
 
-  <!-- 🌍 77 Districts Delivery Rate Management Section -->
-  <div id="zoneManagementBox" class="zone-section">
-    <h3 style="color: #1976D2; margin-bottom: 15px;">🚚 77 जिल्ला डेलिभरी रेट व्यवस्थापन (Delivery Zones)</h3>
-    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-      <input id="newZoneName" type="text" placeholder="जिल्लाको नाम (District Name)" style="flex: 2; padding: 10px;">
-      <input id="newZoneRate" type="number" placeholder="रेट (Rs.)" style="flex: 1; padding: 10px;">
-      <button class="addBtn" onclick="addNewDeliveryZone()" style="background:#1976D2; padding: 10px 20px;">+ नयाँ जिल्ला थप्नुहोस्</button>
-    </div>
-    <div style="overflow-x: auto; width:100%; max-height: 300px; overflow-y: auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>District Name (जिल्ला)</th>
-            <th>Delivery Rate (Rs.)</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="zoneTableList">
-          <tr><td colspan="3">Loading Delivery Zones...</td></tr>
-        </tbody>
-      </table>
+  <div class="chart-container" id="monthlySalesChartDiv" style="width: 100%; height: 320px; background: #fff; padding: 15px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+    <h3 style="color: #e91e63; margin-bottom: 10px; font-size: 16px;">Monthly Sales Insights & Growth (RM)</h3>
+    <div id="monthlySalesChart" style="width: 100%; height: 250px;"></div>
+  </div>
+  
+  <div class="chart-container" id="hourlySalesChartDiv" style="width: 100%; height: 320px; background: #fff; padding: 15px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+    <h3 style="color: #e91e63; margin-bottom: 10px; font-size: 16px;">Today's Hourly Sales Trend (RM)</h3>
+    <div id="hourlySalesChart" style="width: 100%; height: 250px;"></div>
+  </div>
+
+  <div id="salesReportBox" style="background: #fff; padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+    <h3 style="color: #e91e63; margin-bottom: 15px; font-size: 18px;">📊 Sales Report Generator & Export</h3>
+    <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+      <div>
+        <label style="display: block; font-size: 13px; font-weight: bold; color: #555; margin-bottom: 5px;">Start Date:</label>
+        <input type="date" id="reportStartDate" style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px;">
+      </div>
+      <div>
+        <label style="display: block; font-size: 13px; font-weight: bold; color: #555; margin-bottom: 5px;">End Date:</label>
+        <input type="date" id="reportEndDate" style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px;">
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 5px;">
+        <button class="excelBtn" onclick="exportExcelReport()" style="background: #1F7246; color: white; border: none; padding: 11px 18px; border-radius: 8px; font-weight: bold; cursor: pointer;">📥 Export Excel (.CSV)</button>
+        <button class="pdfBtn" onclick="printPdfReport()" style="background: #E01A22; color: white; border: none; padding: 11px 18px; border-radius: 8px; font-weight: bold; cursor: pointer;">🖨️ Print / Download PDF</button>
+      </div>
     </div>
   </div>
 
-  <div id="mainOrdersTableSection" style="margin-top: 30px;">
+  <div id="mainOrdersTableSection">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
       <h3 style="margin: 0;">🛒 Active Orders</h3>
       <input type="text" id="orderSearchInput" onkeyup="filterActiveOrders()" placeholder="🔍 Search Order No / Customer..." style="padding: 8px 12px; width: 260px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px;">
@@ -133,7 +200,7 @@
             <th>Customer</th>
             <th>Total</th>
             <th>Payment Slip</th>
-            <th>Delivery District & Address</th>
+            <th>Delivery Date & Time</th>
             <th>Delivery Proof</th>
             <th>Status / Change</th>
             <th>Instant Action</th>
@@ -146,25 +213,49 @@
     </div>
   </div>
 
+  <!-- 🚚 77 जिल्ला डेलिभरी रेट व्यवस्थापन (Delivery Zones) -->
+  <div id="zoneManagementBox" class="zone-section">
+    <h3 style="color: #e91e63; margin-bottom: 15px;">🚚 77 जिल्ला डेलिभरी रेट व्यवस्थापन (Delivery Zones)</h3>
+    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+      <input id="newZoneName" type="text" placeholder="जिल्लाको नाम (District Name)" style="flex: 2; padding: 10px;">
+      <input id="newZoneRate" type="number" placeholder="रेट (RM / Rs.)" style="flex: 1; padding: 10px;">
+      <button class="addBtn" onclick="addNewDeliveryZone()" style="padding: 10px 20px;">+ नयाँ जिल्ला थप्नुहोस्</button>
+    </div>
+    <div style="overflow-x: auto; width:100%; max-height: 300px; overflow-y: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>District Name (जिल्ला)</th>
+            <th>Delivery Rate</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="zoneTableList">
+          <tr><td colspan="3">Loading Delivery Zones...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <div id="menuManagementBox" class="menu-section">
-    <h3>📦 Product Management</h3>
+    <h3>📦 Menu & Product Management</h3>
     <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd;">
       <h4>+ Add New Product</h4>
       <input id="prodId" type="text" placeholder="Item ID">
       <input id="prodName" type="text" placeholder="Product Name">
-      <input id="prodPrice" type="number" placeholder="Price (Rs.)">
+      <input id="prodPrice" type="number" placeholder="Price">
       <input id="prodImg" type="text" placeholder="Image URL">
       <input id="prodDesc" type="text" placeholder="Description">
       <input id="prodCat" type="text" placeholder="Category">
       <button id="addProductBtn" class="addBtn" onclick="createNewProduct()">+ Add Product</button>
     </div>
-    <h4>Current Products</h4>
+    <h4>Current Food Items</h4>
     <div style="overflow-x: auto; width:100%;">
       <table>
         <thead>
           <tr>
             <th>ID</th>
-            <th>Product Name</th>
+            <th>Food Name</th>
             <th>Price</th>
             <th>Image</th>
             <th>Description</th>
@@ -177,8 +268,306 @@
     </div>
   </div>
 
+  <div id="inventoryManagementBox" class="inventory-section">
+    <h3>📦 Inventory Management</h3>
+    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:20px; border:1px solid #ddd;">
+      <div style="margin-bottom: 15px;">
+        <select id="inventoryItemSelect" onchange="onInventoryItemSelect()" style="width: 100%; max-width: 450px; padding: 10px; font-size: 14px; font-weight: bold; border-radius: 6px; border: 1px solid #ccc;">
+          <option value="">-- Item ID छान्नुहोस् --</option>
+        </select>
+      </div>
+      <div style="margin-bottom: 8px; font-size: 15px; font-weight: bold; color: #333;" id="invDisplayName">Name: -</div>
+      <div style="margin-bottom: 12px; font-size: 15px; font-weight: bold; color: #333;" id="invDisplayCategory">Category: -</div>
+      <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <label style="font-weight: bold; color: #555;">Current Stock:</label>
+        <input id="invCurrentStock" type="number" placeholder="Enter Current Stock" style="width: 180px; padding: 8px;">
+      </div>
+      <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <label style="font-weight: bold; color: #555;">Alert Limit:</label>
+        <input id="invAlertLimit" type="number" value="50" style="width: 180px; padding: 8px;">
+      </div>
+      <button onclick="saveInventoryStock()" style="background:#4CAF50; color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer; font-size: 15px;">Save Stock</button>
+    </div>
+
+    <h3 style="color: #e91e63; margin-top: 25px;">⚠️ Stock Alert Items</h3>
+    <div style="overflow-x: auto; width:100%;">
+      <table>
+        <thead>
+          <tr>
+            <th>ItemID</th>
+            <th>ItemName</th>
+            <th>Category</th>
+            <th>Current</th>
+            <th>Limit</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="inventoryTableList">
+          <tr><td colspan="6" style="padding: 15px;">Loading Inventory...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="staffManagementBox" class="staff-section" style="background: #fff; padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+    <h3 style="color: #e91e63; margin-bottom: 15px; font-size: 18px;">👥 Staff & Access Management</h3>
+    
+    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd;">
+      <h4 style="margin-bottom: 10px; color: #333;">+ Add New Staff</h4>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <input id="staffUsername" type="text" placeholder="Username / Email" style="flex: 1; min-width: 180px; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+        <input id="staffPassword" type="password" placeholder="Password" style="flex: 1; min-width: 150px; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+        <input id="staffRoleInput" type="text" placeholder="Role (e.g. order_taker, delivery, manager)" style="flex: 1; min-width: 150px; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-weight: bold;">
+        <button class="addBtn" onclick="createNewStaff()" style="background: #e91e63; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">+ Add Staff</button>
+      </div>
+    </div>
+
+    <h4 style="margin-bottom: 10px; color: #333;">Current Staff Members</h4>
+    <div style="overflow-x: auto; width: 100%;">
+      <table>
+       <thead>
+      <tr>
+        <th>Username</th>
+        <th>Password</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+        <tbody id="staffTableList">
+          <tr><td colspan="5" style="padding: 15px;">Loading staff members...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="expenseTrackerBox" style="background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 20px;">
+      <h3 style="margin-bottom: 15px; color: #333;">💰 Expense & Profit Tracker</h3>
+      
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; align-items: center;">
+          <input type="date" id="expenseDateInput" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+          <input type="text" id="expenseCategory" placeholder="Category (e.g. Rent, Salary)" style="padding: 8px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
+          <input type="number" id="expenseAmount" placeholder="Amount (RM)" style="padding: 8px; width: 130px; border: 1px solid #ccc; border-radius: 4px;">
+          <input type="text" id="expenseDescription" placeholder="Description" style="padding: 8px; flex: 2; border: 1px solid #ccc; border-radius: 4px;">
+          <button onclick="addExpense()" style="background: #e91e63; color: white; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer;">+ Add Expense</button>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+          <h4 style="color: #333; margin-bottom: 10px;">📊 Expense Report Generator & Export</h4>
+          <div style="display: flex; gap: 15px; align-items: center; background: #f9f9f9; padding: 15px; border-radius: 6px; flex-wrap: wrap;">
+              <div>
+                  <label style="font-size: 13px; color: #333; font-weight: bold; display: block; margin-bottom: 5px;">Start Date:</label>
+                  <input type="date" id="expenseStartDate" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+              </div>
+              <div>
+                  <label style="font-size: 13px; color: #333; font-weight: bold; display: block; margin-bottom: 5px;">End Date:</label>
+                  <input type="date" id="expenseEndDate" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+              </div>
+              <div style="display: flex; gap: 10px; align-items: flex-end; margin-top: 20px;">
+                  <button onclick="exportExpenseExcel()" style="background: #2e7d32; color: white; border: none; padding: 9px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px;">📥 Export Excel (.CSV)</button>
+                  <button onclick="printExpensePDF()" style="background: #d32f2f; color: white; border: none; padding: 9px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px;">🖨️ Print / Download PDF</button>
+              </div>
+          </div>
+      </div>
+
+      <div style="border-top: 2px solid #eee; padding-top: 15px; font-size: 16px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="color: #1976D2; font-weight: bold;">जम्मा Total Revenue: <span id="summaryRevenue">RM 147.00</span></div>
+          <div style="color: #D32F2F; font-weight: bold;">जम्मा Total Expense: <span id="summaryExpense">RM 0.00</span></div>
+          <div style="color: #388E3C; font-weight: bold; font-size: 18px;">जम्मा Net Profit: <span id="summaryNetProfit">RM 0.00</span></div>
+      </div>
+  </div>
+
+  <div id="salarySectionBox" class="salary-section" style="background: #fff; padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+      <h3 style="color: #e91e63; margin-bottom: 15px; font-size: 18px;">💰 Staff Salary Sheet & Voucher System</h3>
+      
+      <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd;">
+          <h4 style="margin-bottom: 10px; color: #333;">+ Add New Staff & Designation</h4>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <input id="salStaffName" type="text" placeholder="Full Name (e.g. Shova Kumari)" style="flex: 2; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+              <input id="salStaffDesig" type="text" placeholder="Designation (e.g. order_taker, delivery)" style="flex: 2; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+              <button class="addBtn" onclick="addNewSalaryStaff()" style="background: #e91e63; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">+ Add Staff</button>
+          </div>
+      </div>
+
+      <div style="background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e91e63;">
+          <h4 style="margin-bottom: 15px; color: #e91e63;">🧾 Create Salary Voucher</h4>
+          
+          <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+              <div style="flex: 2; min-width: 250px;">
+                  <label style="display: block; font-size: 13px; font-weight: bold; color: #555; margin-bottom: 5px;">Employee Name:</label>
+                  <select id="voucherEmpSelect" onchange="onVoucherEmpChange()" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-weight: bold;">
+                      <option value="">-- कामदार रोज्नुहोस् --</option>
+                  </select>
+              </div>
+              <div style="flex: 2; min-width: 250px;">
+                  <label style="display: block; font-size: 13px; font-weight: bold; color: #555; margin-bottom: 5px;">Designation:</label>
+                  <input id="voucherDesignation" type="text" placeholder="Designation" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-weight: bold;">
+              </div>
+          </div>
+
+          <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+              <div style="flex: 1; min-width: 100px;">
+                  <label style="display: block; font-size: 13px; font-weight: bold; color: #555; margin-bottom: 5px;">Day:</label>
+                  <input id="voucherDay" type="number" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+              </div>
+              <div style="flex: 1; min-width: 100px;">
+                  <label style="display: block; font-size: 13px; font-weight: bold; color: #555; margin-bottom: 5px;">Month:</label>
+                  <input id="voucherMonth" type="number" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+              </div>
+              <div style="flex: 1; min-width: 100px;">
+                  <label style="display: block; font-size: 13px; font-weight: bold; color: #555; margin-bottom: 5px;">Year:</label>
+                  <input id="voucherYear" type="number" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+              </div>
+          </div>
+
+          <div style="margin-bottom: 15px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <label style="font-weight: bold; color: #333;">Earnings & Allowances:</label>
+                  <button onclick="addEarningRow()" style="background: #e91e63; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px;">+ Add Earnings</button>
+              </div>
+              <div id="earningsContainer" style="display: flex; flex-direction: column; gap: 8px;">
+                  <div style="display: flex; gap: 10px; align-items: center;" class="earning-row">
+                      <input type="text" value="MONTHLY BASIC SALARY PAYED" style="flex: 3; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                      <input type="number" value="0" oninput="calculateNetSalary()" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="earning-amount">
+                      <button onclick="removeRow(this)" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
+                  </div>
+              </div>
+          </div>
+
+          <div style="margin-bottom: 15px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <label style="font-weight: bold; color: #333;">Deductions:</label>
+                  <button onclick="addDeductionRow()" style="background: #e91e63; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px;">+ Add Deduction</button>
+              </div>
+              <div id="deductionsContainer" style="display: flex; flex-direction: column; gap: 8px;">
+                  <div style="display: flex; gap: 10px; align-items: center;" class="deduction-row">
+                      <input type="text" placeholder="Deduction Description" style="flex: 3; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="deduction-desc">
+                      <input type="number" value="0" oninput="calculateNetSalary()" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="deduction-amount">
+                      <button onclick="removeRow(this)" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
+                  </div>
+              </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+              <label style="display: block; font-size: 13px; font-weight: bold; color: #555; margin-bottom: 5px;">Payment Mode:</label>
+              <select id="voucherPaymentMode" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-weight: bold;">
+                  <option value="💵 CASH PAYMENT">💵 CASH PAYMENT</option>
+                  <option value="🏦 BANK CASH / CHECK DEPOSITE">🏦 BANK CASH / CHECK DEPOSITE</option>
+                  <option value="📱 MOBILE BANKING TRANSFER">📱 MOBILE BANKING TRANSFER</option>
+              </select>
+          </div>
+
+          <div style="background: #fff5f5; border: 1px dashed #e91e63; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 18px; font-weight: bold; color: #e91e63;">
+              NET Salary: RM <span id="displayNetSalary">0.00</span>
+          </div>
+
+          <button onclick="saveAndPrintSalaryVoucher()" style="background: #4CAF50; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px;">💾 Save & Print Salary Voucher</button>
+      </div>
+
+      <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+          <h4 style="color: #333; margin-bottom: 10px;">📊 Salary Statements Export & Report</h4>
+          <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+              <div>
+                  <label style="font-size: 13px; color: #333; font-weight: bold; display: block; margin-bottom: 5px;">Start Date:</label>
+                  <input type="date" id="salaryStartDate" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+              </div>
+              <div>
+                  <label style="font-size: 13px; color: #333; font-weight: bold; display: block; margin-bottom: 5px;">End Date:</label>
+                  <input type="date" id="salaryEndDate" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+              </div>
+              <div style="display: flex; gap: 10px; align-items: flex-end; margin-top: 20px;">
+                  <button onclick="exportSalaryExcel()" class="excelBtn" style="background: #2e7d32; color: white; border: none; padding: 9px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px;">📥 Download Excel (.CSV)</button>
+                  <button onclick="printSalaryPDF()" class="pdfBtn" style="background: #d32f2f; color: white; border: none; padding: 9px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px;">📄 Print / PDF Report</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div id="extraServiceInvoiceBox" class="invoice-section" style="background: #fff; padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+      <h3 style="color: #e91e63; margin-bottom: 15px; font-size: 18px;">🧾 Extra Service Invoice Generator</h3>
+      
+      <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+          <div style="flex: 2; min-width: 250px;">
+              <label style="display: block; font-size: 13px; font-weight: bold; color: #555; margin-bottom: 5px;">Bill To (Customer Name / Details):</label>
+              <input id="invBillTo" type="text" placeholder="Enter Customer Name / Company" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-weight: bold;">
+          </div>
+          <div style="flex: 1; min-width: 180px;">
+              <label style="display: block; font-size: 13px; font-weight: bold; color: #555; margin-bottom: 5px;">Invoice Date:</label>
+              <input type="date" id="invDateInput" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+          </div>
+      </div>
+
+      <div style="margin-bottom: 15px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <label style="font-weight: bold; color: #333;">Invoice Descriptions & Amounts:</label>
+              <button onclick="addInvoiceItemRow()" style="background: #e91e63; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px;">+ Add Item</button>
+          </div>
+          <div id="invoiceItemsContainer" style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; gap: 10px; align-items: center;" class="inv-item-row">
+                  <input type="text" value="Pre Enrollment & Passport Form Fill-up (RM.35X2 PAX)" style="flex: 3; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="inv-desc">
+                  <input type="number" value="70" oninput="calculateDynamicInvoice()" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="inv-amount">
+                  <button onclick="removeInvoiceRow(this)" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center;" class="inv-item-row">
+                  <input type="text" value="Nepal Embassy Charge (RM.240X2 PAX)" style="flex: 3; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="inv-desc">
+                  <input type="number" value="480" oninput="calculateDynamicInvoice()" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="inv-amount">
+                  <button onclick="removeInvoiceRow(this)" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center;" class="inv-item-row">
+                  <input type="text" value="Service Charge (RM.150X2 PAX)" style="flex: 3; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="inv-desc">
+                  <input type="number" value="300" oninput="calculateDynamicInvoice()" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="inv-amount">
+                  <button onclick="removeInvoiceRow(this)" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
+              </div>
+          </div>
+      </div>
+
+      <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+          <div style="flex: 1; min-width: 180px;">
+              <label style="display: block; font-size: 13px; font-weight: bold; color: #555; margin-bottom: 5px;">Paid (RM):</label>
+              <input id="invBankDeposit" type="number" value="0" oninput="calculateDynamicInvoice()" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+          </div>
+      </div>
+
+      <div style="background: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <h4 style="margin: 0 0 10px 0; color: #333;">Summary Preview:</h4>
+          <div style="display: flex; justify-content: space-between; padding: 5px 0; font-size: 16px; color: #e91e63;">
+              <span><b>TOTAL:</b></span>
+              <b id="previewTotal">RM 850.00</b>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 5px 0; font-size: 15px; color: #388E3C;">
+              <span><b>BALANCE DUE:</b></span>
+              <b id="previewBalance">RM 850.00</b>
+          </div>
+      </div>
+
+      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+          <button onclick="printDynamicServiceInvoice(true)" style="background: #E01A22; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; font-size: 16px;">💾 Save as PDF (Download)</button>
+          <button onclick="printDynamicServiceInvoice(false)" style="background: #4CAF50; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; font-size: 16px;">🖨️ Print Invoice</button>
+      </div>
+  </div>
+
+  <!-- 📊 Total Income Report Generator & Export -->
+  <div id="totalIncomeReportBox" style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-top: 20px; border: 1px solid #ddd;">
+      <h3 style="margin-bottom: 15px; color: #e91e63; font-size: 18px;">📊 Total Income Report Generator & Export</h3>
+      
+      <div style="display: flex; gap: 15px; align-items: center; background: #f9f9f9; padding: 15px; border-radius: 8px; flex-wrap: wrap; border: 1px solid #eee;">
+          <div>
+              <label style="font-size: 13px; color: #333; font-weight: bold; display: block; margin-bottom: 5px;">Start Date:</label>
+              <input type="date" id="incomeStartDate" style="padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
+          </div>
+          <div>
+              <label style="font-size: 13px; color: #333; font-weight: bold; display: block; margin-bottom: 5px;">End Date:</label>
+              <input type="date" id="incomeEndDate" style="padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
+          </div>
+          <div style="display: flex; gap: 10px; align-items: flex-end; margin-top: 20px;">
+              <button onclick="exportTotalIncomeExcel()" style="background: #1F7246; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">📥 Export Excel (.CSV)</button>
+              <button onclick="printTotalIncomePDF()" style="background: #E01A22; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">🖨️ Print / Download PDF</button>
+          </div>
+      </div>
+  </div>
+
   <div class="chat-section">
-    <h3 style="color: #1976D2; margin-bottom: 15px; font-size: 18px;">💬 Live Support Chat Center</h3>
+    <h3 style="color: #e91e63; margin-bottom: 15px; font-size: 18px;">💬 Live Support Chat Center</h3>
     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
       <div style="flex: 1; min-width: 280px; border-right: 1px solid #ddd; padding-right: 10px;">
         <h4>Active Chats</h4>
@@ -189,57 +578,142 @@
       <div style="flex: 2; min-width: 320px; display: flex; flex-direction: column; justify-content: space-between;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 10px;">
           <h4 style="margin: 0;" id="activeChatTitle">Select a chat from left</h4>
+          <div>
+            <span style="font-size: 13px; font-weight: bold; color: #555;">Pass to:</span>
+            <button onclick="passChat('Manager')" style="background: #9C27B0; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size:12px;">Manager</button>
+            <button onclick="passChat('Order Taker')" style="background: #FF9800; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size:12px;">O. Taker</button>
+            <button onclick="passChat('Delivery')" style="background: #2196F3; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size:12px;">Delivery</button>
+          </div>
         </div>
         <div id="chatMessagesBox" style="background: #f9f9f9; padding: 15px; border-radius: 8px; height: 250px; overflow-y: auto; border: 1px solid #ddd; display: flex; flex-direction: column; gap: 10px;">
           <div style="color: #777; text-align: center; margin-top: 100px;">No conversation selected.</div>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 10px;">
           <input type="text" id="adminChatInput" placeholder="Type a reply..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
-          <button onclick="sendAdminChat()" style="background: #1976D2; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">Send</button>
+          <button onclick="sendAdminChat()" style="background: #e91e63; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">Send</button>
         </div>
       </div>
     </div>
   </div>
+
 </div>
 
 <div id="printModalBox" class="print-modal">
   <div class="print-box">
-     <div id="printableInvoiceArea" class="print-area"></div>
-     <div style="margin-top:20px; text-align:center;">
-        <button class="rcvBtn" onclick="executeSystemPrint()" style="padding:10px 20px;">🖨 Print</button>
-        <button class="close-viewer-btn" onclick="closePrintModal()" style="padding:10px 20px; margin-left:10px;">Close ✕</button>
-     </div>
+    <div id="printableInvoiceArea" class="print-area"></div>
+    <div style="margin-top:20px; text-align:center;">
+       <button class="rcvBtn" onclick="executeSystemPrint()" style="padding:10px 20px;">🖨 Save as PDF / Print</button>
+       <button class="close-viewer-btn" onclick="closePrintModal()" style="padding:10px 20px; margin-left:10px;">Close ✕</button>
+    </div>
   </div>
 </div>
 
 <div id="imageViewerModal" class="image-viewer-modal" onclick="closeImageViewer()">
   <div class="image-viewer-box" onclick="event.stopPropagation()">
-    <img id="viewerTargetImage" src="" alt="Payment Proof">
+    <img id="viewerTargetImage" src="" alt="Payment / Delivery Proof">
     <br>
     <button class="close-viewer-btn" onclick="closeImageViewer()">Close ✕</button>
   </div>
 </div>
 
 <script>
-  const SUPABASE_URL = 'https://odhdrvvgemwgiphipgv.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k';
+  const SUPABASE_URL = 'https://lorhrfdqzagulicwcctx.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_YxubnsG5x3QD_OaPzEEy_w_wzLVLSlW';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   var myRole = "admin";
-  var activeOrdersCache = [];
-  var menuItemsCache = [];
+  var currentLoggedInUser = "";
+  var activeOrdersCache = JSON.parse(localStorage.getItem("cached_active_orders") || "[]");
+  var menuItemsCache = [
+    { id: 1, name: "Chicken Momo", price: 12, category: "Momo", description: "Fresh juicy chicken momo", status: "In Stock", image: "" },
+    { id: 2, name: "Veg Chowmein", price: 10, category: "Chowmein", description: "Delicious stir-fried noodles", status: "In Stock", image: "" }
+  ];
+  var staffListCache = [
+    { email: "admin@ugratara.com", password: "123456", role: "admin", status: "Active" }
+  ];
   var selectedChatSession = null;
+
+  document.addEventListener('click', function unlockAudioContext() {
+    try {
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!window.audioCtx) {
+        window.audioCtx = new AudioContext();
+      }
+      if (window.audioCtx.state === 'suspended') {
+        window.audioCtx.resume();
+      }
+    } catch(e) {}
+  }, { once: true });
+
+  function playClickSound() {
+    try {
+      if (!window.audioCtx) return;
+      if (window.audioCtx.state === 'suspended') {
+        window.audioCtx.resume();
+      }
+      
+      let osc = window.audioCtx.createOscillator();
+      let gain = window.audioCtx.createGain();
+      
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(800, window.audioCtx.currentTime);
+      
+      gain.gain.setValueAtTime(0.4, window.audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, window.audioCtx.currentTime + 0.08);
+      
+      osc.connect(gain);
+      gain.connect(window.audioCtx.destination);
+      
+      osc.start();
+      osc.stop(window.audioCtx.currentTime + 0.08);
+    } catch(e) {}
+  };
+
+  document.addEventListener("click", function(event) {
+    let target = event.target;
+    if (target.tagName === "BUTTON" || target.closest("button") || target.tagName === "A" || target.closest("a") || target.tagName === "SELECT" || target.tagName === "INPUT" || target.tagName === "LABEL") {
+      playClickSound();
+    }
+  });
 
   function playTringTringBell() {
     try {
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!window.audioCtx) {
+        window.audioCtx = new AudioContext();
+      }
+      if (window.audioCtx.state === 'suspended') {
+        window.audioCtx.resume();
+      }
+      
+      const playBeep = (timeOffset, freq) => {
+        let osc = window.audioCtx.createOscillator();
+        let gain = window.audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, window.audioCtx.currentTime + timeOffset);
+        gain.gain.setValueAtTime(1.0, window.audioCtx.currentTime + timeOffset);
+        gain.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + timeOffset + 0.4);
+        osc.connect(gain);
+        gain.connect(window.audioCtx.destination);
+        osc.start(window.audioCtx.currentTime + timeOffset);
+        osc.stop(window.audioCtx.currentTime + timeOffset + 0.4);
+      };
+
+      playBeep(0.0, 1200);
+      playBeep(0.2, 1400);
+      playBeep(0.4, 1600);
+
       const audio = document.getElementById("notificationAudio");
-      if (audio) { audio.currentTime = 0; audio.play().catch(e => {}); }
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(e => {});
+      }
     } catch(e) {}
   };
 
   function testBellSound() {
     playTringTringBell();
-    alert("🔔 डेलिभरी घण्टी बज्यो!");
+    alert("🔔 डिजिटल घण्टी सुचारु भयो!");
   };
 
   async function handleLogin() {
@@ -247,12 +721,51 @@
     var p = document.getElementById("password").value.trim();
     if(u === "" || p === "") { alert("Enter credentials."); return; }
     
+    let btn = document.getElementById("loginBtn");
+    btn.innerText = "Verifying...";
+    btn.disabled = true;
+
     if ((u === "admin@poojaexport.com" || u === "admin") && (p === "123456" || p === "123")) {
       sessionStorage.setItem("ADMIN_LOGIN", "true");
       sessionStorage.setItem("USER_ROLE", "admin");
+      localStorage.setItem("adminRole", "admin");
+      sessionStorage.setItem("LOGGED_USER", u);
+      myRole = "admin";
+      currentLoggedInUser = u;
+      btn.innerText = "Login";
+      btn.disabled = false;
       showAdminPanel();
       return;
     }
+
+    try {
+      let { data, error } = await supabaseClient.from('admins').select('*');
+      if(!error && data && data.length > 0) {
+        let matchedStaff = data.find(s => {
+          let dbEmail = String(s.email || s.username || s.full_name || "").trim().toLowerCase();
+          let dbPass = String(s.password || "").trim();
+          return (dbEmail === u || dbEmail === u.replace("@poojaexport.com","")) && dbPass === p;
+        });
+
+        if(matchedStaff) {
+          let role = String(matchedStaff.role || 'order_taker').trim().toLowerCase();
+          
+          sessionStorage.setItem("ADMIN_LOGIN", "true");
+          sessionStorage.setItem("USER_ROLE", role);
+          localStorage.setItem("adminRole", role);
+          sessionStorage.setItem("LOGGED_USER", u);
+          myRole = role;
+          currentLoggedInUser = u;
+          btn.innerText = "Login";
+          btn.disabled = false;
+          showAdminPanel();
+          return;
+        }
+      }
+    } catch(err) {}
+
+    btn.innerText = "Login";
+    btn.disabled = false;
     alert("❌ Invalid Username or Password!");
   };
 
@@ -270,7 +783,7 @@
         html += `
           <tr>
             <td><b>${z.district_name}</b></td>
-            <td>Rs. <input type="number" id="zone_rate_${z.id}" value="${z.rate}" style="width:100px; text-align:center;"></td>
+            <td>RM / Rs. <input type="number" id="zone_rate_${z.id}" value="${z.rate}" style="width:100px; text-align:center;"></td>
             <td>
               <button class="updateBtn" onclick="updateZoneRate(${z.id})">Update</button>
               <button class="removeBtn" onclick="deleteZone(${z.id})">Delete</button>
@@ -306,59 +819,1111 @@
   };
 
   async function loadOrders() {
+    if (activeOrdersCache.length > 0) {
+      calculateDashboardStats(activeOrdersCache);
+      renderActiveOrdersTable(activeOrdersCache);
+    }
+
     try {
       let { data, error } = await supabaseClient.from('orders').select('*');
-      if (!error && data) {
-        activeOrdersCache = data.sort((a, b) => (b.id || 0) - (a.id || 0));
-        renderActiveOrdersTable(activeOrdersCache);
-        calculateDashboardStats(activeOrdersCache);
+      if (!error && data && data.length > 0) {
+        let newSorted = data.sort((a, b) => {
+          let idA = parseInt(a.id || a.order_no?.replace(/\D/g, '')) || 0;
+          let idB = parseInt(b.id || b.order_no?.replace(/\D/g, '')) || 0;
+          if (idA !== idB) return idB - idA;
+          return new Date(b.time || 0) - new Date(a.time || 0);
+        });
+
+        if (activeOrdersCache.length > 0 && newSorted.length > activeOrdersCache.length) {
+          playTringTringBell();
+        }
+        activeOrdersCache = newSorted;
+        localStorage.setItem("cached_active_orders", JSON.stringify(activeOrdersCache));
       }
+      calculateDashboardStats(activeOrdersCache);
+      renderActiveOrdersTable(activeOrdersCache);
     } catch (err) {}
+  };
+
+  function setupRealtimeOrders() {
+    try {
+      supabaseClient
+        .channel('public:chats_admin_v2')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chats' }, payload => {
+          if (payload.new && payload.new.sender) {
+            let senderName = String(payload.new.sender).trim().toLowerCase();
+            if (senderName !== 'admin' && senderName !== 'admin staff') {
+              playTringTringBell();
+            }
+          }
+          loadAdminChats();
+          if(selectedChatSession && payload.new && selectedChatSession === payload.new.session_id) {
+            selectChatSession(selectedChatSession);
+          }
+        })
+        .subscribe();
+
+      supabaseClient
+        .channel('public:chats_admin')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chats' }, payload => {
+          if (payload.new && payload.new.sender === 'Customer') {
+            playTringTringBell();
+          }
+          loadAdminChats();
+          if(selectedChatSession === payload.new.session_id) {
+            selectChatSession(selectedChatSession);
+          }
+        })
+        .subscribe();
+    } catch(e) {}
+  };
+
+  async function loadAdminChats() {
+    try {
+      let { data, error } = await supabaseClient.from('chats').select('*').order('id', { ascending: false });
+      if(error || !data) return;
+
+      let sessions = {};
+      data.forEach(m => {
+        if(!sessions[m.session_id]) {
+          sessions[m.session_id] = {
+            session_id: m.session_id,
+            customer_name: m.customer_name || 'Customer',
+            support_type: m.support_type || 'General',
+            last_time: m.time || ''
+          };
+        }
+      });
+
+      let container = document.getElementById("chatListContainer");
+      if(!container) return;
+
+      let html = "";
+      Object.values(sessions).forEach(s => {
+        let badgeColor = s.support_type === 'Manager' ? '#9C27B0' : (s.support_type === 'Delivery' ? '#2196F3' : '#FF9800');
+        let isSelected = selectedChatSession === s.session_id ? 'background: #ffe0e0;' : 'background: #fafafa;';
+        html += `
+          <div onclick="selectChatSession('${s.session_id}')" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; ${isSelected} cursor: pointer;">
+            <b>${s.session_id} (${s.customer_name})</b><br><small style="color:#666;">${s.last_time}</small><br>
+            <span style="background: ${badgeColor}; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 11px;">${s.support_type.toUpperCase()}</span>
+          </div>
+        `;
+      });
+      container.innerHTML = html || `<div style="padding:10px; color:#666;">No active chats found.</div>`;
+    } catch(e) {}
+  };
+
+  async function selectChatSession(sessionId) {
+    selectedChatSession = sessionId;
+    loadAdminChats();
+
+    try {
+      let { data } = await supabaseClient.from('chats').select('*').eq('session_id', sessionId).order('id', { ascending: true });
+      let box = document.getElementById("chatMessagesBox");
+      let titleEl = document.getElementById("activeChatTitle");
+      if(!box) return;
+
+      if(data && data.length > 0) {
+        if(titleEl) titleEl.innerText = `Chat Session: ${sessionId} [${data[0].customer_name} - ${data[0].support_type}]`;
+        let html = "";
+        data.forEach(m => {
+          let isCustomer = m.sender === 'Customer';
+          html += `
+            <div style="background: ${isCustomer ? '#fff' : '#e3f2fd'}; padding: 8px 12px; border-radius: 6px; border: 1px solid #eee; width: fit-content; max-width: 80%; ${isCustomer ? '' : 'margin-left: auto; background: #e3f2fd; border-color: #bbdefb;'}">
+              <small style="color: ${isCustomer ? '#777' : '#1976D2'}; display: block; font-weight: bold;">${m.sender} (${m.customer_name || ''})</small>
+              <span>${m.message}</span>
+              <small style="color: #999; display: block; font-size: 10px; margin-top: 2px;">${m.time || ''}</small>
+            </div>
+          `;
+        });
+        box.innerHTML = html;
+        box.scrollTop = box.scrollHeight;
+      }
+    } catch(e) {}
+  };
+
+  async function sendAdminChat() {
+    if(!selectedChatSession) { alert("⚠️ कृपया अघिल्लो सूचीबाट एउटा च्याट छान्नुहोस्!"); return; }
+    let inputEl = document.getElementById("adminChatInput");
+    let msg = inputEl.value.trim();
+    if(!msg) return;
+
+    let timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    let dateStr = new Date().toISOString().slice(0, 10) + ", " + timeStr;
+
+    try {
+      await supabaseClient.from('chats').insert([{
+        session_id: selectedChatSession,
+        customer_name: "Admin Staff",
+        support_type: "Admin",
+        sender: "Admin",
+        message: msg,
+        time: dateStr
+      }]);
+
+      inputEl.value = "";
+      selectChatSession(selectedChatSession);
+    } catch(err) {}
   };
 
   function renderActiveOrdersTable(ordersToRender) {
     var tableBody = document.getElementById("ordersTable");
     if(!tableBody) return;
-    let html = "";
-    if(ordersToRender.length === 0) {
-      html = `<tr><td colspan="9" style="padding:20px;">No Active Orders Found.</td></tr>`;
-    } else {
-      ordersToRender.forEach(function(o){
-        let slipHtml = (o.payment_slip && o.payment_slip !== "None") ? `<img src="${o.payment_slip}" class="proof-thumb" onclick="openImageViewer('${o.payment_slip}')">` : `None`;
-        let delivHtml = (o.proof_img && o.proof_img !== "None") ? `<img src="${o.proof_img}" class="proof-thumb" onclick="openImageViewer('${o.proof_img}')">` : `None`;
-        let statusSelect = `<select id="status_${o.order_no}">
-          <option value="Pending" ${o.status==="Pending"?"selected":""}>Pending</option>
-          <option value="Preparing" ${o.status==="Preparing"?"selected":""}>Preparing</option>
-          <option value="Ready" ${o.status==="Ready"?"selected":""}>Ready</option>
-          <option value="Out for Delivery" ${o.status==="Out for Delivery"?"selected":""}>Out for Delivery</option>
-          <option value="Delivered" ${o.status==="Delivered"?"selected":""}>Delivered</option>
-        </select> <button class="updateBtn" onclick="manualUpdate('${o.order_no}')">Go</button>`;
+    
+    let currentRole = (sessionStorage.getItem("USER_ROLE") || "").toLowerCase();
+    let filteredOrders = ordersToRender;
 
-        html += `<tr>
-          <td>${o.time || '-'}</td>
-          <td><b>${o.order_no}</b></td>
-          <td>${o.customer_name || '-'}<br><small>${o.phone || ''}</small></td>
-          <td style="color:#1976D2; font-weight:bold;">Rs. ${o.total || '0'}</td>
-          <td>${slipHtml}</td>
-          <td>${o.address || '-'}</td>
-          <td>${delivHtml}</td>
-          <td>${statusSelect}</td>
-          <td><button class="rcvBtn" onclick="updateOrderStatus('${o.order_no}', 'Delivered')">Mark Delivered</button></td>
-        </tr>`;
+    if(currentRole === "delivery") {
+      filteredOrders = ordersToRender.filter(o => {
+        let st = String(o.status || "").trim().toLowerCase();
+        return st === "ready" || st === "out for delivery";
+      });
+    } else if(currentRole === "order_taker") {
+      filteredOrders = ordersToRender.filter(o => {
+        let st = String(o.status || "").trim().toLowerCase();
+        return st === "pending" || st === "order received" || st === "" || st === "ready" || st === "out for delivery";
       });
     }
-    tableBody.innerHTML = html;
+
+    let html = "";
+    let limitedOrders = filteredOrders;
+    let totalOrdersCount = limitedOrders.length;
+
+    if(totalOrdersCount === 0) {
+      html = `<tr><td colspan="9" style="padding:20px;">No Active Orders Found.</td></tr>`;
+    } else {
+      limitedOrders.forEach(function(o, index){
+        let rawStatus = o.status ? String(o.status).trim() : "Pending";
+        let status = rawStatus.toLowerCase();
+        
+        let slipHtml = (o.payment_slip && o.payment_slip !== "None" && o.payment_slip !== "") ?  
+          `<img src="${o.payment_slip}" class="proof-thumb" onclick="openImageViewer('${o.payment_slip}')">` : `None`;
+        
+        let delivHtml = (o.proof_img && o.proof_img !== "None" && o.proof_img !== "") ?  
+          `<img src="${o.proof_img}" class="proof-thumb" onclick="openImageViewer('${o.proof_img}')">` : `None`;
+        
+        let statusSelect = `<select id="status_${o.order_no || o.id}">
+          <option value="Pending" ${status==="pending"?"selected":""}>Pending</option>
+          <option value="Preparing" ${status==="preparing"?"selected":""}>Preparing</option>
+          <option value="Ready" ${status==="ready"?"selected":""}>Ready</option>
+          <option value="Out for Delivery" ${status==="out for delivery"?"selected":""}>Out for Delivery</option>
+          <option value="Delivered" ${status==="delivered"?"selected":""}>Delivered</option>
+          <option value="Cancelled" ${status==="cancelled"?"selected":""} style="color:red; font-weight:bold;">Cancelled</option>
+        </select> 
+        <button class="updateBtn" onclick="manualUpdate('${o.order_no || o.id}')">Go</button>`;
+
+        let cancelBtnHtml = "";
+        if (currentRole === "admin" || currentRole === "manager") {
+            cancelBtnHtml = `<div><button onclick="updateOrderStatus('${o.order_no || o.id}', 'Cancelled')" style="background:#f44336; color:white; border:none; padding:5px 10px; border-radius:6px; font-weight:bold; cursor:pointer; margin-top:4px; font-size:12px;">❌ Cancel</button></div>`;
+        }
+
+        let actionButtons = "";
+        if (status === "pending" || status === "order received" || status === "") {
+            actionButtons = `<button class="rcvBtn" onclick="triggerInstantAction('${o.order_no || o.id}', 'Preparing', 'kot')">🎫 Receive & KOT</button>
+                        ${cancelBtnHtml}`;
+        } else if (status === "preparing") {
+            actionButtons = `<button class="rdyBtn" onclick="triggerInstantAction('${o.order_no || o.id}', 'Ready', 'bill')">🍳 Ready & Bill</button>
+                        ${cancelBtnHtml}`;
+        } else if (status === "ready") {
+            actionButtons = `<button class="updateBtn" style="background:#FF9800;" onclick="updateOrderStatus('${o.order_no || o.id}', 'Out for Delivery')">🚚 Dispatch</button>
+                        ${cancelBtnHtml}`;
+        } else if (status === "out for delivery") {
+            actionButtons = `Upload Proof:<br><input type="file" accept="image/*" capture="environment" onchange="uploadDeliveryProof('${o.order_no || o.id}', this)" style="width:110px;">
+                        ${cancelBtnHtml}`;
+        } else if (status === "delivered") {
+            actionButtons = `<span style="color:green; font-weight:bold;">✅ Delivered</span>`;
+        } else if (status === "cancelled") {
+            actionButtons = `<span style="color:red; font-weight:bold;">🚫 Cancelled</span>`;
+        }
+
+        let displayOrderNo = o.order_no && String(o.order_no).startsWith("ORD") ? o.order_no : ("ORD" + (1001 + index));
+
+        html += `<tr id="order_row_${o.order_no || o.id}">
+          <td style="font-size:12px; color:#555;">${o.time || '-'}</td>
+          <td><b>${displayOrderNo}</b></td>
+          <td>${o.customer_name || '-'}<br><small style="color:#666;">${o.phone || ''}</small></td>
+          <td style="color:#e91e63; font-weight:bold;">RM ${o.total || '0'}</td>
+          <td>${slipHtml}</td>
+          <td style="font-size:12px; color:#555; font-weight:bold;">${o.delivery_time || 'N/A'}</td>
+          <td>${delivHtml}</td>
+          <td>${statusSelect}</td>
+          <td>${actionButtons}</td>
+        </tr>`;
+      });
+  }
+  tableBody.innerHTML = html;
   };
 
   function filterActiveOrders() {
     let query = document.getElementById("orderSearchInput").value.trim().toLowerCase();
-    if(!query) { renderActiveOrdersTable(activeOrdersCache); return; }
-    let filtered = activeOrdersCache.filter(o => String(o.order_no || '').toLowerCase().includes(query) || String(o.customer_name || '').toLowerCase().includes(query));
+    if(!query) {
+      renderActiveOrdersTable(activeOrdersCache);
+      return;
+    }
+    let filtered = activeOrdersCache.filter(o => {
+      let ordNo = String(o.order_no || '').toLowerCase();
+      let custName = String(o.customer_name || '').toLowerCase();
+      let phoneNum = String(o.phone || '').toLowerCase();
+      return ordNo.includes(query) || custName.includes(query) || phoneNum.includes(query);
+    });
     renderActiveOrdersTable(filtered);
   };
 
+  function passChat(roleName) {
+    alert("✅ Chat successfully passed to: " + roleName);
+  };
+
+  function addInvoiceItemRow() {
+    let container = document.getElementById("invoiceItemsContainer");
+    let div = document.createElement("div");
+    div.className = "inv-item-row";
+    div.style.display = "flex";
+    div.style.gap = "10px";
+    div.style.alignItems = "center";
+    div.innerHTML = `
+      <input type="text" placeholder="Description / Service Name" style="flex: 3; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="inv-desc">
+      <input type="number" value="0" oninput="calculateDynamicInvoice()" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="inv-amount">
+      <button onclick="removeInvoiceRow(this)" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
+    `;
+    container.appendChild(div);
+    calculateDynamicInvoice();
+  };
+
+  function removeInvoiceRow(btn) {
+    btn.closest('div').remove();
+    calculateDynamicInvoice();
+  };
+
+  function calculateDynamicInvoice() {
+    let total = 0;
+    let amountInputs = document.querySelectorAll(".inv-amount");
+    amountInputs.forEach(input => {
+      total += parseFloat(input.value) || 0;
+    });
+
+    let paid = parseFloat(document.getElementById("invBankDeposit").value) || 0;
+    let balance = total - paid;
+
+    document.getElementById("previewTotal").innerText = "RM " + total.toFixed(2);
+    document.getElementById("previewBalance").innerText = "RM " + balance.toFixed(2);
+
+    return { total, paid, balance };
+  };
+
+  async function printDynamicServiceInvoice(isPdfDownload = false) {
+    let billTo = document.getElementById("invBillTo").value.trim() || "Valued Customer";
+    let invDate = document.getElementById("invDateInput").value || new Date().toISOString().slice(0, 10);
+    let calc = calculateDynamicInvoice();
+    
+    if (calc.total <= 0) {
+      alert("⚠️ कृपया कमसेकम एउटा सही सेवा/वस्तु र रकम (Total RM > 0) राख्नुहोस्!");
+      return;
+    }
+
+    let lastSeq = parseInt(localStorage.getItem("pooja_invoice_seq") || "1536");
+    let nextSeq = lastSeq + 1;
+    localStorage.setItem("pooja_invoice_seq", nextSeq);
+    let invoiceNo = "INV-" + nextSeq;
+
+    let rowsHtml = "";
+    let itemsDescription = "";
+    document.querySelectorAll(".inv-item-row").forEach(row => {
+      let desc = row.querySelector(".inv-desc").value.trim() || "";
+      let amt = parseFloat(row.querySelector(".inv-amount").value) || 0;
+      if (amt > 0 || desc !== "") {
+        itemsDescription += `${desc} (RM ${amt.toFixed(2)}); `;
+        rowsHtml += `
+          <tr>
+            <td style="border: 1px solid #000; padding: 8px;">${desc || 'Service Item'}</td>
+            <td style="border: 1px solid #000; padding: 8px; text-align: right;">${amt.toFixed(2)}</td>
+          </tr>
+        `;
+      }
+    });
+
+    try {
+      let { error: insertErr } = await supabaseClient.from('extra_invoices').insert([{
+        invoice_no: invoiceNo,
+        bill_to: billTo,
+        date: invDate,
+        total: calc.total,
+        paid: calc.paid,
+        balance: calc.balance,
+        items: itemsDescription
+      }]);
+      if (insertErr) {
+        console.error("Supabase insert error:", insertErr.message);
+      }
+    } catch (err) {
+      console.log("Invoice save exception: " + err);
+    }
+
+    let invoiceHtml = `
+      <div style="font-family: Arial, sans-serif; font-size: 12px; color: #000; padding: 20px; background: #fff; max-width: 650px; margin: 0 auto; position: relative;">
+        <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px;">
+          <img src="https://i.postimg.cc/ry18SGbR/LOGO.png" style="width: 75px; height: 75px; object-fit: contain; margin-bottom: 5px;" alt="Logo"><br>
+          <h2 style="margin: 0; font-size: 18px; font-weight: bold;">POOJA EXPORT AND IMPORT TRADING PVT. LTD.</h2>
+          <p style="margin: 3px 0 0 0; font-size: 11px;">Kuala Lumpur, Malaysia</p>
+        </div>
+        
+        <div style="text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 15px; font-size: 15px;">INVOICE</div>
+        
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 13px;">
+          <div><b>Bill To:</b><br>${billTo}</div>
+          <div><b>Invoice No:</b> ${invoiceNo}<br><b>Invoice Date:</b> ${invDate}</div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 13px;">
+          <thead>
+            <tr>
+              <th style="border: 1px solid #000; padding: 8px; text-align: left; background:#f0f0f0;">DESCRIPTION</th>
+              <th style="border: 1px solid #000; padding: 8px; text-align: right; background:#f0f0f0; width: 120px;">AMOUNT (RM)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+            <tr>
+              <td style="border: 1px solid #000; padding: 8px; font-weight: bold; text-align: right;">TOTAL</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: right; font-weight: bold;">${calc.total.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #000; padding: 8px; text-align: right;">Paid</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: right;">${calc.paid.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td style="border: 1px solid #000; padding: 8px; font-weight: bold; text-align: right;">Balance</td>
+              <td style="border: 1px solid #000; padding: 8px; text-align: right; font-weight: bold;">${calc.balance.toFixed(2)}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-bottom: 20px; font-size: 12px; border: 1px solid #ccc; padding: 10px; border-radius: 6px; width: 55%;">
+          <b>Terms & Conditions:</b><br>
+          Payment is due within 15 days
+      </div>
+
+        <div style="position: relative; margin-top: -30px; height: 120px;">
+          <div style="position: absolute; right: 0; bottom: 0; text-align: center; width: 280px;">
+            <div style="position: relative; height: 90px; margin-bottom: 2px;">
+            </div>
+            <div style="border-top: 1px solid #000; padding-top: 3px; font-size: 12px; font-weight: bold;">
+              For POOJA EXPORT AND IMPORT TRADING PVT. LTD.
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    let pWin = window.open('', '_blank', 'height=700,width=800');
+    if (!pWin) {
+      alert("⚠️ पपअप ब्लक (Pop-up Blocked) भयो! कृपया ब्राउजरको सेटिङबाट पपअप अनुमति दिनुहोस्।");
+      return;
+    }
+    
+    pWin.document.write(`
+      <html>
+      <head>
+        <title>${invoiceNo} - Official Invoice</title>
+        <style>
+          @page { size: A4 portrait; margin: 10mm; }
+          body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #fff; }
+        </style>
+      </head>
+      <body>
+        ${invoiceHtml}
+        <script>
+          setTimeout(function() {
+            window.focus();
+            window.print();
+          }, 600);
+        <\/script>
+      </body>
+      </html>
+    `);
+    pWin.document.close();
+
+    document.getElementById("invBillTo").value = "";
+    document.getElementById("invBankDeposit").value = "0";
+    
+    let itemsContainer = document.getElementById("invoiceItemsContainer");
+    itemsContainer.innerHTML = `
+      <div style="display: flex; gap: 10px; align-items: center;" class="inv-item-row">
+          <input type="text" placeholder="Description / Service Name" style="flex: 3; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="inv-desc">
+          <input type="number" value="0" oninput="calculateDynamicInvoice()" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="inv-amount">
+          <button onclick="removeInvoiceRow(this)" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
+      </div>
+    `;
+    calculateDynamicInvoice();
+  };
+
+  async function exportTotalIncomeExcel() {
+    let startDate = document.getElementById("incomeStartDate").value;
+    let endDate = document.getElementById("incomeEndDate").value;
+
+    let { data: extraInvoices } = await supabaseClient.from('extra_invoices').select('*');
+    let filteredOrders = activeOrdersCache;
+
+    if (startDate && endDate) {
+      let start = new Date(startDate);
+      let end = new Date(endDate);
+      end.setHours(23, 59, 59);
+
+      filteredOrders = activeOrdersCache.filter(o => {
+        let oDate = new Date(o.time);
+        return oDate >= start && oDate <= end;
+      });
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,Type,Date,Reference No,Name/Customer,Details,Amount (RM)\r\n";
+    
+    filteredOrders.forEach(o => {
+      csvContent += `"Order","${o.time || ''}","${o.order_no || ''}","${o.customer_name || ''}","${(o.items || '').replace(/"/g, '""')}","${o.total || '0'}"\r\n`;
+    });
+
+    (extraInvoices || []).forEach(inv => {
+      if (!startDate || !endDate || (inv.date >= startDate && inv.date <= endDate)) {
+        csvContent += `"Extra Service Invoice","${inv.date || ''}","${inv.invoice_no || ''}","${inv.bill_to || ''}","${(inv.items || '').replace(/"/g, '""')}","${inv.total || '0'}"\r\n`;
+      }
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Total_Income_Report_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  async function printTotalIncomePDF() {
+    let startDate = document.getElementById("incomeStartDate").value;
+    let endDate = document.getElementById("incomeEndDate").value;
+
+    let { data: extraInvoices } = await supabaseClient.from('extra_invoices').select('*');
+    let filteredOrders = activeOrdersCache;
+
+    if (startDate && endDate) {
+      let start = new Date(startDate);
+      let end = new Date(endDate);
+      end.setHours(23, 59, 59);
+
+      filteredOrders = activeOrdersCache.filter(o => {
+        let oDate = new Date(o.time);
+        return oDate >= start && oDate <= end;
+      });
+    }
+
+    let totalRevenue = 0;
+    let tableRows = "";
+    let counter = 1;
+
+    filteredOrders.forEach(o => {
+      let amt = parseFloat(o.total) || 0;
+      totalRevenue += amt;
+      tableRows += `
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${counter++}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${o.time || ''}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><b>${o.order_no || ''}</b></td>
+          <td style="padding: 8px; border: 1px solid #ddd;">${o.customer_name || ''}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: right; color: #1976D2;"><b>RM ${amt.toFixed(2)}</b></td>
+        </tr>
+      `;
+    });
+
+    (extraInvoices || []).forEach(inv => {
+      if (!startDate || !endDate || (inv.date >= startDate && inv.date <= endDate)) {
+        let amt = parseFloat(inv.total) || 0;
+        totalRevenue += amt;
+        tableRows += `
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${counter++}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${inv.date || ''}</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><b>${inv.invoice_no || ''}</b></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${inv.bill_to || ''} (Extra Service)</td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right; color: #1976D2;"><b>RM ${amt.toFixed(2)}</b></td>
+          </tr>
+        `;
+      }
+    });
+
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    printWindow.document.write(`
+      <html>
+      <head>
+        <title>Total Income Report Statement</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+          .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #e91e63; padding-bottom: 10px; }
+          .header h2 { margin: 0; color: #e91e63; font-size: 24px; }
+          .header p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
+          .logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 5px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+          th { background: #f8f9fa; padding: 10px; border: 1px solid #ddd; text-align: left; }
+          td { border: 1px solid #ddd; padding: 8px; }
+          .summary-box { margin-top: 20px; text-align: right; font-size: 16px; background: #f0f7ff; padding: 12px; border-radius: 6px; border: 1px solid #cce5ff; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <img src="https://i.postimg.cc/ry18SGbR/LOGO.png" class="logo" alt="Logo">
+          <h2>POOJA EXPORT AND IMPORT TRADING PVT. LTD.</h2>
+          <p>📊 <b>Total Income Report Statement</b> (${startDate || 'All Time'} to ${endDate || 'All Time'})</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 40px; text-align: center;">S.N.</th>
+              <th style="text-align: center;">Date</th>
+              <th style="text-align: center;">Reference No</th>
+              <th>Customer / Bill To</th>
+              <th style="text-align: right;">Total Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+        <div class="summary-box">
+          <span style="color: #1976D2; font-weight: bold;">Total Combined Income / Revenue: RM ${totalRevenue.toFixed(2)}</span>
+        </div>
+        <script>
+          window.onload = function() { window.print(); window.close(); }
+        <\/script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
+  async function loadInventoryData() {
+    let { data: menuData, error: menuErr } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
+    if (!menuErr && menuData && menuData.length > 0) {
+      menuItemsCache = menuData;
+    }
+
+    let { data: invData, error: invErr } = await supabaseClient.from('inventory').select('*');
+    
+    let selectEl = document.getElementById("inventoryItemSelect");
+    if (selectEl) {
+      let opts = `<option value="">-- Item ID छान्नुहोस् --</option>`;
+      menuItemsCache.forEach(m => {
+        opts += `<option value="${m.id}">${m.id} - ${m.name || ''} (${m.category || 'General'})</option>`;
+      });
+      selectEl.innerHTML = opts;
+    }
+
+    let inventoryTable = document.getElementById("inventoryTableList");
+    if (!inventoryTable) return;
+
+    let html = "";
+    let inventoryMap = new Map();
+    
+    if (!invErr && invData) {
+      invData.forEach(inv => {
+        inventoryMap.set(String(inv.id || inv.item_id), inv);
+        if (inv.name) inventoryMap.set(String(inv.name).trim(), inv);
+      });
+    }
+
+    menuItemsCache.forEach(m => {
+      let existing = inventoryMap.get(String(m.id)) || inventoryMap.get(String(m.name).trim()) || {};
+      let current = existing.current_stock !== undefined && !isNaN(existing.current_stock) ? parseFloat(existing.current_stock) : 0;
+      let limit = existing.alert_limit !== undefined && !isNaN(existing.alert_limit) ? parseFloat(existing.alert_limit) : 50;
+      
+      let statusHtml = current <= limit 
+        ? `<span style="background:#ffe0e0; color:#d32f2f; padding:4px 10px; border-radius:4px; font-weight:bold;">🔴 Low Stock</span>`
+        : `<span style="background:#e8f5e9; color:#2e7d32; padding:4px 10px; border-radius:4px; font-weight:bold;">🟢 Sufficient</span>`;
+
+      html += `<tr>
+        <td><b>${m.id}</b></td>
+        <td><b>${m.name || '-'}</b></td>
+        <td><b>${m.category || 'General'}</b></td>
+        <td style="font-weight:bold; ${current <= limit ? 'color:#d32f2f;' : ''}">${current}</td>
+        <td>${limit}</td>
+        <td>${statusHtml}</td>
+      </tr>`;
+    });
+
+    inventoryTable.innerHTML = html || `<tr><td colspan="6" style="padding: 15px; color:#555;">No inventory items found.</td></tr>`;
+  }
+
+  async function onInventoryItemSelect() {
+    let selectEl = document.getElementById("inventoryItemSelect");
+    let selectedId = selectEl.value;
+    if (!selectedId) {
+      document.getElementById("invDisplayName").innerText = "Name: -";
+      document.getElementById("invDisplayCategory").innerText = "Category: -";
+      document.getElementById("invCurrentStock").value = "";
+      document.getElementById("invAlertLimit").value = "50";
+      return;
+    }
+
+    let matchedItem = menuItemsCache.find(m => String(m.id) === String(selectedId));
+    if (matchedItem) {
+      document.getElementById("invDisplayName").innerText = "Name: " + (matchedItem.name || '-');
+      document.getElementById("invDisplayCategory").innerText = "Category: " + (matchedItem.category || '-');
+      document.getElementById("invCurrentStock").value = "100";
+      document.getElementById("invAlertLimit").value = "50";
+    }
+  };
+
+  async function saveInventoryStock() {
+    let selectEl = document.getElementById("inventoryItemSelect");
+    let selectedId = selectEl.value;
+    let currentStockVal = parseFloat(document.getElementById("invCurrentStock").value);
+    let alertLimitVal = parseFloat(document.getElementById("invAlertLimit").value);
+
+    if (!selectedId) { alert("⚠️ कृपया पहिले Item ID छान्नुहोस्!"); return; }
+    if (isNaN(currentStockVal)) { alert("⚠️ कृपया सही Current Stock हाल्नुहोस्!"); return; }
+
+    let matchedItem = menuItemsCache.find(m => String(m.id) === String(selectedId));
+    if (!matchedItem) return;
+
+    let payload = {
+      id: parseInt(selectedId),
+      name: matchedItem.name,
+      category: matchedItem.category || 'General',
+      current_stock: currentStockVal,
+      alert_limit: isNaN(alertLimitVal) ? 50 : alertLimitVal
+    };
+
+    await supabaseClient.from('inventory').upsert(payload, { onConflict: 'id' });
+    alert("✅ Stock Saved Successfully!");
+    document.getElementById("inventoryItemSelect").value = "";
+    document.getElementById("invDisplayName").innerText = "Name: -";
+    document.getElementById("invDisplayCategory").innerText = "Category: -";
+    document.getElementById("invCurrentStock").value = "";
+    document.getElementById("invAlertLimit").value = "50";
+    loadInventoryData();
+  };
+
+  async function loadSalaryStaffDropdown() {
+    let { data: staffMgrData } = await supabaseClient.from('staff_manager').select('*');
+    let { data: adminsData } = await supabaseClient.from('admins').select('*');
+
+    let rawStaff = [];
+    if (staffMgrData && staffMgrData.length > 0) {
+      staffMgrData.forEach(s => {
+        rawStaff.push({ name: String(s.staff_name || "").trim(), desig: String(s.designation || "").trim() });
+      });
+    }
+    if (adminsData && adminsData.length > 0) {
+      adminsData.forEach(a => {
+        let name = String(a.full_name || a.email || a.username || "").trim();
+        let desig = String(a.role || 'staff').trim();
+        if (name) {
+          rawStaff.push({ name: name, desig: desig });
+        }
+      });
+    }
+
+    let uniqueMap = new Map();
+    rawStaff.forEach(item => {
+      if(item.name && !uniqueMap.has(item.name.toLowerCase())) {
+        uniqueMap.set(item.name.toLowerCase(), item);
+      }
+    });
+    staffListCache = Array.from(uniqueMap.values());
+
+    let selectEl = document.getElementById("voucherEmpSelect");
+    if (!selectEl) return;
+    let opts = `<option value="">-- कामदार रोज्नुहोस् --</option>`;
+    staffListCache.forEach(s => {
+      opts += `<option value="${s.name}" data-desig="${s.desig}">${s.name} (${s.desig})</option>`;
+    });
+    selectEl.innerHTML = opts;
+
+    let now = new Date();
+    if(document.getElementById("voucherDay")) document.getElementById("voucherDay").value = now.getDate();
+    if(document.getElementById("voucherMonth")) document.getElementById("voucherMonth").value = now.getMonth() + 1;
+    if(document.getElementById("voucherYear")) document.getElementById("voucherYear").value = now.getFullYear();
+    if(document.getElementById("invDateInput")) document.getElementById("invDateInput").value = now.toISOString().slice(0, 10);
+    if(document.getElementById("incomeStartDate")) document.getElementById("incomeStartDate").value = now.toISOString().slice(0, 10);
+    if(document.getElementById("incomeEndDate")) document.getElementById("incomeEndDate").value = now.toISOString().slice(0, 10);
+
+    calculateNetSalary();
+  };
+
+  function onVoucherEmpChange() {
+    let selectEl = document.getElementById("voucherEmpSelect");
+    let selectedOpt = selectEl.options[selectEl.selectedIndex];
+    let desig = selectedOpt.getAttribute("data-desig") || "";
+    if(document.getElementById("voucherDesignation")) {
+      document.getElementById("voucherDesignation").value = desig;
+    }
+  };
+
+  async function addNewSalaryStaff() {
+    let name = document.getElementById("salStaffName").value.trim();
+    let desig = document.getElementById("salStaffDesig").value.trim();
+    if (!name || !desig) { alert("⚠️ कृपया पूरा नाम र पद (Designation) लेख्नुहोस्!"); return; }
+
+    let emailVal = name.toLowerCase().replace(/\s+/g, '') + "@poojaexport.com";
+    
+    let res1 = await supabaseClient.from('staff_manager').insert([{ staff_name: name, designation: desig }]);
+    let res2 = await supabaseClient.from('admins').insert([{ full_name: name, email: emailVal, password: '123', role: desig }]);
+
+    if (!res1.error || !res2.error) {
+      alert("✅ Staff Added Successfully!");
+      document.getElementById("salStaffName").value = "";
+      document.getElementById("salStaffDesig").value = "";
+      loadSalaryStaffDropdown();
+      loadStaffList();
+    } else {
+      alert("❌ Error: " + (res1.error?.message || res2.error?.message));
+    }
+  };
+
+  function addEarningRow() {
+    let container = document.getElementById("earningsContainer");
+    let div = document.createElement("div");
+    div.className = "earning-row";
+    div.style.display = "flex";
+    div.style.gap = "10px";
+    div.style.alignItems = "center";
+    div.innerHTML = `
+      <input type="text" placeholder="Allowance Description" style="flex: 3; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+      <input type="number" value="0" oninput="calculateNetSalary()" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="earning-amount">
+      <button onclick="removeRow(this)" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
+    `;
+    container.appendChild(div);
+  };
+
+  function addDeductionRow() {
+    let container = document.getElementById("deductionsContainer");
+    let div = document.createElement("div");
+    div.className = "deduction-row";
+    div.style.display = "flex";
+    div.style.gap = "10px";
+    div.style.alignItems = "center";
+    div.innerHTML = `
+      <input type="text" placeholder="Deduction Description" style="flex: 3; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="deduction-desc">
+      <input type="number" value="0" oninput="calculateNetSalary()" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="deduction-amount">
+      <button onclick="removeRow(this)" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
+    `;
+    container.appendChild(div);
+  };
+
+  function removeRow(btn) {
+    btn.closest('div').remove();
+    calculateNetSalary();
+  };
+
+  function calculateNetSalary() {
+    let totalEarnings = 0;
+    let earningAmounts = document.querySelectorAll(".earning-amount");
+    earningAmounts.forEach(input => {
+      totalEarnings += parseFloat(input.value) || 0;
+    });
+
+    let totalDeductions = 0;
+    let deductionAmounts = document.querySelectorAll(".deduction-amount");
+    deductionAmounts.forEach(input => {
+      totalDeductions += parseFloat(input.value) || 0;
+    });
+
+    let net = totalEarnings - totalDeductions;
+    if(document.getElementById("displayNetSalary")) {
+      document.getElementById("displayNetSalary").innerText = net.toFixed(2);
+    }
+    return net;
+  };
+
+  async function saveAndPrintSalaryVoucher() {
+    let empName = document.getElementById("voucherEmpSelect").value;
+    let desig = document.getElementById("voucherDesignation").value.trim();
+    let day = document.getElementById("voucherDay").value;
+    let month = document.getElementById("voucherMonth").value;
+    let year = document.getElementById("voucherYear").value;
+    let paymentMode = document.getElementById("voucherPaymentMode").value;
+
+    if (!empName) { alert("⚠️ कृपया कामदारको नाम छान्नुहोस्!"); return; }
+
+    let netSalary = calculateNetSalary();
+    let dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    
+    let lastVoucherSeq = parseInt(localStorage.getItem("pooja_salary_voucher_seq") || "30");
+    let voucherNo = lastVoucherSeq + 1;
+    localStorage.setItem("pooja_salary_voucher_seq", voucherNo);
+
+    let earningsText = "";
+    document.querySelectorAll(".earning-row").forEach(row => {
+      let desc = row.querySelector("input[type='text']").value;
+      let amt = row.querySelector(".earning-amount").value;
+      earningsText += `${desc}: RM ${amt}; `;
+    });
+
+    try {
+      await supabaseClient.from('salaries').insert([{
+        date: dateStr,
+        staff_name: empName,
+        role: desig,
+        amount: netSalary,
+        payment_mode: paymentMode,
+        description: `Voucher #${voucherNo} | ${earningsText}`
+      }]);
+    } catch(err) {}
+
+    try {
+      await supabaseClient.from('expenses').insert([{
+        date: dateStr,
+        category: 'Staff Salary',
+        amount: netSalary,
+        description: `Voucher #${voucherNo} - ${empName} (${desig}) | Mode: ${paymentMode} | ${earningsText}`
+      }]);
+    } catch(err) {}
+
+    alert("✅ Salary Voucher Saved & Added Successfully!");
+    loadExpenseSummary();
+
+    let singleVoucherHtml = `
+      <div style="font-family: Arial, sans-serif; font-size: 11px; color: #000; padding: 14px 18px; border: 1.5px solid #000; background: #fff; height: 44.5vh; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 8px;">
+            <img src="https://i.postimg.cc/ry18SGbR/LOGO.png" style="width: 45px; height: 45px; object-fit: contain; margin-bottom: 3px;" alt="Logo"><br>
+            <h3 style="margin: 0; font-size: 14.5px; font-weight: bold;">POOJA EXPORT AND IMPORT TRADING PVT. LTD.</h3>
+            <p style="margin: 2px 0 0 0; font-size: 10px;">Kuala Lumpur, Malaysia</p>
+          </div>
+          <div style="text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 8px; font-size: 12.5px;">SALARY VOUCHER</div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11.5px;">
+            <div><b>Employee Name :</b> ${empName}</div>
+            <div><b>Date :</b> ${day}/${month}/${year}</div>
+          </div>
+          <div style="margin-bottom: 8px; font-size: 11.5px;"><b>Designation :</b> ${desig}</div>
+          <div style="background: #000; color: #fff; padding: 3px 6px; font-weight: bold; margin-bottom: 8px; font-size: 11px;">VOUCHER NO. ${voucherNo}</div>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 11.5px;">
+            <thead>
+              <tr><th style="border: 1px solid #000; padding: 5px; text-align: left; background:#f0f0f0;">Earnings</th><th style="border: 1px solid #000; padding: 5px; text-align: right; background:#f0f0f0; width: 70px;">RM</th></tr>
+            </thead>
+            <tbody>
+              <tr><td style="border: 1px solid #000; padding: 5px;">1. MONTHLY BASIC SALARY PAYED</td><td style="border: 1px solid #000; padding: 5px; text-align: right;">${netSalary.toFixed(2)}</td></tr>
+            </tbody>
+          </table>
+          <div style="text-align: right; font-weight: bold; margin-bottom: 8px; font-size: 12.5px;">NET Salary: RM ${netSalary.toFixed(2)}</div>
+          <div style="font-weight: bold; font-size: 11px;">☑ ${paymentMode}</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 10.5px; align-items: flex-end; border-top: 1px dotted #999; padding-top: 6px;">
+          <div>Company Copy / Staff Copy</div>
+          <div style="border-top: 1px solid #000; width: 150px; text-align: center; padding-top: 2px;">Employee Signature</div>
+        </div>
+      </div>
+    `;
+
+    let fullA4PrintHtml = `
+      <html>
+      <head>
+        <title>Salary Voucher Print</title>
+        <style>
+          @page { size: A4 portrait; margin: 5mm 8mm; }
+          body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #fff; }
+          .cut-line { border-top: 2px dashed #000; margin-top: 13mm; margin-bottom: 10mm; text-align: center; font-size: 1px; color: transparent; }
+        </style>
+      </head>
+      <body>
+        ${singleVoucherHtml}
+        <div class="cut-line">----------------------------------------------------------------------------------------------------------------------------------------</div>
+        ${singleVoucherHtml}
+        <script>
+          window.onload = function() { window.print(); window.close(); }
+        <\/script>
+      </body>
+      </html>
+    `;
+      
+    let printWin = window.open('', '_blank', 'height=700,width=800');
+    printWin.document.write(fullA4PrintHtml);
+    printWin.document.close();
+
+    document.getElementById("voucherEmpSelect").value = "";
+    document.getElementById("voucherDesignation").value = "";
+    
+    document.getElementById("earningsContainer").innerHTML = `
+      <div style="display: flex; gap: 10px; align-items: center;" class="earning-row">
+          <input type="text" value="MONTHLY BASIC SALARY PAYED" style="flex: 3; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+          <input type="number" value="0" oninput="calculateNetSalary()" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="earning-amount">
+          <button onclick="removeRow(this)" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
+      </div>
+    `;
+
+    document.getElementById("deductionsContainer").innerHTML = `
+      <div style="display: flex; gap: 10px; align-items: center;" class="deduction-row">
+          <input type="text" placeholder="Deduction Description" style="flex: 3; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="deduction-desc">
+          <input type="number" value="0" oninput="calculateNetSalary()" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" class="deduction-amount">
+          <button onclick="removeRow(this)" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
+      </div>
+    `;
+    calculateNetSalary();
+  };
+
+  async function exportSalaryExcel() {
+    let startDate = document.getElementById("salaryStartDate").value;
+    let endDate = document.getElementById("salaryEndDate").value;
+
+    let { data } = await supabaseClient.from('expenses').select('*').eq('category', 'Staff Salary');
+    let filtered = (data || []).filter(item => {
+      if (!startDate || !endDate) return true;
+      let itemDt = new Date(item.date);
+      return itemDt >= new Date(startDate) && itemDt <= new Date(endDate);
+    });
+
+    let csv = ["Date,Category,Amount (RM),Description"];
+    filtered.forEach(item => {
+      csv.push(`"${item.date}","${item.category}",${item.amount},"${(item.description || '').replace(/"/g, '""')}"`);
+    });
+
+    let blob = new Blob([csv.join("\n")], { type: "text/csv" });
+    let link = document.createElement("a");
+    link.download = "Salary_Statement_Report.csv";
+    link.href = window.URL.createObjectURL(blob);
+    link.click();
+  };
+
+  async function printSalaryPDF() {
+    let startDate = document.getElementById("salaryStartDate").value;
+    let endDate = document.getElementById("salaryEndDate").value;
+
+    let { data } = await supabaseClient.from('expenses').select('*').eq('category', 'Staff Salary');
+    let filtered = (data || []).filter(item => {
+      if (!startDate || !endDate) return true;
+      let itemDt = new Date(item.date);
+      return itemDt >= new Date(startDate) && itemDt <= new Date(endDate);
+    });
+
+    let total = 0;
+    let rows = "";
+    filtered.forEach((item, idx) => {
+      let amt = parseFloat(item.amount) || 0;
+      total += amt;
+      rows += `
+        <tr>
+          <td style="border:1px solid #ddd; padding:8px; text-align:center;">${idx + 1}</td>
+          <td style="border:1px solid #ddd; padding:8px; text-align:center;">${item.date}</td>
+          <td style="border:1px solid #ddd; padding:8px;">${item.description}</td>
+          <td style="border:1px solid #ddd; padding:8px; text-align:right; color:#d32f2f;"><b>RM ${amt.toFixed(2)}</b></td>
+        </tr>
+      `;
+    });
+
+    let pWin = window.open('', '_blank', 'height=700,width=900');
+    pWin.document.write(`
+      <html>
+      <head>
+        <title>Salary Report Statement</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+          .header { text-align: center; border-bottom: 2px solid #e91e63; padding-bottom: 10px; margin-bottom: 20px; }
+          .logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 5px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+          th { background: #f8f9fa; padding: 10px; border: 1px solid #ddd; text-align: left; }
+          .summary { margin-top: 20px; text-align: right; font-size: 16px; background: #fff5f5; padding: 12px; border: 1px solid #ffe0e0; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <img src="https://i.postimg.cc/ry18SGbR/LOGO.png" class="logo" alt="Logo">
+          <h2>POOJA EXPORT AND IMPORT TRADING PVT. LTD.</h2>
+          <p>📊 <b>Staff Salary Statement Report</b> (${startDate || 'All Time'} to ${endDate || 'All Time'})</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:40px; text-align:center;">S.N.</th>
+              <th style="text-align:center;">Date</th>
+              <th>Description / Employee Details</th>
+              <th style="text-align:right;">Amount (RM)</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div class="summary">
+          <span style="color: #d32f2f; font-weight: bold;">Total Salary Paid: RM ${total.toFixed(2)}</span>
+        </div>
+        <script>
+          window.onload = function() { window.print(); window.close(); }
+        <\/script>
+      </body>
+      </html>
+    `);
+    pWin.document.close();
+  };
+
+  async function triggerInstantAction(orderNo, nextStatus, printType) {
+    await supabaseClient.from('orders').update({ status: nextStatus }).eq('order_no', orderNo);
+    await loadOrders();
+
+    var o = activeOrdersCache.find(item => item.order_no == orderNo || item.id == orderNo);
+    if(!o) o = { order_no: orderNo, customer_name: "Valued Customer", time: "Now", total: "0", items: "Items" };
+
+    var isKot = (printType === "kot");
+    var invoiceHtml = `
+    <div style="font-family: 'Courier New', Courier, monospace; width: 58mm; max-width: 58mm; padding: 5px; margin: 0 auto; color: #000; background: #fff;">
+      <div style="text-align: center; border-bottom: 2px dashed #000; padding-bottom: 6px; margin-bottom: 6px;">
+        <h2 style="margin: 0; font-size: 14px; font-weight: bold;">POOJA EXPORT & IMPORT</h2>
+      </div>
+      ${isKot ? `
+        <div style="text-align: center; margin-bottom: 6px;">
+          <span style="font-size: 12px; font-weight: bold; background: #000; color: #fff; padding: 2px 10px; display: inline-block;">DISPATCH TICKET</span>
+        </div>
+        <div style="font-size: 11px; margin-bottom: 6px; border-bottom: 1px dashed #000; padding-bottom: 5px;">
+          <div><b>Order No:</b> ${o.order_no || orderNo}</div>
+          <div><b>Time:</b> ${o.time || 'Now'}</div>
+        </div>
+        <div style="font-size: 12px;">
+          <div style="font-weight: bold; border-bottom: 1px solid #000; margin-bottom: 4px;">ITEMS:</div>
+          <div style="white-space: pre-wrap; font-weight: bold;">${o.items || 'Items'}</div>
+        </div>
+      ` : `
+        <div style="text-align: center; margin-bottom: 6px;">
+          <span style="font-size: 12px; font-weight: bold; border: 1px solid #000; padding: 2px 8px; display: inline-block;">TAX INVOICE / BILL</span>
+        </div>
+        <div style="font-size: 10.5px; margin-bottom: 6px; border-bottom: 1px dashed #000; padding-bottom: 5px;">
+          <div><b>Bill No:</b> ${o.order_no || orderNo}</div>
+          <div><b>Customer:</b> ${o.customer_name || 'Guest'}</div>
+          <div><b>Phone:</b> ${o.phone || '-'}</div>
+          <div><b>Date:</b> ${o.time || 'N/A'}</div>
+        </div>
+        <div style="font-size: 11px; margin-bottom: 6px;">
+          <div style="font-weight: bold; border-bottom: 1px solid #000; margin-bottom: 4px; display: flex; justify-content: space-between;">
+            <span>DESCRIPTION</span><span>TOTAL</span>
+          </div>
+          <div style="white-space: pre-wrap;">${o.items || 'Items'}</div>
+        </div>
+        <hr style="border: 0; border-top: 1px dashed #000; margin: 6px 0;">
+        <div style="text-align: right; font-size: 13px; font-weight: bold; margin-bottom: 8px;">
+          Grand Total: RM ${o.total || '0'}
+        </div>
+        <div style="text-align: center; font-size: 10px; border-top: 1px dashed #000; padding-top: 6px;">
+          <p style="margin: 0;">🙏 Thank you!</p>
+        </div>
+      `}
+    </div>`;
+        
+    if(document.getElementById("printableInvoiceArea")) {
+        document.getElementById("printableInvoiceArea").innerHTML = invoiceHtml;
+        document.getElementById("printModalBox").style.display = "flex";
+    }
+  };
+
+  function executeSystemPrint() {
+    var printArea = document.getElementById("printableInvoiceArea");
+    if (!printArea) return;
+    var w = window.open('', '_blank', 'height=650,width=350');
+    w.document.write(`<html><head><title>Print Receipt</title><style>@page{size:58mm auto;margin:0mm;}body{margin:0;padding:0;background:#fff;}</style></head><body>${printArea.innerHTML}</body></html>`);
+    w.document.close();
+    w.focus();
+    setTimeout(() => { w.print(); w.close(); }, 400);
+  };
+
+  function closePrintModal() {
+    var modalBox = document.getElementById("printModalBox");
+    if(modalBox) modalBox.style.display = "none";
+  };
+
   async function updateOrderStatus(orderNo, newStatus) {
-    await supabaseClient.from('orders').update({ status: newStatus }).eq('order_no', orderNo);
+    let updatePayload = { status: newStatus };
+    if(newStatus === "Delivered") updatePayload.delivery_time = new Date().toLocaleString();
+    await supabaseClient.from('orders').update(updatePayload).eq('order_no', orderNo);
     loadOrders();
   };
 
@@ -367,125 +1932,617 @@
     await updateOrderStatus(orderNo, s);
   };
 
+  function uploadDeliveryProof(orderNo, fileInput) {
+    const file = fileInput.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = async function() {
+        let updatePayload = { status: "Delivered", proof_img: reader.result, delivery_time: new Date().toLocaleString() };
+        await supabaseClient.from('orders').update(updatePayload).eq('order_no', orderNo);
+        alert("✅ Delivery Proof Uploaded Successfully!");
+        loadOrders();
+    };
+    reader.readAsDataURL(file);
+  };
+
   function calculateDashboardStats(orders) {
     let totalOrders = orders.length;
     let totalRevenue = 0, todaySales = 0, monthSales = 0;
-    let now = new Date();
+    let now = new Date(), currentDay = now.getDate(), currentMonth = now.getMonth(), currentYear = now.getFullYear();
 
     orders.forEach(o => {
       let amount = parseFloat(o.total) || 0;
       totalRevenue += amount;
-      let orderDate = new Date(o.time);
-      if(!isNaN(orderDate.getTime())) {
-        if(orderDate.toDateString() === now.toDateString()) todaySales += amount;
-        if(orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear()) monthSales += amount;
+      if (o.time) {
+        let timeStr = String(o.time).replace(/at/gi, "").trim();
+        let orderDate = new Date(timeStr);
+
+        let dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})/;
+        let match = timeStr.match(dateRegex);
+        if (match) {
+            let day = parseInt(match[1]);
+            let month = parseInt(match[2]) - 1; 
+            let year = parseInt(match[3]);
+            orderDate = new Date(year, month, day);
+        }
+
+        if (!isNaN(orderDate.getTime())) {
+          if (orderDate.getDate() === currentDay && orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear) todaySales += amount;
+          if (orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear) monthSales += amount;
+        }
       }
     });
 
-    document.getElementById("dashTotalOrders").innerText = totalOrders;
-    document.getElementById("dashTotalRevenue").innerText = "Rs. " + totalRevenue.toFixed(2);
-    document.getElementById("dashTodaySales").innerText = "Rs. " + todaySales.toFixed(2);
-    document.getElementById("dashMonthSales").innerText = "Rs. " + monthSales.toFixed(2);
+    let avgOrderValue = totalOrders > 0 ? (totalRevenue / totalOrders) : 0;
+    if(document.getElementById("dashTotalOrders")) document.getElementById("dashTotalOrders").innerText = totalOrders;
+    if(document.getElementById("dashTotalRevenue")) document.getElementById("dashTotalRevenue").innerText = "RM " + totalRevenue.toFixed(2);
+    if(document.getElementById("dashTodaySales")) document.getElementById("dashTodaySales").innerText = "RM " + todaySales.toFixed(2);
+    if(document.getElementById("dashMonthSales")) document.getElementById("dashMonthSales").innerText = "RM " + monthSales.toFixed(2);
+    if(document.getElementById("dashAvgOrder")) document.getElementById("dashAvgOrder").innerText = "RM " + avgOrderValue.toFixed(2);
+        
+    drawMonthlySalesChart(orders);
+    drawHourlySalesChart(orders);
   };
 
   async function loadMenuList() {
     let { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
-    if (data) menuItemsCache = data;
+    if (data && data.length > 0) menuItemsCache = data;
+
     var menuList = document.getElementById("menuTableList");
     if(!menuList) return;
     let html = "";
     menuItemsCache.forEach((r, index) => {
+      let stockStatus = r.status || "In Stock";
+      let stockBtnClass = stockStatus === "In Stock" ? "inStockBtn" : "outStockBtn";
+      let stockText = stockStatus === "In Stock" ? "🟢 In Stock" : "🔴 Out of Stock";
       html += `<tr>
         <td><b>${index + 1}</b></td>
         <td><b>${r.name || ''}</b></td>
-        <td style="color:#1976D2; font-weight:bold;">Rs. ${r.price || 0}</td>
+        <td style="color:#e91e63; font-weight:bold;">RM ${r.price || 0}</td>
         <td>${r.image ? `<img src="${r.image}" class="menu-thumb">` : 'No Image'}</td>
         <td>${r.description || ''}</td>
         <td><b>${r.category || ''}</b></td>
-        <td><button class="removeBtn" onclick="deleteProduct(${r.id})">Delete</button></td>
+        <td>
+          <button class="${stockBtnClass}" onclick="toggleStock(${r.id}, '${stockStatus}')">${stockText}</button>
+          <button class="editBtn" onclick="editProduct(${r.id}, '${r.name}', ${r.price}, '${r.image || ''}', '${r.description || ''}', '${r.category || ''}')">✏️ Edit</button>
+          <button class="removeBtn" onclick="deleteProduct(${r.id})">❌ Delete</button>
+        </td>
       </tr>`;
     });
     menuList.innerHTML = html;
+  };
+
+  async function toggleStock(rowId, currentStatus) {
+    let newStatus = currentStatus === "In Stock" ? "Out of Stock" : "In Stock";
+    await supabaseClient.from('menu_items').update({ status: newStatus }).eq('id', rowId);
+    loadMenuList();
   };
 
   async function createNewProduct() {
     var name = document.getElementById("prodName").value.trim();
     var price = parseFloat(document.getElementById("prodPrice").value) || 0;
     if(!name || !price) { alert("Enter Name and Price!"); return; }
-    await supabaseClient.from('menu_items').insert([{ name: name, price: price, image: document.getElementById("prodImg").value.trim(), description: document.getElementById("prodDesc").value.trim(), category: document.getElementById("prodCat").value.trim() }]);
+    await supabaseClient.from('menu_items').insert([{ name: name, price: price, image: document.getElementById("prodImg").value.trim(), description: document.getElementById("prodDesc").value.trim(), category: document.getElementById("prodCat").value.trim(), status: "In Stock" }]);
     alert("✅ Product Added!");
     loadMenuList();
+    loadInventoryData();
+  };
+
+  async function editProduct(rowId, oldName, oldPrice, oldImg, oldDesc, oldCat) {
+    var newName = prompt("Edit Food Name:", oldName); if(newName === null) return;
+    var newPrice = parseFloat(prompt("Edit Price (RM):", oldPrice)); if(isNaN(newPrice)) newPrice = oldPrice;
+    var newImg = prompt("Edit Image URL:", oldImg); if(newImg === null) newImg = oldImg;
+    var newDesc = prompt("Edit Description:", oldDesc); if(newDesc === null) newDesc = oldDesc;
+    var newCat = prompt("Edit Category:", oldCat); if(newCat === null) newCat = oldCat;
+
+    await supabaseClient.from('menu_items').update({ 
+      name: newName, 
+      price: newPrice, 
+      image: newImg, 
+      description: newDesc, 
+      category: newCat 
+    }).eq('id', rowId);
+
+    alert("✅ Product Updated Successfully!");
+    loadMenuList();
+    loadInventoryData();
   };
 
   async function deleteProduct(rowId) {
     if(confirm("Delete item?")) {
       await supabaseClient.from('menu_items').delete().eq('id', rowId);
       loadMenuList();
+      loadInventoryData();
     }
   };
 
-  async function loadAdminChats() {
-    try {
-      let { data } = await supabaseClient.from('chats').select('*').order('id', { ascending: false });
-      if(!data) return;
-      let sessions = {};
-      data.forEach(m => {
-        if(!sessions[m.session_id]) {
-          sessions[m.session_id] = { session_id: m.session_id, customer_name: m.customer_name || 'Customer', support_type: m.support_type || 'General', last_time: m.time || '' };
-        }
-      });
-      let container = document.getElementById("chatListContainer");
-      let html = "";
-      Object.values(sessions).forEach(s => {
-        html += `<div onclick="selectChatSession('${s.session_id}')" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: #fafafa; cursor: pointer;">
-          <b>${s.session_id} (${s.customer_name})</b><br><small>${s.last_time}</small>
-        </div>`;
-      });
-      container.innerHTML = html || `<div style="padding:10px;">No chats found.</div>`;
-    } catch(e) {}
+  function openImageViewer(imgUrl) {
+    document.getElementById("viewerTargetImage").src = imgUrl;
+    document.getElementById("imageViewerModal").style.display = "flex";
   };
 
-  async function selectChatSession(sessionId) {
-    selectedChatSession = sessionId;
-    let { data } = await supabaseClient.from('chats').select('*').eq('session_id', sessionId).order('id', { ascending: true });
-    let box = document.getElementById("chatMessagesBox");
-    let html = "";
-    if(data) {
-      data.forEach(m => {
-        html += `<div style="background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #eee; margin-bottom:5px;"><b>${m.sender}:</b> ${m.message}</div>`;
-      });
-      box.innerHTML = html;
-    }
+  function closeImageViewer() {
+    document.getElementById("imageViewerModal").style.display = "none";
   };
-
-  async function sendAdminChat() {
-    if(!selectedChatSession) { alert("Select a chat first!"); return; }
-    let msg = document.getElementById("adminChatInput").value.trim();
-    if(!msg) return;
-    await supabaseClient.from('chats').insert([{ session_id: selectedChatSession, customer_name: "Admin", support_type: "General", sender: "Admin", message: msg, time: new Date().toLocaleString() }]);
-    document.getElementById("adminChatInput").value = "";
-    selectChatSession(selectedChatSession);
-  };
-
-  function openImageViewer(url) { document.getElementById("viewerTargetImage").src = url; document.getElementById("imageViewerModal").style.display = "flex"; }
-  function closeImageViewer() { document.getElementById("imageViewerModal").style.display = "none"; }
-  function closePrintModal() { document.getElementById("printModalBox").style.display = "none"; }
-  function logout() { sessionStorage.clear(); window.location.reload(); }
 
   function showAdminPanel() {
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("adminContent").style.display = "block";
+    myRole = String(sessionStorage.getItem("USER_ROLE") || "admin").toLowerCase();
+        
+    let roleBadge = document.getElementById("userRoleBadge");
+    if(roleBadge) roleBadge.innerText = myRole.toUpperCase();
+
+    let dashBox = document.getElementById("salesDashboardBox");
+    let monthlyDiv = document.getElementById("monthlySalesChartDiv");
+    let hourlyDiv = document.getElementById("hourlySalesChartDiv");
+    let reportBox = document.getElementById("salesReportBox");
+    let menuBox = document.getElementById("menuManagementBox");
+    let inventoryBox = document.getElementById("inventoryManagementBox");
+    let staffBox = document.getElementById("staffManagementBox");
+    let expenseBox = document.getElementById("expenseTrackerBox");
+    let salaryBox = document.getElementById("salarySectionBox");
+    let invoiceBox = document.getElementById("extraServiceInvoiceBox");
+    let totalIncomeBox = document.getElementById("totalIncomeReportBox");
+
+    if (myRole === "order_taker") {
+      if(dashBox) dashBox.style.display = "none";
+      if(monthlyDiv) monthlyDiv.style.display = "none";
+      if(hourlyDiv) hourlyDiv.style.display = "none";
+      if(reportBox) reportBox.style.display = "none";
+      if(menuBox) menuBox.style.display = "none";
+      if(inventoryBox) inventoryBox.style.display = "none";
+      if(staffBox) staffBox.style.display = "none";
+      if(expenseBox) expenseBox.style.display = "none";
+      if(salaryBox) salaryBox.style.display = "none";
+      if(invoiceBox) invoiceBox.style.display = "none";
+      if(totalIncomeBox) totalIncomeBox.style.display = "none";
+    } else if (myRole === "delivery") {
+      if(dashBox) dashBox.style.display = "none";
+      if(monthlyDiv) monthlyDiv.style.display = "none";
+      if(hourlyDiv) hourlyDiv.style.display = "none";
+      if(reportBox) reportBox.style.display = "none";
+      if(menuBox) menuBox.style.display = "none";
+      if(inventoryBox) inventoryBox.style.display = "none";
+      if(staffBox) staffBox.style.display = "none";
+      if(expenseBox) expenseBox.style.display = "none";
+      if(salaryBox) salaryBox.style.display = "none";
+      if(invoiceBox) invoiceBox.style.display = "none";
+      if(totalIncomeBox) totalIncomeBox.style.display = "none";
+    } else {
+      if(dashBox) dashBox.style.display = "flex";
+      if(monthlyDiv) monthlyDiv.style.display = "block";
+      if(hourlyDiv) hourlyDiv.style.display = "block";
+      if(reportBox) reportBox.style.display = "block";
+      if(menuBox) menuBox.style.display = "block";
+      if(inventoryBox) inventoryBox.style.display = "block";
+      if(staffBox) staffBox.style.display = "block";
+      if(expenseBox) expenseBox.style.display = "block";
+      if(salaryBox) salaryBox.style.display = "block";
+      if(invoiceBox) invoiceBox.style.display = "block";
+      if(totalIncomeBox) totalIncomeBox.style.display = "block";
+    }
+
+    if(myRole !== "order_taker" && myRole !== "delivery") {
+      loadMenuList();
+      loadStaffList();
+      loadExpenseSummary();
+      loadInventoryData();
+      loadSalaryStaffDropdown();
+      loadDeliveryZonesAdmin();
+    }
+
     loadOrders();
-    loadMenuList();
-    loadDeliveryZonesAdmin();
+    setupRealtimeOrders();
     loadAdminChats();
+
+    setInterval(() => {
+      loadOrders();
+      loadAdminChats();
+    }, 15000);
   };
 
+  function logout() { sessionStorage.clear(); window.location.reload(); };
+
   if (sessionStorage.getItem("ADMIN_LOGIN") === "true") {
+    myRole = (sessionStorage.getItem("USER_ROLE") || "admin").toLowerCase();
+    currentLoggedInUser = sessionStorage.getItem("LOGGED_USER") || "";
     showAdminPanel();
   } else {
     document.getElementById("loginScreen").style.display = "flex";
   }
+
+  function drawMonthlySalesChart(orders) {
+    if (typeof google === 'undefined' || !google.visualization) return;
+    let monthlyDataMap = {};
+    orders.forEach(o => {
+      let amount = parseFloat(o.total) || 0;
+      if (o.time) {
+        let orderDate = new Date(o.time);
+        if (isNaN(orderDate.getTime())) orderDate = new Date(o.time.replace(/at/gi, "").trim());
+        if (!isNaN(orderDate.getTime())) {
+          let key = `${orderDate.getFullYear()}-${String(orderDate.getMonth() + 1).padStart(2, '0')}`;
+          monthlyDataMap[key] = (monthlyDataMap[key] || 0) + amount;
+        }
+      }
+    });
+    let chartArray = [['Months (Year-MM)', 'Revenue (RM)']];
+    Object.keys(monthlyDataMap).sort().forEach(k => chartArray.push([k, monthlyDataMap[k]]));
+    if (chartArray.length === 1) chartArray.push(['No Data', 0]);
+    new google.visualization.ColumnChart(document.getElementById('monthlySalesChart')).draw(google.visualization.arrayToDataTable(chartArray), { legend: { position: 'none' }, colors: ['#8E24AA'] });
+  };
+
+  function drawHourlySalesChart(orders) {
+    if (typeof google === 'undefined' || !google.visualization) return;
+    let hourlyMap = {};
+    for (let i = 0; i < 24; i++) hourlyMap[i < 10 ? `0${i}:00` : `${i}:00`] = 0;
+    let now = new Date();
+    orders.forEach(o => {
+      let amount = parseFloat(o.total) || 0;
+      if (o.time) {
+        let orderDate = new Date(o.time);
+        if (isNaN(orderDate.getTime())) orderDate = new Date(o.time.replace(/at/gi, "").trim());
+        if (!isNaN(orderDate.getTime()) && orderDate.getDate() === now.getDate() && orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear()) {
+          let hour = orderDate.getHours();
+          let hourKey = hour < 10 ? `0${hour}:00` : `${hour}:00`;
+          hourlyMap[hourKey] += amount;
+        }
+      }
+    });
+    let chartArray = [['Time (Hours)', 'Revenue (RM)']];
+    Object.keys(hourlyMap).sort().forEach(h => chartArray.push([h, hourlyMap[h]]));
+    new google.visualization.LineChart(document.getElementById('hourlySalesChart')).draw(google.visualization.arrayToDataTable(chartArray), { legend: { position: 'none' }, colors: ['#E91E63'], curveType: 'function' });
+  };
+
+  function exportExcelReport() {
+    let filteredOrders = activeOrdersCache;
+    let csvContent = "data:text/csv;charset=utf-8,Order Date,Order No,Customer Name,Phone,Address,Items,Total (RM),Status\r\n";
+    filteredOrders.forEach(o => {
+      csvContent += `"${o.time || ''}","${o.order_no || ''}","${o.customer_name || ''}","${o.phone || ''}","${(o.address || '').replace(/"/g, '""')}","${(o.items || '').replace(/\n/g, ' ')}","${o.total || '0'}","${o.status || ''}"\r\n`;
+    });
+    let link = document.createElement("a");
+    link.setAttribute("href", encodeURI(csvContent));
+    link.setAttribute("download", `Sales_Report_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  function printPdfReport() {
+    let startDate = document.getElementById("reportStartDate").value;
+    let endDate = document.getElementById("reportEndDate").value;
+
+    let filteredOrders = activeOrdersCache;
+    if (startDate && endDate) {
+      let start = new Date(startDate);
+      let end = new Date(endDate);
+      end.setHours(23, 59, 59);
+
+      filteredOrders = activeOrdersCache.filter(o => {
+        let oDate = new Date(o.time);
+        return oDate >= start && oDate <= end;
+      });
+    }
+
+    let totalRev = 0;
+    let tableRows = "";
+
+    filteredOrders.forEach((o, index) => {
+      let amt = parseFloat(o.total) || 0;
+      totalRev += amt;
+      tableRows += `
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${index + 1}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${o.time || ''}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><b>${o.order_no || ''}</b></td>
+          <td style="padding: 8px; border: 1px solid #ddd;">${o.customer_name || ''}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${o.status || ''}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: right; color: #1976D2;"><b>RM ${amt.toFixed(2)}</b></td>
+        </tr>
+      `;
+    });
+
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    printWindow.document.write(`
+      <html>
+      <head>
+        <title>Sales Report Statement</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+          .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #e91e63; padding-bottom: 10px; }
+          .header h2 { margin: 0; color: #e91e63; font-size: 24px; }
+          .header p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
+          .logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 5px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+          th { background: #f8f9fa; padding: 10px; border: 1px solid #ddd; text-align: left; }
+          td { border: 1px solid #ddd; padding: 8px; }
+          .summary-box { margin-top: 20px; text-align: right; font-size: 16px; background: #f0f7ff; padding: 12px; border-radius: 6px; border: 1px solid #cce5ff; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <img src="https://i.postimg.cc/ry18SGbR/LOGO.png" class="logo" alt="Logo">
+          <h2>POOJA EXPORT AND IMPORT TRADING PVT. LTD.</h2>
+          <p>📊 <b>Sales Report Statement</b> (${startDate || 'All Time'} to ${endDate || 'All Time'})</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 40px; text-align: center;">S.N.</th>
+              <th style="text-align: center;">Date & Time</th>
+              <th style="text-align: center;">Order No</th>
+              <th>Customer Name</th>
+              <th style="text-align: center;">Status</th>
+              <th style="text-align: right;">Total Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+        <div class="summary-box">
+          <span style="color: #1976D2; font-weight: bold;">Total Revenue: RM ${totalRev.toFixed(2)}</span>
+        </div>
+        <script>
+          window.onload = function() { window.print(); window.close(); }
+        <\/script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
+  async function loadStaffList() {
+    let staffTable = document.getElementById("staffTableList");
+    if (!staffTable) return;
+    let { data } = await supabaseClient.from('admins').select('*').order('id', { ascending: true });
+    let staffData = (data && data.length > 0) ? data : staffListCache;
+
+    let currentRole = (sessionStorage.getItem("USER_ROLE") || "").toLowerCase();
+    if(currentRole === "manager") {
+      staffData = staffData.filter(s => {
+        let r = String(s.role || '').toLowerCase();
+        return r !== 'admin' && r !== 'manager';
+      });
+    }
+
+    let html = "";
+    staffData.forEach(staff => {
+      let uName = staff.full_name || staff.email || staff.username || '';
+      let uPass = staff.password || '';
+      let uRole = staff.role || '';
+      let uStatus = staff.status || 'Active';
+      let statusBtnClass = uStatus === 'Active' ? 'inStockBtn' : 'outStockBtn';
+      let statusText = uStatus === 'Active' ? '🟢 Active' : '🔴 Inactive';
+
+      html += `<tr>
+        <td><b>${uName}</b></td>
+        <td>${uPass}</td>
+        <td><b>${uRole}</b></td>
+        <td>${uStatus}</td>
+        <td>
+          <button class="${statusBtnClass}" onclick="toggleStaffStatus(this, '${uStatus}')" style="padding:5px 8px; font-size:12px;">${statusText}</button>
+          <button class="editBtn" onclick="editStaff(${staff.id || 1}, '${uName}', '${uPass}', '${uRole}')">✏️ Edit</button>
+          <button class="removeBtn" onclick="deleteStaff(${staff.id || 1})">❌ Delete</button>
+        </td>
+      </tr>`;
+    });
+    staffTable.innerHTML = html || `<tr><td colspan="5">No staff found.</td></tr>`;
+  };
+
+  function toggleStaffStatus(btnElement, currentStatus) {
+    let newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
+    let row = btnElement.closest('tr');
+    if (row) {
+      let statusCell = row.cells[3];
+      if (statusCell) statusCell.innerText = newStatus;
+        
+      btnElement.innerText = newStatus === 'Active' ? '🟢 Active' : '🔴 Inactive';
+      btnElement.className = newStatus === 'Active' ? 'inStockBtn' : 'outStockBtn';
+      btnElement.setAttribute('onclick', `toggleStaffStatus(this, '${newStatus}')`);
+    }
+  };
+
+  async function editStaff(staffId, oldEmail, oldPass, oldRole) {
+    let currentRole = (sessionStorage.getItem("USER_ROLE") || "").toLowerCase();
+    if(currentRole === "manager") {
+      let rLower = String(oldRole || "").toLowerCase();
+      if(rLower === "admin" || rLower === "manager") {
+        alert("⚠️ You do not have permission to edit Admin or Manager accounts!");
+        return;
+      }
+    }
+
+    let newEmail = prompt("Edit Username / Name:", oldEmail);
+    if (newEmail === null) return;
+    let newPass = prompt("Edit Password:", oldPass);
+    if (newPass === null) return;
+    let newRole = prompt("Edit Role:", oldRole);
+    if (newRole === null) return;
+
+    if(currentRole === "manager") {
+      let checkR = String(newRole || "").toLowerCase();
+      if(checkR === "admin" || checkR === "manager") {
+        alert("⚠️ You cannot assign Admin or Manager roles!");
+        return;
+      }
+    }
+
+    await supabaseClient.from('admins').update({ full_name: newEmail, email: newEmail, password: newPass, role: newRole }).eq('id', staffId);
+    await supabaseClient.from('staff_manager').upsert({ staff_name: newEmail, designation: newRole }, { onConflict: 'staff_name' });
+
+    alert("✅ Staff Updated Successfully!");
+    loadStaffList();
+    loadSalaryStaffDropdown();
+  };
+
+  async function createNewStaff() {
+    let username = document.getElementById("staffUsername").value.trim();
+    let password = document.getElementById("staffPassword").value.trim();
+    let role = document.getElementById("staffRoleInput").value.trim();
+    if (!username || !password || !role) { alert("Enter Username, Password and Role!"); return; }
+
+    let currentRole = (sessionStorage.getItem("USER_ROLE") || "").toLowerCase();
+    if(currentRole === "manager") {
+      let rLower = role.toLowerCase();
+      if(rLower === "admin" || rLower === "manager") {
+        alert("⚠️ Managers can only create staff roles other than Admin and Manager!");
+        return;
+      }
+    }
+
+    await supabaseClient.from('admins').insert([{ full_name: username, email: username, password: password, role: role }]);
+    await supabaseClient.from('staff_manager').upsert([{ staff_name: username, designation: role }], { onConflict: 'staff_name' });
+
+    alert("✅ Staff Added!");
+    document.getElementById("staffUsername").value = "";
+    document.getElementById("staffPassword").value = "";
+    document.getElementById("staffRoleInput").value = "";
+    loadStaffList();
+    loadSalaryStaffDropdown();
+  };
+
+  async function deleteStaff(staffId) {
+    let currentRole = (sessionStorage.getItem("USER_ROLE") || "").toLowerCase();
+    if(currentRole === "manager") {
+      try {
+        let { data } = await supabaseClient.from('admins').select('*').eq('id', staffId).single();
+        if(data) {
+          let r = String(data.role || "").toLowerCase();
+          if(r === "admin" || r === "manager") {
+            alert("⚠️ You do not have permission to delete Admin or Manager accounts!");
+            return;
+          }
+        }
+      } catch(e) {}
+    }
+
+    if (confirm("Delete staff?")) {
+      await supabaseClient.from('admins').delete().eq('id', staffId);
+      loadStaffList();
+      loadSalaryStaffDropdown();
+    }
+  };
+
+  async function addExpense() {
+    let dateVal = document.getElementById("expenseDateInput").value;
+    let category = document.getElementById("expenseCategory").value.trim();
+    let amount = parseFloat(document.getElementById("expenseAmount").value);
+    let description = document.getElementById("expenseDescription").value.trim();
+
+    if (!dateVal || !category || isNaN(amount)) {
+        alert("⚠️ कृपया मिति, श्रेणी र रकम सही तरिकाले भर्नुहोस्!");
+        return;
+    }
+
+    await supabaseClient.from('expenses').insert([{ date: dateVal, category: category, amount: amount, description: description }]);
+    alert("✅ Expense Added Successfully!");
+    document.getElementById("expenseDateInput").value = "";
+    document.getElementById("expenseCategory").value = "";
+    document.getElementById("expenseAmount").value = "";
+    document.getElementById("expenseDescription").value = "";
+    loadExpenseSummary();
+  };
+
+  async function loadExpenseSummary() {
+    try {
+        let { data } = await supabaseClient.from('expenses').select('*');
+        let totalExpense = 0;
+        (data || []).forEach(item => {
+            totalExpense += parseFloat(item.amount) || 0;
+        });
+
+        document.getElementById("summaryExpense").innerText = "RM " + totalExpense.toFixed(2);
+
+        let totalRevenue = 147.00;
+        let netProfit = totalRevenue - totalExpense;
+        let netProfitEl = document.getElementById("summaryNetProfit");
+        netProfitEl.innerText = "RM " + netProfit.toFixed(2);
+        netProfitEl.style.color = netProfit >= 0 ? "#388E3C" : "#D32F2F";
+    } catch (err) {}
+  };
+
+  async function exportExpenseExcel() {
+    let { data } = await supabaseClient.from('expenses').select('*');
+    let csv = ["Date,Category,Amount (RM),Description"];
+    (data || []).forEach(item => {
+        csv.push(`"${item.date}","${item.category}",${item.amount},"${item.description || ''}"`);
+    });
+
+    let csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+    let downloadLink = document.createElement("a");
+    downloadLink.download = "Expense_Report.csv";
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.click();
+  };
+
+  async function printExpensePDF() {
+    let { data } = await supabaseClient.from('expenses').select('*');
+    let totalExp = 0;
+    let tableRows = "";
+
+    (data || []).forEach((item, index) => {
+        let amt = parseFloat(item.amount) || 0;
+        totalExp += amt;
+        tableRows += `
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${index + 1}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">${item.date || ''}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><b>${item.category || ''}</b></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">${item.description || ''}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: right; color: #d32f2f;"><b>RM ${amt.toFixed(2)}</b></td>
+            </tr>
+        `;
+    });
+
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Expense Report Statement</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+                .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #e91e63; padding-bottom: 10px; }
+                .header h2 { margin: 0; color: #e91e63; font-size: 24px; }
+                .header p { margin: 5px 0 0 0; color: #666; font-size: 14px; }
+                .logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 5px; }
+                .table-con { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                th { background: #f8f9fa; padding: 10px; border: 1px solid #ddd; text-align: left; }
+                td { border: 1px solid #ddd; padding: 8px; }
+                .summary-box { margin-top: 20px; text-align: right; font-size: 16px; background: #fff5f5; padding: 12px; border-radius: 6px; border: 1px solid #ffe0e0; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <img src="https://i.postimg.cc/ry18SGbR/LOGO.png" class="logo" alt="Logo">
+                <h2>POOJA EXPORT AND IMPORT TRADING PVT. LTD.</h2>
+                <p>📊 <b>Expense Report Statement</b> (All Time)</p>
+            </div>
+            <table class="table-con">
+                <thead>
+                    <tr>
+                        <th style="width: 40px; text-align: center;">S.N.</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th style="text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
+            <div class="summary-box">
+                <span style="color: #d32f2f; font-weight: bold;">Total Expense: RM ${totalExp.toFixed(2)}</span>
+            </div>
+            <script>
+                window.onload = function() { window.print(); window.close(); }
+            <\/script>
+        </body>
+        </html>
+  `);
+  printWindow.document.close();
+};
 </script>
 </body>
 </html>
