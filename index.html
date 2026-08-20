@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BINOD KIRANA PASAL</title>
+    <!-- Favicon / Tab Logo -->
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/ry18SGbR/LOGO.png">
+    <!-- Supabase JS Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- HTML5-Qrcode Library for Camera Scanning -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
+body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflow-x: hidden; }
+
+.header{ background:#2e7d32; color:#fff; padding:30px 15px; text-align:center; border-radius:0 0 25px 25px; box-shadow:0 5px 15px rgba(0,0,0,.15); width: 100%; }
+.restaurant-logo{ width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:10px; border:2px solid #fff; box-shadow:0 3px 8px rgba(0,0,0,0.2); background:#fff; }
+.header h1{ font-size:34px; margin-bottom:8px; }
+.header p{ font-size:16px; opacity:.9; }
+
+.container{ width:100%; max-width:600px; padding: 0 12px; margin: auto; }
+.search-box{ margin:15px auto; padding: 0 2px; width: 100%; }
+.search-box input{ width:100%; padding:14px 20px; border-radius:35px; border:1px solid #ddd; font-size:16px; outline:none; }
+.search-box input:focus{ border-color:#2e7d32; box-shadow:0 0 8px rgba(46,125,50,.2); }
+
+.category-tabs{ display:flex; gap:8px; overflow-x:auto; padding:10px 2px; margin-bottom:15px; position:sticky; top:0; background:#f5f5f5; z-index:100; scrollbar-width: none; width: 100%; }
+.category-tabs::-webkit-scrollbar { display: none; }
+.category-tabs button{ background:#fff; border:none; padding:10px 20px; border-radius:30px; cursor:pointer; font-size:14px; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.06); transition:.25s; white-space:nowrap; }
+.category-tabs button:hover, .category-tabs button.active{ background:#2e7d32; color:#fff; }
+
+#menu{ display:grid; grid-template-columns:1fr; gap:16px; padding: 0 2px; width: 100%; }
+.food-card{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 3px 12px rgba(0,0,0,0.06); position:relative; width: 100%; margin: 0; }
+.food-card img{ width:100%; height:220px; object-fit:cover; display:block; background:#eee; }
+
+.food-info{ padding:15px; text-align: left; width: 100%; }
+.food-info h3{ font-size:22px; font-weight:700; margin-bottom:6px; color: #111; }
+.rating{ color:#ff9800; font-size:14px; margin-bottom:6px; }
+.food-desc{ color:#666; font-size:15px; margin-bottom:12px; line-height: 1.4; }
+
+.food-bottom{ display:flex; justify-content:space-between; align-items:center; width: 100%; }
+.food-price{ font-size:24px; font-weight:bold; color:#2e7d32; }
+
+.food-card button, .qty-btn { background:#2e7d32; color:#fff; border:none; border-radius:10px; padding:10px 22px; font-size:16px; font-weight:bold; cursor:pointer; }
+
+.customer{ background:#fff; padding:20px 15px; border-radius:16px; margin-top:20px; box-shadow:0 3px 12px rgba(0,0,0,0.06); width: 100%; }
+.customer input, .customer textarea, .customer select{ width:100%; padding:14px; margin:8px 0; border:1px solid #ddd; border-radius:8px; font-size:17px; outline: none; background: #fafafa; }
+#total{ color:#2e7d32; font-size:30px; font-weight:bold; }
+.place-btn{ margin-top:15px; width:100%; padding:16px; background:#4CAF50; color:#fff; border:none; border-radius:10px; font-size:20px; font-weight:bold; cursor:pointer; display: block; text-align: center; }
+
+.floating-cart{ position:fixed; right:20px; bottom:20px; width:70px; height:70px; background:#2e7d32; color:#fff; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:28px; cursor:pointer; box-shadow:0 6px 15px rgba(46,125,50,0.3); z-index:9999; }
+.cart-count{ position:absolute; top:-2px; right:-2px; width:24px; height:24px; background:#333; color:#fff; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:11px; font-weight:bold; border: 2px solid #2e7d32; }
+
+.qr-section { background:#f1f8e9; border:2px dashed #2e7d32; border-radius:16px; padding:20px 15px; text-align:center; margin-bottom:15px; width: 100%; }
+.qr-img { width:200px; height:200px; object-fit:contain; margin:12px auto; display:block; border:2px solid #2e7d32; padding:6px; background:#fff; border-radius:10px; }
+.file-upload-box { background:#fff; border: 1px solid #ddd; padding: 12px; border-radius: 8px; width: 100%; margin: 12px 0; font-size: 15px; font-weight: bold; background-color: #f9f9f9; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <img src="https://i.postimg.cc/ry18SGbR/LOGO.png" alt="Binod Kirana Pasal Logo" class="restaurant-logo">
+    <h1>🛒 BINOD KIRANA PASAL</h1>
+    <p>Quality Groceries • Fresh Items • Fast Home Delivery</p>
+</div>
+
+<div class="container">
+    <div class="search-box">
+        <input id="searchFood" type="text" placeholder="🔍 Search items..." onkeyup="window.searchFood()">
+    </div>
+
+    <div class="category-tabs">
+        <button class="active" onclick="window.filterCategory('All', this)">🛍️ All</button>
+        <button onclick="window.filterCategory('Grocery', this)">🌾 Grocery</button>
+        <button onclick="window.filterCategory('Snacks', this)">🍪 Snacks</button>
+        <button onclick="window.filterCategory('Beverages', this)">🥤 Beverages</button>
+        <button onclick="window.filterCategory('Dairy', this)">🥛 Dairy</button>
+        <button onclick="window.filterCategory('Household', this)">🧽 Household</button>
+    </div>
+
+    <div id="menu" style="text-align:center; font-size:18px; padding:20px; color:#666;">Loading Products from Supabase...</div>
+
+    <!-- 🛒 सपिङ कार्ट र अर्डर सेक्सन -->
+    <div class="customer cart-section">
+        <h2>Shopping Cart</h2>
+        <div id="cart" style="margin:15px 0; font-size:18px; line-height:2;">Your cart is empty.</div>
+        
+        <div id="cartSummaryPriceBox" style="font-size: 16px; margin: 10px 0; text-align: left; line-height: 1.6;">
+          <div>Items Subtotal: RM <span id="subtotalPrice">0.00</span></div>
+          <div style="color: #555;">Delivery Charge: RM <span id="deliveryPriceLabel">0.00</span></div>
+        </div>
+        <h2>Total : RM <span id="total">0</span></h2>
+        
+        <br><hr style="border: 0; border-top: 1px dashed #ddd; margin: 15px 0;"><br>
+
+        <h2>Customer Information</h2>
+        <input id="customerName" type="text" placeholder="Customer Name (नाम लेख्नुहोस्)">
+        
+        <label style="font-weight: bold; font-size: 14px; color: #555; display: block; margin-top: 8px;">Select Delivery / Pickup Zone:</label>
+        <select id="deliveryZoneSelect" onchange="window.handleZoneChange()">
+          <option value="0" data-name="Self-Pickup / पसलमै आएर लैजाने">🛍️ Self-Pickup / पसलमै आएर लैजाने (RM 0)</option>
+          <option value="3" data-name="Zone A (Within 3 KM)">📍 Zone A - Within 3 KM (RM 3)</option>
+          <option value="5" data-name="Zone B (3 KM to 6 KM)">📍 Zone B - 3 KM to 6 KM (RM 5)</option>
+          <option value="8" data-name="Zone C (6 KM to 10 KM)">📍 Zone C - 6 KM to 10 KM (RM 8)</option>
+        </select>
+        
+        <input id="customerPhone" type="tel" placeholder="Phone Number">
+        
+        <!-- 🏠 Delivery Address सेक्सन -->
+        <div id="deliveryAddressBox" style="display:block;">
+          <textarea id="customerAddress" placeholder="Delivery Address / Special Notes"></textarea>
+        </div>
+
+        <br><hr style="border: 0; border-top: 1px dashed #ddd; margin: 15px 0;"><br>
+
+        <div class="qr-section">
+            <h2 style="color:#2e7d32; font-size: 21px;">💳 Scan to Pay (DuitNow QR)</h2>
+            <img src="https://i.postimg.cc/wMgC6W6m/gdfgffghgf.png" class="qr-img" alt="Binod Kirana Pasal QR">
+            <p style="font-size:14px; color:#444; font-weight:bold; margin-bottom: 8px;">रकम हेरेर क्युआर स्क्यान गर्नुहोस् र तल क्यामेरा वा ग्यालरीबाट स्लिप छान्नुहोस्।</p>
+            
+            <div class="file-upload-box">
+               <span style="color:#2e7d32; display:block; margin-bottom:8px;">📁 Upload Payment Slip *</span>
+               
+               <div style="display: flex; gap: 10px; justify-content: center;">
+                   <button type="button" onclick="document.getElementById('paymentSlipFile').setAttribute('capture', 'environment'); document.getElementById('paymentSlipFile').click();" style="flex:1; padding:12px; background:#2196F3; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer;">📷 Camera</button>
+                   <button type="button" onclick="document.getElementById('paymentSlipFile').removeAttribute('capture'); document.getElementById('paymentSlipFile').click();" style="flex:1; padding:12px; background:#4CAF50; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer;">🖼️ Gallery</button>
+               </div>
+
+               <input id="paymentSlipFile" type="file" accept="image/*" onchange="window.previewFile()" style="display:none;">
+            </div>
+            <div id="fileStatus" style="font-size:13px; color:green; margin-top:5px; font-weight:bold;"></div>
+        </div>
+
+        <button class="place-btn" id="submitOrderBtn" onclick="window.placeOrder()">🚀 Place Order</button>
+    </div>
+
+    <hr style="margin:25px 0; border:0; border-top:1px solid #ddd; width: 100%;">
+    <div style="padding: 0 4px; text-align: left;">
+        <h2>📦 Track Your Order</h2>
+        <input id="trackOrderNo" type="text" placeholder="Enter Order No (Example: ORD1001)" style="width:100%; padding:14px; margin:10px 0; border-radius:8px; border:1px solid #ddd; font-size:18px;">
+        <button class="place-btn" style="background:#2e7d32;" onclick="window.trackMyOrder()">Track Order</button>
+        <div id="trackResult" style="margin-top:20px;"></div>
+    </div>
+</div>
+
+<div class="floating-cart" onclick="window.openCart()">🛒<div class="cart-count" id="cartCount">0</div></div>
+
+<!-- Footer Section -->
+<footer style="background-color: #1b2e1b; color: #fff; padding: 50px 20px 20px 20px; font-family: Arial, sans-serif; border-top: 3px solid #2e7d32; margin-top: 50px; width: 100%;">
+  <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px;">
+    
+    <div style="flex: 2; min-width: 280px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+        <img src="https://i.postimg.cc/ry18SGbR/LOGO.png" alt="Binod Kirana Logo" style="width: 55px; height: 55px; object-fit: contain;">
+        <h3 style="margin: 0; color: #fff; font-size: 20px;">BINOD KIRANA PASAL</h3>
+      </div>
+      <p style="color: #ccc; font-size: 14px; line-height: 1.6; max-width: 450px; margin-bottom: 20px;">
+        Your trusted local grocery store. Get daily essentials, quality food items, and household goods delivered right to your doorstep or ready for pickup.
+      </p>
+      
+      <div style="display: flex; gap: 30px; font-size: 13px; color: #ddd; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; flex-wrap: wrap;">
+        <div>
+          <strong style="color: #fff; display: block; margin-bottom: 3px;">Monday – Sunday</strong>
+          8:00 am to 10:00 pm
+        </div>
+      </div>
+    </div>
+
+    <div style="flex: 1; min-width: 150px;">
+      <h4 style="color: #2e7d32; font-size: 16px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Navigation</h4>
+      <ul style="list-style: none; padding: 0; margin: 0; line-height: 2.5; font-size: 14px;">
+        <li><a href="#" style="color: #ccc; text-decoration: none;">Categories</a></li>
+        <li><a href="#" style="color: #ccc; text-decoration: none;">About Us</a></li>
+        <li><a href="#" style="color: #ccc; text-decoration: none;">Offers</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div style="max-width: 1200px; margin: 40px auto 0 auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; font-size: 13px; color: #aaa; gap: 15px;">
+    <div>
+      © 2026 All Right Reserved. Binod Kirana Pasal
+    </div>
+  </div>
+</footer>
+
+<script>
+  const SUPABASE_URL = 'https://odhdrvvgemwgiphipgv.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  window.cart = []; 
+  window.selectedCategory = "All";
+  window.base64SlipData = ""; 
+  window.menuItemsCache = [];
+
+  window.handleZoneChange = function() {
+    let zoneSelect = document.getElementById("deliveryZoneSelect");
+    let addressBox = document.getElementById("deliveryAddressBox");
+    if (zoneSelect) {
+      let selectedText = zoneSelect.options[zoneSelect.selectedIndex].text;
+      if (selectedText.includes("Self-Pickup")) {
+        if(addressBox) addressBox.style.display = "none";
+      } else {
+        if(addressBox) addressBox.style.display = "block";
+      }
+    }
+    window.showCart();
+  };
+
+  async function loadMenuFromSupabase() {
+    try {
+      let { data, error } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
+      if (!error && data) {
+        window.menuItemsCache = data;
+        window.showMenu(data);
+      } else {
+        document.getElementById("menu").innerHTML = "<p style='color:red;'>⚠️ Failed to load products from Supabase.</p>";
+      }
+    } catch(err) {
+      document.getElementById("menu").innerHTML = "<p style='color:red;'>⚠️ Connection Error.</p>";
+    }
+  }
+
+  window.showMenu = function(data){
+    let html = "";
+    if(!data || data.length === 0) { 
+        html = "<p style='text-align:center; padding:20px; color:red;'>⚠️ No products found!</p>"; 
+    } else {
+        var activeItems = data.filter(r => r && String(r.status || "In Stock") !== "Hidden");
+        activeItems.forEach(row => {
+            const itemPrice = parseFloat(row.price) || 0;
+            const imgUrl = (row.image && String(row.image).startsWith("http")) ? String(row.image).trim() : "https://images.unsplash.com/photo-1542838132-92c53300491e?w=500";
+            
+            const rawName = row.name ? String(row.name) : "Unnamed Item";
+            const safeName = rawName.replace(/'/g, "\\'");
+            const stockStatus = row.status ? String(row.status).trim() : "In Stock";
+            
+            let orderActionHtml = `<button onclick="window.addToCart('${safeName}', ${itemPrice})">🛒 Add</button>`;
+            if (stockStatus === "Out of Stock") {
+                orderActionHtml = `<button disabled style="background:#ccc; color:#777; cursor:not-allowed;">🚫 Out of Stock</button>`;
+            }
+            
+            html += `<div class="food-card" data-category="${row.category || 'General'}"><img src="${imgUrl}" alt="${rawName}" onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?w=500'"><div class="food-info"><h3>${rawName}</h3><div class="rating">⭐⭐⭐⭐⭐ (5.0)</div><p class="food-desc">${row.description || ""}</p><div class="food-bottom"><span class="food-price">RM ${itemPrice}</span>${orderActionHtml}</div></div></div>`;
+        });
+    }
+    document.getElementById("menu").innerHTML = html; 
+    window.searchFood();
+  };
+
+  window.filterCategory = function(category, element){ 
+    window.selectedCategory = category; 
+    document.querySelectorAll(".category-tabs button").forEach(btn => btn.classList.remove("active")); 
+    if(element) { element.classList.add("active"); } 
+    window.searchFood(); 
+  };
+
+  window.searchFood = function(){ 
+    const keyword = document.getElementById("searchFood").value.toLowerCase(); 
+    const cards = document.querySelectorAll(".food-card"); 
+    cards.forEach(card => { 
+        const h3El = card.querySelector("h3");
+        const food = h3El ? h3El.innerText.toLowerCase() : ""; 
+        const category = card.dataset.category ? card.dataset.category.trim() : ""; 
+        card.style.display = ((window.selectedCategory === "All" || category === window.selectedCategory) && food.includes(keyword)) ? "block" : "none"; 
+    }); 
+  };
+
+  window.addToCart = function(food, price){ const found = window.cart.find(item => item.food === food); if(found){ found.qty++; } else { window.cart.push({ food, price: Number(price), qty: 1 }); } window.showCart(); };
+  window.increaseQty = function(i){ window.cart[i].qty++; window.showCart(); };
+  window.decreaseQty = function(i){ if(window.cart[i].qty > 1){ window.cart[i].qty--; } else { window.cart.splice(i,1); } window.showCart(); };
+  window.removeItem = function(i){ window.cart.splice(i,1); window.showCart(); };
+
+  window.showCart = function(){
+    let html = ""; let subtotal = 0; if(window.cart.length === 0) { html = "<p style='padding:0 5px;'>Your cart is empty.</p>"; } else {
+        window.cart.forEach((item, i) => { const itemTotal = item.price * item.qty; subtotal += itemTotal; html += `<div style='padding: 0 5px;'><p><b>${item.food}</b><br><button class="qty-btn" style='padding:5px 12px; font-size:13px;' onclick="window.decreaseQty(${i})">−</button> <span style='margin:0 10px;font-weight:bold;'>${item.qty}</span> <button class="qty-btn" style='padding:5px 12px; font-size:13px;' onclick="window.increaseQty(${i})">+</button> &nbsp;&nbsp; RM ${itemTotal} <button onclick="window.removeItem(${i})" style="background:red;color:white;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;margin-left:10px;">✕</button></p></div><hr style="margin:10px 0; border:0; border-top:1px dashed #ccc;">`; });
+    }
+    
+    let zoneSelect = document.getElementById("deliveryZoneSelect");
+    let deliveryCharge = zoneSelect ? parseFloat(zoneSelect.value) : 0;
+    let grandTotal = subtotal + deliveryCharge;
+    
+    document.getElementById("cart").innerHTML = html; 
+    if(document.getElementById("subtotalPrice")) document.getElementById("subtotalPrice").innerText = subtotal.toFixed(2);
+    if(document.getElementById("deliveryPriceLabel")) document.getElementById("deliveryPriceLabel").innerText = deliveryCharge.toFixed(2);
+    document.getElementById("total").innerText = grandTotal.toFixed(2); 
+    document.getElementById("cartCount").innerText = window.cart.reduce((sum, item) => sum + item.qty, 0);
+  };
+
+  window.openCart = function(){ var el = document.querySelector(".customer"); if(el) el.scrollIntoView({ behavior:"smooth" }); };
+
+  window.previewFile = function() { 
+    const file = document.getElementById("paymentSlipFile").files[0]; 
+    const status = document.getElementById("fileStatus"); 
+    if (!file) return; 
+    status.innerText = "Processing Image..."; 
+    const reader = new FileReader(); 
+    reader.onloadend = function() { window.base64SlipData = reader.result; status.innerText = "📸 Slip Attached Successfully!"; }; 
+    reader.readAsDataURL(file); 
+  };
+
+  window.placeOrder = async function(){
+    const name = document.getElementById("customerName").value.trim();
+    const phone = document.getElementById("customerPhone").value.trim();
+    
+    let zoneSelect = document.getElementById("deliveryZoneSelect");
+    let zoneName = zoneSelect ? zoneSelect.options[zoneSelect.selectedIndex].dataset.name : "Self-Pickup";
+    let deliveryCharge = zoneSelect ? parseFloat(zoneSelect.value) : 0;
+    
+    let addressEl = document.getElementById("customerAddress");
+    let address = addressEl ? addressEl.value.trim() : "";
+    const orderBtn = document.getElementById("submitOrderBtn");
+    
+    if(name === "" || phone === "" || window.cart.length === 0 || window.base64SlipData === ""){ alert("Please fill details and upload payment slip."); return; }
+    
+    orderBtn.disabled = true;
+    orderBtn.innerText = "Placing Order...";
+
+    const items = window.cart.map(item => `${item.food} x ${item.qty} (RM ${item.price * item.qty})`).join("\n");
+    const subtotal = window.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const grandTotal = subtotal + deliveryCharge;
+    
+    let fullAddress = address;
+    if (zoneName.includes("Self-Pickup")) {
+      fullAddress = `[Self-Pickup]`;
+    } else {
+      fullAddress = `[${zoneName}] ${address}`;
+    }
+
+    try {
+      let { data: existingOrders } = await supabaseClient.from('orders').select('order_no');
+      let nextId = 1001;
+      if (existingOrders && existingOrders.length > 0) {
+        let nums = existingOrders.map(o => parseInt(String(o.order_no || "").replace(/\D/g, "")) || 1000);
+        nextId = Math.max(...nums) + 1;
+      }
+      let orderNo = "ORD" + nextId;
+      let timeStr = new Date().toLocaleString();
+
+      let { error } = await supabaseClient.from('orders').insert([{
+        order_no: orderNo,
+        time: timeStr,
+        customer_name: name,
+        phone: phone,
+        address: fullAddress,
+        items: items,
+        total: grandTotal.toFixed(2),
+        status: "Pending",
+        payment_slip: window.base64SlipData,
+        proof_img: "None"
+      }]);
+
+      if (error) {
+        alert("❌ Order Error: " + error.message);
+        orderBtn.disabled = false;
+        orderBtn.innerText = "🚀 Place Order";
+        return;
+      }
+
+      alert("✅ Order Placed Successfully! Order No: " + orderNo);
+      
+      const rm = `🛒 NEW ORDER (QR PAID - BINOD KIRANA)\n\nOrder No: ${orderNo}\n\n👤 ${name}\n📞 ${phone}\n🚚 Zone: ${zoneName}\n🏠 Address/Notes: ${address}\n\n📦 Items:\n${items}\n\n------------------\nSubtotal: RM ${subtotal.toFixed(2)}\nDelivery: RM ${deliveryCharge.toFixed(2)}\n💰 Total: RM ${grandTotal.toFixed(2)}`;
+      window.open("https://wa.me/9769338427?text=" + encodeURIComponent(rm), "_blank");
+      
+      window.cart = []; 
+      window.showCart(); 
+      document.getElementById("customerName").value = ""; 
+      document.getElementById("customerPhone").value = ""; 
+      if(addressEl) addressEl.value = ""; 
+      document.getElementById("paymentSlipFile").value = ""; 
+      document.getElementById("fileStatus").innerText = ""; 
+      window.base64SlipData = "";
+      if(zoneSelect) zoneSelect.value = "0";
+      window.handleZoneChange();
+
+    } catch(err) {
+      alert("❌ System Error: " + err.message);
+    } finally {
+      orderBtn.disabled = false;
+      orderBtn.innerText = "🚀 Place Order";
+    }
+  };
+
+  window.trackMyOrder = async function() { 
+    const orderNo = document.getElementById("trackOrderNo").value.trim().toUpperCase(); 
+    if (orderNo === "") return; 
+    document.getElementById("trackResult").innerHTML = "Searching..."; 
+    try {
+      let { data, error } = await supabaseClient.from('orders').select('*').eq('order_no', orderNo).single();
+      if (error || !data) {
+        document.getElementById("trackResult").innerHTML = `<div style="color:red;padding:15px;background:#fff;border-radius:8px;font-weight:bold;margin-top:10px;">❌ Order Not Found</div>`;
+        return;
+      }
+      window.showTrackingResult(data);
+    } catch(e) {
+      document.getElementById("trackResult").innerHTML = `<div style="color:red;padding:15px;background:#fff;border-radius:8px;font-weight:bold;margin-top:10px;">❌ Error fetching order</div>`;
+    }
+  };
+
+  window.showTrackingResult = function(order){
+    let progress = 25, color = "#FF9800";
+    let s = order.status ? order.status.trim() : "Pending";
+    
+    if(s === "Pending" || s === "Order Received"){ progress = 25; color = "#FF9800"; }
+    else if(s === "Preparing"){ progress = 50; color = "#2196F3"; }
+    else if(s === "Ready"){ progress = 75; color = "#9C27B0"; }
+    else if(s === "Out for Delivery"){ progress = 90; color = "#00BCD4"; }
+    else if(s === "Delivered"){ progress = 100; color = "#4CAF50"; }
+
+    document.getElementById("trackResult").innerHTML = `
+    <div style="background:#fff; padding:22px; border-radius:18px; box-shadow:0 5px 18px rgba(0,0,0,.08); line-height:1.8; margin-top:15px; text-align:left; color:#333;">
+        <center><h3 style="color:#2e7d32; margin-bottom:15px;">📦 Order Tracking</h3></center>
+        <p><b>Order No :</b> ${order.order_no}</p>
+        <p><b>Status :</b> <span style="background:${color}; color:white; padding:4px 12px; border-radius:20px; font-weight:bold; font-size:14px;">${s}</span></p>
+        <div style="width:100%; height:18px; background:#eee; border-radius:10px; overflow:hidden; margin:12px 0;"><div style="width:${progress}%; height:100%; background:${color}; text-align:center; color:white; font-size:12px; font-weight:bold; line-height:18px;">${progress}%</div></div>
+    </div>`;
+  };
+
+  document.addEventListener("DOMContentLoaded", function () {
+    loadMenuFromSupabase();
+    window.handleZoneChange();
+  });
+</script>
+</body>
+</html>
