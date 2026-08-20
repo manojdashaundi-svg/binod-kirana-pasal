@@ -252,7 +252,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   ];
 
   window.cart = []; 
-  window.selectedCategory = "All";
+  window.selectedCategory = "All"; 
   window.base64SlipData = ""; 
   window.menuItemsCache = [];
 
@@ -431,18 +431,22 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         let orderNo = "ORD" + nextId;
         let timeStr = new Date().toLocaleString();
 
-        await supabaseClient.from('orders').insert([{
+        let { error: insertError } = await supabaseClient.from('orders').insert([{
           order_no: orderNo,
           time: timeStr,
           customer_name: name,
           phone: phone,
           address: fullAddress,
           items: items,
-          total: grandTotal.toFixed(2),
+          total: Number(grandTotal.toFixed(2)),
           status: "Pending",
           payment_slip: window.base64SlipData,
           proof_img: "None"
         }]);
+
+        if (insertError) {
+          throw new Error(insertError.message);
+        }
         
         alert("✅ Order Placed Successfully! Order No: " + orderNo);
       } else {
