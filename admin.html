@@ -46,9 +46,6 @@
     .print-box { background:#fff; padding:25px; border-radius:12px; width:360px; max-height:85vh; overflow-y:auto; box-shadow:0 5px 20px rgba(0,0,0,0.3); }
     .print-area { font-family: 'Courier New', Courier, monospace; font-size:14px; color:#000; line-height:1.4; }
 
-    .chart-container { background:#fff; padding:15px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.05); margin:20px 0; border:1px solid #ddd; width:100%; height: 280px; display:block; }
-    .inStockBtn { background:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; display: inline-flex; align-items: center; gap: 5px; }
-    .outStockBtn { background:#ff9800; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; }
     .menu-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
   </style>
 </head>
@@ -77,30 +74,6 @@
     <span id="emailAutomationStatusBadge" class="automation-badge" style="display: inline-block;">🟢 Active</span>
   </h2>
 
-  <!-- 77 Districts Delivery Zone Management Section -->
-  <div class="invoice-section" style="background:#fff; padding:20px; border-radius:10px; margin-top:20px; border:1px solid #ddd;">
-    <h3 style="color:#1976D2; margin-bottom:15px;">🚚 Delivery Zone & District Rate Management (77 Districts)</h3>
-    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-      <input id="newDistrictName" type="text" placeholder="जिल्लाको नाम (District Name)" style="flex:2; padding:10px;">
-      <input id="newDistrictRate" type="number" placeholder="रेट (Rs.)" style="flex:1; padding:10px;">
-      <button class="addBtn" onclick="addDeliveryZone()" style="background:#1976D2; padding:10px 20px;">+ जिल्ला थप्नुहोस्</button>
-    </div>
-    <div style="overflow-x: auto; max-height: 250px; overflow-y: auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>District Name (जिल्ला)</th>
-            <th>Delivery Rate (Rs.)</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="deliveryZonesTableList">
-          <tr><td colspan="3" style="padding:15px;">Loading Delivery Zones...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
   <div id="salesDashboardBox" style="display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap;">
     <div style="flex: 1; min-width: 140px; background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #2196F3; text-align: center;">
       <span style="font-size: 13px; color: #777; font-weight: bold;">Total Orders</span>
@@ -120,6 +93,7 @@
     </div>
   </div>
 
+  <!-- 🛒 Active Orders Section -->
   <div id="mainOrdersTableSection">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
       <h3 style="margin: 0;">🛒 Active Orders</h3>
@@ -147,6 +121,31 @@
     </div>
   </div>
 
+  <!-- 🚚 Delivery Zone & District Rate Management (77 Districts) - Active Orders पछि राखिएको -->
+  <div class="invoice-section" style="background:#fff; padding:20px; border-radius:10px; margin-top:20px; border:1px solid #ddd;">
+    <h3 style="color:#1976D2; margin-bottom:15px;">🚚 Delivery Zone & District Rate Management (77 Districts)</h3>
+    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+      <input id="newDistrictName" type="text" placeholder="जिल्लाको नाम (District Name)" style="flex:2; padding:10px;">
+      <input id="newDistrictRate" type="number" placeholder="रेट (Rs.)" style="flex:1; padding:10px;">
+      <button class="addBtn" onclick="addDeliveryZone()" style="background:#1976D2; padding:10px 20px;">+ जिल्ला थप्नुहोस्</button>
+    </div>
+    <div style="overflow-x: auto; max-height: 250px; overflow-y: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>District Name (जिल्ला)</th>
+            <th>Delivery Rate (Rs.)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="deliveryZonesTableList">
+          <tr><td colspan="3" style="padding:15px;">Loading Delivery Zones...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 📦 Product Management Section -->
   <div id="menuManagementBox" class="menu-section">
     <h3 style="color:#1976D2;">📦 Product Management</h3>
     <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd;">
@@ -177,6 +176,7 @@
     </div>
   </div>
 
+  <!-- 💬 Live Support Chat Center -->
   <div class="chat-section">
     <h3 style="color: #1976D2; margin-bottom: 15px; font-size: 18px;">💬 Live Support Chat Center</h3>
     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
@@ -222,7 +222,6 @@
 </div>
 
 <script>
-  // तपाईंको बिनोद किराना / पूजा एक्स्पोर्टको Supabase प्रोजेक्ट लिंक र Anon Key (Ugratara सँग कुनै सम्बन्ध छैन)
   const SUPABASE_URL = 'https://odhdrvvgemwgiphipgv.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -260,7 +259,6 @@
     var p = document.getElementById("password").value.trim();
     if(u === "" || p === "") { alert("Enter credentials."); return; }
     
-    // एडमिन लगइन क्रेडिसियल (तपाईंले परिवर्तन गर्न सक्नुहुन्छ)
     if ((u === "admin@pooja.com" || u === "admin") && (p === "123456" || p === "123")) {
       sessionStorage.setItem("ADMIN_LOGIN", "true");
       sessionStorage.setItem("USER_ROLE", "admin");
