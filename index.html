@@ -232,14 +232,18 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   async function loadMenuFromSupabase() {
     try {
       let { data, error } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
-      if (!error && data) {
+      if (error) {
+        document.getElementById("menu").innerHTML = "<p style='color:red;'>⚠️ Supabase Error: " + error.message + "</p>";
+        return;
+      }
+      if (data) {
         window.menuItemsCache = data;
         window.showMenu(data);
       } else {
-        document.getElementById("menu").innerHTML = "<p style='color:red;'>⚠️ Failed to load products from Supabase.</p>";
+        document.getElementById("menu").innerHTML = "<p style='color:red;'>⚠️ No data found in table.</p>";
       }
     } catch(err) {
-      document.getElementById("menu").innerHTML = "<p style='color:red;'>⚠️ Connection Error.</p>";
+      document.getElementById("menu").innerHTML = "<p style='color:red;'>⚠️ Connection Error: " + err.message + "</p>";
     }
   }
 
@@ -248,8 +252,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     if(!data || data.length === 0) { 
         html = "<p style='text-align:center; padding:20px; color:#666;'>⚠️ No products found in database yet!</p>"; 
     } else {
-        // status खाली (null) भए पनि लोड हुने गरी मिलाइएको
-        var activeItems = data.filter(r => r && String(r.status || "In Stock") !== "Hidden");
+        var activeItems = data.filter(r => r && String(r.status || "In Stock").trim() !== "Hidden");
         activeItems.forEach(row => {
             const itemPrice = parseFloat(row.price) || 0;
             const imgUrl = (row.image && String(row.image).startsWith("http")) ? String(row.image).trim() : "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500";
@@ -472,7 +475,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
   window.selectChatCategory = async function(role) {
     if(role === 'delivery') window.currentChatCategory = "Delivery Inquiry";
-    else if(role === 'order_taker') window.currentChatCategory = "Order Inquiry";
+    else if(role === 'order_taker') window.currentCacheCategory = "Order Inquiry";
     else window.currentChatCategory = "General Info";
     
     document.getElementById("chatOptionsBlock").style.display = "none";
@@ -492,7 +495,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
       let html = "";
       data.forEach(function(m) {
         let align = (m.sender === "Customer") ? "text-align:right;" : "text-align:left;";
-        let bg = (m.sender === "Customer") ? "#1976D2; color:white;" : "#eee; color:#333;";
+        let bg = (m.sender ===6 "Customer") ? "#1976D2; color:white;" : "#eee; color:#333;";
         html += `<div style="${align} margin-bottom:10px;"><span style="display:inline-block; padding:8px 12px; border-radius:10px; background:${bg}; max-width:85%; text-align:left;"><small style="font-size:9px; display:block; opacity:0.8;">${m.sender}</small><div>${m.message}</div></span></div>`;
       });
       area.innerHTML = html;
@@ -505,7 +508,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     if(!inputEl) return;
     var msg = inputEl.value.trim();
     if(!msg) return;
-    inputEl.value = "";
+    inputEl.value, inputEl.value = "";
     try {
       await supabaseClient.from('chats').insert([{
         session_id: window.currentChatOrderNo,
