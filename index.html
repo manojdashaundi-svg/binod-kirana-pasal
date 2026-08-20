@@ -7,6 +7,8 @@
     <title>POOJA EXPORT AND IMPORT TRADING PVT. LTD.</title>
     <!-- Favicon / Tab Logo -->
     <link rel="icon" type="image/png" href="https://i.postimg.cc/0QBZjp0P/Chat-GPT-Image-Aug-20-2026-10-44-04-AM.png">
+    <!-- Supabase JS Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{ margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
 body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflow-x: hidden; }
@@ -94,6 +96,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         
         <label style="font-weight: bold; font-size: 14px; color: #555; display: block; margin-top: 8px;">Select Delivery District (77 Districts):</label>
         <select id="deliveryZoneSelect" onchange="window.handleZoneChange()">
+          <!-- Supabase बाट ७७ जिल्लाहरू यहाँ लोड हुनेछन् -->
           <option value="0" data-name="Self-Pickup / अफिसबाटै लिने">📦 Self-Pickup / अफिसबाटै लिने (Rs. 0)</option>
         </select>
         
@@ -137,25 +140,121 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
 <div class="floating-cart" onclick="window.openCart()">🛒<div class="cart-count" id="cartCount">0</div></div>
 
+<!-- 💬 लाइभ सपोर्ट च्याट बक्स र आइकन -->
+<div id="customerChatBox" style="position:fixed; bottom:180px; right:20px; width:300px; background:#fff; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.2); display:none; z-index:99999; flex-direction:column; overflow:hidden;">
+  <div style="background:#1976D2; color:#fff; padding:12px; font-weight:bold; display:flex; justify-content:space-between; align-items:center;">
+    <span id="chatHeaderTitle">💬 Live Support</span>
+    <button onclick="window.toggleCustomerChat()" style="background:none; border:none; color:#fff; font-size:16px; cursor:pointer;">✕</button>
+  </div>
+  
+  <div id="chatInitBlock" style="padding:15px; text-align:center;">
+    <input id="chatOrderNo" type="text" placeholder="Enter Order No or Name" style="width:100%; padding:8px; margin-bottom:10px; border:1px solid #ddd; border-radius:6px; color:#333;">
+    <button class="place-btn" style="padding:8px; font-size:14px; margin:0; background:#1976D2;" onclick="window.initChatOptions()">Next</button>
+  </div>
+
+  <div id="chatOptionsBlock" style="padding:15px; display:none; flex-direction:column; gap:8px;">
+    <p style="font-size:13px; font-weight:bold; color:#555; text-align:left;">How can we help you?</p>
+    <button class="qty-btn" style="background:#2196F3; font-size:13px; padding:10px;" onclick="window.selectChatCategory('delivery')">🚚 1. Delivery Inquiry</button>
+    <button class="qty-btn" style="background:#FF9800; font-size:13px; padding:10px;" onclick="window.selectChatCategory('order_taker')">📦 2. Order Inquiry</button>
+    <button class="qty-btn" style="background:#9C27B0; font-size:13px; padding:10px;" onclick="window.selectChatCategory('manager')">👑 3. General Info</button>
+  </div>
+
+  <div id="chatActiveWindow" style="display:none; flex-direction:column; height:300px;">
+    <div id="chatMessageArea" style="flex:1; padding:10px; overflow-y:auto; background:#f9f9f9; font-size:13px; display:block;"></div>
+    <div style="display:flex; border-top:1px solid #ddd;">
+      <input id="chatCustomerInput" type="text" placeholder="Type message..." style="flex:1; padding:10px; border:none; outline:none; color:#000; background:#fff;">
+      <button onclick="window.sendCustomerMsg()" style="background:#1976D2; color:#fff; border:none; padding:10px 15px; cursor:pointer; font-weight:bold;">Send</button>
+    </div>
+  </div>
+</div>
+
+<div style="position:fixed; right:20px; bottom:100px; width:70px; height:70px; background:#2196F3; color:#fff; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:28px; cursor:pointer; box-shadow:0 6px 15px rgba(33,150,243,0.3); z-index:9998;" onclick="window.toggleCustomerChat()">💬</div>
+
+<!-- Footer Section -->
+<footer style="background-color: #0d233a; color: #fff; padding: 50px 20px 20px 20px; font-family: Arial, sans-serif; border-top: 3px solid #1976D2; margin-top: 50px; width: 100%;">
+  <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px;">
+    <div style="flex: 2; min-width: 280px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+        <img src="https://i.postimg.cc/0QBZjp0P/Chat-GPT-Image-Aug-20-2026-10-44-04-AM.png" alt="Pooja Export Logo" style="width: 55px; height: 55px; object-fit: contain;">
+        <h3 style="margin: 0; color: #fff; font-size: 18px;">POOJA EXPORT AND IMPORT TRADING PVT. LTD.</h3>
+      </div>
+      <p style="color: #ccc; font-size: 14px; line-height: 1.6; max-width: 450px; margin-bottom: 20px;">
+        Your trusted partner for international trade, imports, exports, and wholesale distribution.
+      </p>
+    </div>
+  </div>
+  <div style="max-width: 1200px; margin: 40px auto 0 auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; font-size: 13px; color: #aaa;">
+    © 2026 All Right Reserved. Pooja Export and Import Trading Pvt. Ltd.
+  </div>
+</footer>
+
 <script>
+  const SUPABASE_URL = 'https://odhdrvvgemwgiphipgv.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k';
+  
+  let supabaseClient = null;
+  try {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch(e) {
+    console.error("Supabase init error:", e);
+  }
+
   const localFallbackProducts = [
-    { id: 1, name: "Basmati Rice (बासमती चामल)", price: 1500, category: "Wholesale", description: "High quality imported rice.", image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500" },
-    { id: 2, name: "Premium Tea (प्रीमियम चिया)", price: 800, category: "Imports", description: "Export quality green tea.", image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=500" },
-    { id: 3, name: "Organic Honey (अर्गानिक मह)", price: 1200, category: "Trading", description: "Pure natural mountain honey.", image: "https://images.unsplash.com/photo-1587049352847-4a222e784d38?w=500" }
+    {
+      name: "Basmati Rice (बासमती चामल)",
+      price: 1500,
+      category: "Wholesale",
+      description: "High quality imported rice.",
+      image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500"
+    }
   ];
 
   const defaultNepaliDistricts = [
     { district_name: "Self-Pickup / अफिसबाटै लिने", rate: 0 },
-    { district_name: "Kathmandu", rate: 100 }, { district_name: "Lalitpur", rate: 100 },
-    { district_name: "Bhaktapur", rate: 100 }, { district_name: "Kaski (Pokhara)", rate: 150 },
-    { district_name: "Chitwan", rate: 150 }, { district_name: "Jhapa", rate: 250 },
-    { district_name: "Morang", rate: 250 }, { district_name: "Sunsari", rate: 250 }
+    { district_name: "Achham", rate: 250 }, { district_name: "Arghakhanchi", rate: 200 },
+    { district_name: "Baglung", rate: 200 }, { district_name: "Baitadi", rate: 300 },
+    { district_name: "Bajhang", rate: 300 }, { district_name: "Bajura", rate: 300 },
+    { district_name: "Banke", rate: 200 }, { district_name: "Bara", rate: 150 },
+    { district_name: "Bardiya", rate: 250 }, { district_name: "Bhaktapur", rate: 100 },
+    { district_name: "Bhojpur", rate: 250 }, { district_name: "Chitwan", rate: 150 },
+    { district_name: "Dadeldhura", rate: 300 }, { district_name: "Dailekh", rate: 250 },
+    { district_name: "Dang", rate: 200 }, { district_name: "Darchula", rate: 300 },
+    { district_name: "Dhading", rate: 150 }, { district_name: "Dhankuta", rate: 250 },
+    { district_name: "Dhanusa", rate: 200 }, { district_name: "Dolakha", rate: 200 },
+    { district_name: "Dolpa", rate: 350 }, { district_name: "Doti", rate: 300 },
+    { district_name: "Eastern Rukum", rate: 300 }, { district_name: "Gorkha", rate: 180 },
+    { district_name: "Gulmi", rate: 200 }, { district_name: "Humla", rate: 400 },
+    { district_name: "Ilam", rate: 250 }, { district_name: "Jajarkot", rate: 300 },
+    { district_name: "Jhapa", rate: 250 }, { district_name: "Jumla", rate: 350 },
+    { district_name: "Kailali", rate: 250 }, { district_name: "Kalikot", rate: 350 },
+    { district_name: "Kanchanpur", rate: 250 }, { district_name: "Kapilvastu", rate: 200 },
+    { district_name: "Kaski (Pokhara)", rate: 150 }, { district_name: "Kathmandu", rate: 100 },
+    { district_name: "Kavrepalanchok", rate: 120 }, { district_name: "Khotang", rate: 250 },
+    { district_name: "Lalitpur", rate: 100 }, { district_name: "Lamjung", rate: 180 },
+    { district_name: "Mahottari", rate: 200 }, { district_name: "Makwanpur", rate: 150 },
+    { district_name: "Manang", rate: 350 }, { district_name: "Morang", rate: 250 },
+    { district_name: "Mugu", rate: 400 }, { district_name: "Mustang", rate: 350 },
+    { district_name: "Myagdi", rate: 250 }, { district_name: "Nawalparasi East", rate: 150 },
+    { district_name: "Nawalparasi West", rate: 180 }, { district_name: "Nuwakot", rate: 150 },
+    { district_name: "Okhaldhunga", rate: 250 }, { district_name: "Palpa", rate: 200 },
+    { district_name: "Panchthar", rate: 250 }, { district_name: "Parbat", rate: 200 },
+    { district_name: "Parsa", rate: 180 }, { district_name: "Pyuthan", rate: 250 },
+    { district_name: "Ramechhap", rate: 200 }, { district_name: "Rasuwa", rate: 200 },
+    { district_name: "Rautahat", rate: 180 }, { district_name: "Rolpa", rate: 250 },
+    { district_name: "Rupandehi", rate: 180 }, { district_name: "Salyan", rate: 250 },
+    { district_name: "Sankhuwasabha", rate: 300 }, { district_name: "Saptari", rate: 250 },
+    { district_name: "Sarlahi", rate: 200 }, { district_name: "Sindhuli", rate: 200 },
+    { district_name: "Sindhupalchok", rate: 180 }, { district_name: "Siraha", rate: 250 },
+    { district_name: "Solukhumbu", rate: 300 }, { district_name: "Sunsari", rate: 250 },
+    { district_name: "Surkhet", rate: 200 }, { district_name: "Syangja", rate: 180 },
+    { district_name: "Tanahu", rate: 150 }, { district_name: "Taplejung", rate: 300 },
+    { district_name: "Terhathum", rate: 250 }, { district_name: "Udayapur", rate: 250 }
   ];
 
   window.cart = []; 
   window.selectedCategory = "All"; 
   window.base64SlipData = ""; 
-  window.menuItemsCache = localFallbackProducts;
+  window.menuItemsCache = [];
 
   window.handleZoneChange = function() {
     let zoneSelect = document.getElementById("deliveryZoneSelect");
@@ -164,28 +263,58 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     window.showCart();
   };
 
-  function loadDeliveryZones() {
+  async function loadDeliveryZones() {
     let selectEl = document.getElementById("deliveryZoneSelect");
     if (!selectEl) return;
+    
+    let zones = defaultNepaliDistricts;
+    if (supabaseClient) {
+      try {
+        let { data, error } = await supabaseClient.from('delivery_zones').select('*').order('district_name', { ascending: true });
+        if (!error && data && data.length > 0) {
+          zones = data;
+        }
+      } catch(e) {}
+    }
+
     let html = "";
-    defaultNepaliDistricts.forEach(z => {
-      html += `<option value="${z.rate}" data-name="${z.district_name}">${z.district_name} (Rs. ${z.rate})</option>`;
+    zones.forEach(z => {
+      let dName = z.district_name || z.name || "District";
+      let dRate = parseFloat(z.rate) || 0;
+      html += `<option value="${dRate}" data-name="${dName}">${dName} (Rs. ${dRate})</option>`;
     });
     selectEl.innerHTML = html;
     window.handleZoneChange();
   }
 
-  function loadMenu() {
+  async function loadMenuFromSupabase() {
     loadDeliveryZones();
-    window.showMenu(localFallbackProducts);
+    if (!supabaseClient) {
+      window.menuItemsCache = localFallbackProducts;
+      window.showMenu(localFallbackProducts);
+      return;
+    }
+    try {
+      let { data, error } = await supabaseClient.from('menu_items').select('*');
+      if (error || !data || data.length === 0) {
+        window.menuItemsCache = localFallbackProducts;
+        window.showMenu(localFallbackProducts);
+        return;
+      }
+      window.menuItemsCache = data;
+      window.showMenu(data);
+    } catch(err) {
+      window.menuItemsCache = localFallbackProducts;
+      window.showMenu(localFallbackProducts);
+    }
   }
 
   window.showMenu = function(data){
     let html = "";
     data.forEach(row => {
         const itemPrice = parseFloat(row.price) || 0;
-        const imgUrl = row.image || "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500";
-        const rawName = row.name || "Unnamed Item";
+        const imgUrl = (row.image && String(row.image).startsWith("http")) ? String(row.image).trim() : "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500";
+        const rawName = row.name ? String(row.name) : "Unnamed Item";
         const safeName = rawName.replace(/'/g, "\\'");
         
         html += `<div class="food-card" data-category="${row.category || 'General'}">
@@ -268,7 +397,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     reader.readAsDataURL(file); 
   };
 
-  window.placeOrder = function(){
+  window.placeOrder = async function(){
     const name = document.getElementById("customerName").value.trim();
     const phone = document.getElementById("customerPhone").value.trim();
     
@@ -289,42 +418,181 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     const subtotal = window.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
     const grandTotal = subtotal + deliveryCharge;
     
+    let fullAddress = `[District: ${zoneName}] ${address}`;
     let orderNo = "ORD" + Math.floor(1000 + Math.random() * 9000);
+    let timeStr = new Date().toLocaleString();
 
-    alert("✅ Order Placed Successfully! Order No: " + orderNo);
-    
-    const rm = `📦 NEW ORDER (QR PAID - POOJA EXPORT)\n\nOrder No: ${orderNo}\n👤 ${name}\n📞 ${phone}\n📍 District: ${zoneName}\n🏠 Address: ${address}\n\n📦 Items:\n${items}\n\n------------------\nSubtotal: Rs. ${subtotal.toFixed(2)}\nDelivery: Rs. ${deliveryCharge.toFixed(2)}\n💰 Total: Rs. ${grandTotal.toFixed(2)}`;
-    window.open("https://wa.me/9769338427?text=" + encodeURIComponent(rm), "_blank");
-    
-    window.cart = []; 
-    window.showCart(); 
-    document.getElementById("customerName").value = ""; 
-    document.getElementById("customerPhone").value = ""; 
-    if(addressEl) addressEl.value = ""; 
-    document.getElementById("paymentSlipFile").value = ""; 
-    document.getElementById("fileStatus").innerText = ""; 
-    window.base64SlipData = "";
-    if(zoneSelect) zoneSelect.selectedIndex = 0;
-    window.handleZoneChange();
+    try {
+      if(supabaseClient) {
+        let { error: insertError } = await supabaseClient.from('orders').insert([{
+          order_no: orderNo,
+          time: timeStr,
+          customer_name: name,
+          phone: phone,
+          address: fullAddress,
+          items: items,
+          total: Number(grandTotal.toFixed(2)),
+          status: "Pending",
+          payment_slip: window.base64SlipData,
+          proof_img: "None"
+        }]);
 
-    orderBtn.disabled = false;
-    orderBtn.innerText = "🚀 Place Order";
+        if (insertError) {
+          throw new Error(insertError.message);
+        }
+      }
+      
+      alert("✅ Order Placed Successfully! Order No: " + orderNo);
+      
+      const rm = `📦 NEW ORDER (QR PAID - POOJA EXPORT)\n\n👤 ${name}\n📞 ${phone}\n📍 District: ${zoneName}\n🏠 Address: ${address}\n\n📦 Items:\n${items}\n\n------------------\nSubtotal: Rs. ${subtotal.toFixed(2)}\nDelivery: Rs. ${deliveryCharge.toFixed(2)}\n💰 Total: Rs. ${grandTotal.toFixed(2)}`;
+      window.open("https://wa.me/9769338427?text=" + encodeURIComponent(rm), "_blank");
+      
+      window.cart = []; 
+      window.showCart(); 
+      document.getElementById("customerName").value = ""; 
+      document.getElementById("customerPhone").value = ""; 
+      if(addressEl) addressEl.value = ""; 
+      document.getElementById("paymentSlipFile").value = ""; 
+      document.getElementById("fileStatus").innerText = ""; 
+      window.base64SlipData = "";
+      if(zoneSelect) zoneSelect.selectedIndex = 0;
+      window.handleZoneChange();
+
+    } catch(err) {
+      alert("❌ System Error: " + err.message);
+    } finally {
+      orderBtn.disabled = false;
+      orderBtn.innerText = "🚀 Place Order";
+    }
   };
 
-  window.trackMyOrder = function() { 
+  window.trackMyOrder = async function() { 
+    if(!supabaseClient) return;
     const orderNo = document.getElementById("trackOrderNo").value.trim().toUpperCase(); 
     if (orderNo === "") return; 
+    document.getElementById("trackResult").innerHTML = "Searching..."; 
+    try {
+      let { data, error } = await supabaseClient.from('orders').select('*').eq('order_no', orderNo).single();
+      if (error || !data) {
+        document.getElementById("trackResult").innerHTML = `<div style="color:red;padding:15px;background:#fff;border-radius:8px;font-weight:bold;margin-top:10px;">❌ Order Not Found</div>`;
+        return;
+      }
+      window.showTrackingResult(data);
+    } catch(e) {
+      document.getElementById("trackResult").innerHTML = `<div style="color:red;padding:15px;background:#fff;border-radius:8px;font-weight:bold;margin-top:10px;">❌ Error fetching order</div>`;
+    }
+  };
+
+  window.showTrackingResult = function(order){
+    let progress = 25, color = "#FF9800";
+    let s = order.status ? order.status.trim() : "Pending";
+    
+    if(s === "Pending" || s === "Order Received"){ progress = 25; color = "#FF9800"; }
+    else if(s === "Preparing"){ progress = 50; color = "#2196F3"; }
+    else if(s === "Ready"){ progress = 75; color = "#9C27B0"; }
+    else if(s === "Out for Delivery"){ progress = 90; color = "#00BCD4"; }
+    else if(s === "Delivered"){ progress = 100; color = "#4CAF50"; }
+
     document.getElementById("trackResult").innerHTML = `
     <div style="background:#fff; padding:22px; border-radius:18px; box-shadow:0 5px 18px rgba(0,0,0,.08); line-height:1.8; margin-top:15px; text-align:left; color:#333;">
         <center><h3 style="color:#1976D2; margin-bottom:15px;">📦 Order Tracking</h3></center>
-        <p><b>Order No :</b> ${orderNo}</p>
-        <p><b>Status :</b> <span style="background:#FF9800; color:white; padding:4px 12px; border-radius:20px; font-weight:bold; font-size:14px;">Pending / Received</span></p>
-        <div style="width:100%; height:18px; background:#eee; border-radius:10px; overflow:hidden; margin:12px 0;"><div style="width:25%; height:100%; background:#FF9800; text-align:center; color:white; font-size:12px; font-weight:bold; line-height:18px;">25%</div></div>
+        <p><b>Order No :</b> ${order.order_no}</p>
+        <p><b>Status :</b> <span style="background:${color}; color:white; padding:4px 12px; border-radius:20px; font-weight:bold; font-size:14px;">${s}</span></p>
+        <div style="width:100%; height:18px; background:#eee; border-radius:10px; overflow:hidden; margin:12px 0;"><div style="width:${progress}%; height:100%; background:${color}; text-align:center; color:white; font-size:12px; font-weight:bold; line-height:18px;">${progress}%</div></div>
     </div>`;
   };
 
+  window.currentChatOrderNo = "";
+  window.currentChatCategory = "";
+  window.chatInterval = null;
+
+  window.toggleCustomerChat = function() {
+    var box = document.getElementById("customerChatBox");
+    if(box.style.display === "none" || box.style.display === "") {
+      box.style.display = "flex";
+    } else {
+      box.style.display = "none";
+      if(window.chatInterval) clearInterval(window.chatInterval);
+    }
+  };
+
+  window.initChatOptions = async function() {
+    var val = document.getElementById("chatOrderNo").value.trim();
+    if(!val) { alert("Please enter Order Number or Name"); return; }
+    try {
+      if(!supabaseClient) { alert("Database connection not ready."); return; }
+      let query = supabaseClient.from('orders').select('customer_name, order_no');
+      if (val.toUpperCase().startsWith("ORD")) {
+        query = query.eq('order_no', val.toUpperCase());
+      } else {
+        query = query.ilike('customer_name', `%${val}%`);
+      }
+      let { data, error } = await query.limit(1).maybeSingle();
+      if(error || !data) {
+        alert("❌ अर्डर नम्बर वा नाम फेला परेन।");
+        return;
+      }
+      window.currentChatOrderNo = data.order_no;
+      document.getElementById("chatHeaderTitle").innerText = `💬 Chat: ${data.order_no}`;
+      document.getElementById("chatInitBlock").style.display = "none";
+      document.getElementById("chatOptionsBlock").style.display = "flex";
+    } catch(e) {
+      alert("❌ Error connecting chat.");
+    }
+  };
+
+  window.selectChatCategory = async function(role) {
+    if(role === 'delivery') window.currentChatCategory = "Delivery Inquiry";
+    else if(role === 'order_taker') window.currentChatCategory = "Order Inquiry";
+    else window.currentChatCategory = "General Info";
+    
+    document.getElementById("chatOptionsBlock").style.display = "none";
+    document.getElementById("chatActiveWindow").style.display = "flex";
+    window.loadChatHistory();
+    if(window.chatInterval) clearInterval(window.chatInterval);
+    window.chatInterval = setInterval(window.loadChatHistory, 3000);
+  };
+
+  window.loadChatHistory = async function() {
+    if(!window.currentChatOrderNo || !supabaseClient) return;
+    try {
+      let { data, error } = await supabaseClient.from('chats').select('*').eq('session_id', window.currentChatOrderNo).order('id', { ascending: true });
+      if(error || !data) return;
+      var area = document.getElementById("chatMessageArea");
+      if(!area) return;
+      let html = "";
+      data.forEach(function(m) {
+        let align = (m.sender === "Customer") ? "text-align:right;" : "text-align:left;";
+        let bg = (m.sender === "Customer") ? "#1976D2; color:white;" : "#eee; color:#333;";
+        html += `<div style="${align} margin-bottom:10px;"><span style="display:inline-block; padding:8px 12px; border-radius:10px; background:${bg}; max-width:85%; text-align:left;"><small style="font-size:9px; display:block; opacity:0.8;">${m.sender}</small><div>${m.message}</div></span></div>`;
+      });
+      area.innerHTML = html;
+      area.scrollTop = area.scrollHeight;
+    } catch(e) {}
+  };
+
+  window.sendCustomerMsg = async function() {
+    var inputEl = document.getElementById("chatCustomerInput");
+    if(!inputEl || !supabaseClient) return;
+    var msg = inputEl.value.trim();
+    if(!msg) return;
+    inputEl.value = "";
+    try {
+      await supabaseClient.from('chats').insert([{
+        session_id: window.currentChatOrderNo,
+        customer_name: "Customer",
+        support_type: window.currentChatCategory || "General",
+        sender: "Customer",
+        message: "Customer: " + msg,
+        time: new Date().toLocaleString()
+      }]);
+      window.loadChatHistory();
+    } catch(e) {}
+  };
+
   document.addEventListener("DOMContentLoaded", function () {
-    loadMenu();
+    loadMenuFromSupabase();
+    window.handleZoneChange();
   });
 </script>
 </body>
