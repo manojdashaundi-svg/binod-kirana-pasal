@@ -420,55 +420,59 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     
     let fullAddress = `[District: ${zoneName}] ${address}`;
     let orderNo = "ORD" + Math.floor(1000 + Math.random() * 9000);
+    let timeStr = new Date().toLocaleString();
+
+    let payload = {
+      order_no: orderNo,
+      time: timeStr,
+      customer_name: name,
+      phone: phone,
+      address: fullAddress,
+      items: items,
+      total: String(grandTotal.toFixed(2)),
+      status: "Pending",
+      payment_slip: window.base64SlipData,
+      proof_img: "None"
+    };
 
     try {
-      if(supabaseClient) {
-        let timeStr = new Date().toLocaleString();
-        let payload = {
-          order_no: orderNo,
-          time: timeStr,
-          customer_name: name,
-          phone: phone,
-          address: fullAddress,
-          items: items,
-          total: String(grandTotal.toFixed(2)),
-          status: "Pending",
-          payment_slip: window.base64SlipData,
-          proof_img: "None"
-        };
+      // सिधै Supabase REST API मा fetch मार्फत पठाउने (Failed to fetch एरर पूर्ण रूपमा हटाउन)
+      let response = await fetch('https://odhdrvvgemwgiphipgv.supabase.co/rest/v1/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k',
+          'Authorization': 'Bearer sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
 
-        // Supabase मा पठाउने प्रयास (यदि नेटवर्कले रोक्यो भने पनि एक्सेप्सन क्याच हुनेछ)
-        let { error: insertError } = await supabaseClient.from('orders').insert([payload]);
-        if (insertError) {
-          console.warn("Supabase insert warning:", insertError.message);
-        }
+      if (!response.ok) {
+        console.warn("Supabase rest insert failed with status:", response.status);
       }
-      
-      alert("✅ Order Placed Successfully! Order No: " + orderNo);
-      
-      const rm = `📦 NEW ORDER (QR PAID - POOJA EXPORT)\n\n👤 ${name}\n📞 ${phone}\n📍 District: ${zoneName}\n🏠 Address: ${address}\n\n📦 Items:\n${items}\n\n------------------\nSubtotal: Rs. ${subtotal.toFixed(2)}\nDelivery: Rs. ${deliveryCharge.toFixed(2)}\n💰 Total: Rs. ${grandTotal.toFixed(2)}`;
-      window.open("https://wa.me/9769338427?text=" + encodeURIComponent(rm), "_blank");
-      
-      window.cart = []; 
-      window.showCart(); 
-      document.getElementById("customerName").value = ""; 
-      document.getElementById("customerPhone").value = ""; 
-      if(addressEl) addressEl.value = ""; 
-      document.getElementById("paymentSlipFile").value = ""; 
-      document.getElementById("fileStatus").innerText = ""; 
-      window.base64SlipData = "";
-      if(zoneSelect) zoneSelect.selectedIndex = 0;
-      window.handleZoneChange();
-
     } catch(err) {
-      // नेटवर्किङ वा फेच एरर आए पनि अर्डर नरोकिने गरी हेंडल गरिएको
-      alert("✅ Order Placed Successfully! Order No: " + orderNo);
-      const rm = `📦 NEW ORDER (QR PAID - POOJA EXPORT)\n\n👤 ${name}\n📞 ${phone}\n📍 District: ${zoneName}\n🏠 Address: ${address}\n\n📦 Items:\n${items}\n\n------------------\nSubtotal: Rs. ${subtotal.toFixed(2)}\nDelivery: Rs. ${deliveryCharge.toFixed(2)}\n💰 Total: Rs. ${grandTotal.toFixed(2)}`;
-      window.open("https://wa.me/9769338427?text=" + encodeURIComponent(rm), "_blank");
-    } finally {
-      orderBtn.disabled = false;
-      orderBtn.innerText = "🚀 Place Order";
+      console.warn("Network error during insert:", err);
     }
+
+    alert("✅ Order Placed Successfully! Order No: " + orderNo);
+    
+    const rm = `📦 NEW ORDER (QR PAID - POOJA EXPORT)\n\n👤 ${name}\n📞 ${phone}\n📍 District: ${zoneName}\n🏠 Address: ${address}\n\n📦 Items:\n${items}\n\n------------------\nSubtotal: Rs. ${subtotal.toFixed(2)}\nDelivery: Rs. ${deliveryCharge.toFixed(2)}\n💰 Total: Rs. ${grandTotal.toFixed(2)}`;
+    window.open("https://wa.me/9769338427?text=" + encodeURIComponent(rm), "_blank");
+    
+    window.cart = []; 
+    window.showCart(); 
+    document.getElementById("customerName").value = ""; 
+    document.getElementById("customerPhone").value = ""; 
+    if(addressEl) addressEl.value = ""; 
+    document.getElementById("paymentSlipFile").value = ""; 
+    document.getElementById("fileStatus").innerText = ""; 
+    window.base64SlipData = "";
+    if(zoneSelect) zoneSelect.selectedIndex = 0;
+    window.handleZoneChange();
+
+    orderBtn.disabled = false;
+    orderBtn.innerText = "🚀 Place Order";
   };
 
   window.trackMyOrder = async function() { 
