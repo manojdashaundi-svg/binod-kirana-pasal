@@ -86,10 +86,10 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         <div id="cart" style="margin:15px 0; font-size:18px; line-height:2;">Your cart is empty.</div>
         
         <div id="cartSummaryPriceBox" style="font-size: 16px; margin: 10px 0; text-align: left; line-height: 1.6;">
-          <div>Items Subtotal: RM <span id="subtotalPrice">0.00</span></div>
-          <div style="color: #555;">Delivery Charge: RM <span id="deliveryPriceLabel">0.00</span></div>
+          <div>Items Subtotal: Rs. <span id="subtotalPrice">0.00</span></div>
+          <div style="color: #555;">Delivery Charge: Rs. <span id="deliveryPriceLabel">0.00</span></div>
         </div>
-        <h2>Total : RM <span id="total">0</span></h2>
+        <h2>Total : Rs. <span id="total">0</span></h2>
         
         <br><hr style="border: 0; border-top: 1px dashed #ddd; margin: 15px 0;"><br>
 
@@ -98,22 +98,22 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         
         <label style="font-weight: bold; font-size: 14px; color: #555; display: block; margin-top: 8px;">Select Delivery / Pickup Zone:</label>
         <select id="deliveryZoneSelect" onchange="window.handleZoneChange()">
-          <option value="0" data-name="Self-Pickup / अफिसबाटै लिने">📦 Self-Pickup / अफिसबाटै लिने (RM 0)</option>
-          <option value="5" data-name="Standard Delivery">🚚 Standard Delivery (RM 5)</option>
-          <option value="10" data-name="Express Delivery">⚡ Express Delivery (RM 10)</option>
+          <option value="0" data-name="Self-Pickup / अफिसबाटै लिने">📦 Self-Pickup / अफिसबाटै लिने (Rs. 0)</option>
+          <option value="100" data-name="Standard Delivery">🚚 Standard Delivery (Rs. 100)</option>
+          <option value="250" data-name="Express Delivery">⚡ Express Delivery (Rs. 250)</option>
         </select>
         
-        <input id="customerPhone" type="tel" placeholder="Phone Number">
+        <input id="customerPhone" type="tel" placeholder="Phone Number (फोन नम्बर)">
         
-        <div id="deliveryAddressBox" style="display:block;">
-          <textarea id="customerAddress" placeholder="Delivery Address / Special Notes"></textarea>
+        <!-- ठेगाना (Address) राख्ने बक्स ज सधैं देखिने बनाइएको छ -->
+        <div id="deliveryAddressBox" style="display:block; margin-top: 10px;">
+          <textarea id="customerAddress" placeholder="Delivery Address / Complete Location (ठेगाना लेख्नुहोस्)"></textarea>
         </div>
 
         <br><hr style="border: 0; border-top: 1px dashed #ddd; margin: 15px 0;"><br>
 
         <div class="qr-section">
             <h2 style="color:#1976D2; font-size: 21px;">💳 Scan to Pay (Nepal SBI Bank QR)</h2>
-            <!-- नयाँ नेपाल एसबिआई बैंकको QR कोड थसिएको -->
             <img src="https://i.postimg.cc/QCqQ51pN/ca-ma-ma.png" class="qr-img" alt="Nepal SBI Bank QR">
             <p style="font-size:14px; color:#444; font-weight:bold; margin-bottom: 8px;">रकम हेरेर क्युआर स्क्यान गर्नुहोस् र तल क्यामेरा वा ग्यालरीबाट स्लिप छान्नुहोस्।</p>
             
@@ -226,14 +226,8 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   window.handleZoneChange = function() {
     let zoneSelect = document.getElementById("deliveryZoneSelect");
     let addressBox = document.getElementById("deliveryAddressBox");
-    if (zoneSelect) {
-      let selectedText = zoneSelect.options[zoneSelect.selectedIndex].text;
-      if (selectedText.includes("Self-Pickup")) {
-        if(addressBox) addressBox.style.display = "none";
-      } else {
-        if(addressBox) addressBox.style.display = "block";
-      }
-    }
+    // ठेगाना बक्स सधैं देखिने बनाइएको छ (Address box will always remain visible)
+    if(addressBox) addressBox.style.display = "block";
     window.showCart();
   };
 
@@ -270,7 +264,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
                 orderActionHtml = `<button disabled style="background:#ccc; color:#777; cursor:not-allowed;">🚫 Out of Stock</button>`;
             }
             
-            html += `<div class="food-card" data-category="${row.category || 'General'}"><img src="${imgUrl}" alt="${rawName}" onerror="this.src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500'"><div class="food-info"><h3>${rawName}</h3><div class="rating">⭐⭐⭐⭐⭐ (5.0)</div><p class="food-desc">${row.description || ""}</p><div class="food-bottom"><span class="food-price">RM ${itemPrice}</span>${orderActionHtml}</div></div></div>`;
+            html += `<div class="food-card" data-category="${row.category || 'General'}"><img src="${imgUrl}" alt="${rawName}" onerror="this.src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500'"><div class="food-info"><h3>${rawName}</h3><div class="rating">⭐⭐⭐⭐⭐ (5.0)</div><p class="food-desc">${row.description || ""}</p><div class="food-bottom"><span class="food-price">Rs. ${itemPrice}</span>${orderActionHtml}</div></div></div>`;
         });
     }
     document.getElementById("menu").innerHTML = html; 
@@ -302,7 +296,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
   window.showCart = function(){
     let html = ""; let subtotal = 0; if(window.cart.length === 0) { html = "<p style='padding:0 5px;'>Your cart is empty.</p>"; } else {
-        window.cart.forEach((item, i) => { const itemTotal = item.price * item.qty; subtotal += itemTotal; html += `<div style='padding: 0 5px;'><p><b>${item.food}</b><br><button class="qty-btn" style='padding:5px 12px; font-size:13px;' onclick="window.decreaseQty(${i})">−</button> <span style='margin:0 10px;font-weight:bold;'>${item.qty}</span> <button class="qty-btn" style='padding:5px 12px; font-size:13px;' onclick="window.increaseQty(${i})">+</button> &nbsp;&nbsp; RM ${itemTotal} <button onclick="window.removeItem(${i})" style="background:red;color:white;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;margin-left:10px;">✕</button></p></div><hr style="margin:10px 0; border:0; border-top:1px dashed #ccc;">`; });
+        window.cart.forEach((item, i) => { const itemTotal = item.price * item.qty; subtotal += itemTotal; html += `<div style='padding: 0 5px;'><p><b>${item.food}</b><br><button class="qty-btn" style='padding:5px 12px; font-size:13px;' onclick="window.decreaseQty(${i})">−</button> <span style='margin:0 10px;font-weight:bold;'>${item.qty}</span> <button class="qty-btn" style='padding:5px 12px; font-size:13px;' onclick="window.increaseQty(${i})">+</button> &nbsp;&nbsp; Rs. ${itemTotal} <button onclick="window.removeItem(${i})" style="background:red;color:white;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;margin-left:10px;">✕</button></p></div><hr style="margin:10px 0; border:0; border-top:1px dashed #ccc;">`; });
     }
     
     let zoneSelect = document.getElementById("deliveryZoneSelect");
@@ -340,21 +334,16 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     let address = addressEl ? addressEl.value.trim() : "";
     const orderBtn = document.getElementById("submitOrderBtn");
     
-    if(name === "" || phone === "" || window.cart.length === 0 || window.base64SlipData === ""){ alert("Please fill details and upload payment slip."); return; }
+    if(name === "" || phone === "" || address === "" || window.cart.length === 0 || window.base64SlipData === ""){ alert("Please fill all customer details (including address) and upload payment slip."); return; }
     
     orderBtn.disabled = true;
     orderBtn.innerText = "Placing Order...";
 
-    const items = window.cart.map(item => `${item.food} x ${item.qty} (RM ${item.price * item.qty})`).join("\n");
+    const items = window.cart.map(item => `${item.food} x ${item.qty} (Rs. ${item.price * item.qty})`).join("\n");
     const subtotal = window.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
     const grandTotal = subtotal + deliveryCharge;
     
-    let fullAddress = address;
-    if (zoneName.includes("Self-Pickup")) {
-      fullAddress = `[Self-Pickup]`;
-    } else {
-      fullAddress = `[${zoneName}] ${address}`;
-    }
+    let fullAddress = `[${zoneName}] ${address}`;
 
     try {
       let { data: existingOrders } = await supabaseClient.from('orders').select('order_no');
@@ -388,7 +377,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
       alert("✅ Order Placed Successfully! Order No: " + orderNo);
       
-      const rm = `📦 NEW ORDER (QR PAID - POOJA EXPORT)\n\nOrder No: ${orderNo}\n\n👤 ${name}\n📞 ${phone}\n🚚 Zone: ${zoneName}\n🏠 Address/Notes: ${address}\n\n📦 Items:\n${items}\n\n------------------\nSubtotal: RM ${subtotal.toFixed(2)}\nDelivery: RM ${deliveryCharge.toFixed(2)}\n💰 Total: RM ${grandTotal.toFixed(2)}`;
+      const rm = `📦 NEW ORDER (QR PAID - POOJA EXPORT)\n\nOrder No: ${orderNo}\n\n👤 ${name}\n📞 ${phone}\n🚚 Zone: ${zoneName}\n🏠 Address: ${address}\n\n📦 Items:\n${items}\n\n------------------\nSubtotal: Rs. ${subtotal.toFixed(2)}\nDelivery: Rs. ${deliveryCharge.toFixed(2)}\n💰 Total: Rs. ${grandTotal.toFixed(2)}`;
       window.open("https://wa.me/9769338427?text=" + encodeURIComponent(rm), "_blank");
       
       window.cart = []; 
