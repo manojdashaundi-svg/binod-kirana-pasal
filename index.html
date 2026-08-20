@@ -409,7 +409,18 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     let address = addressEl ? addressEl.value.trim() : "";
     const orderBtn = document.getElementById("submitOrderBtn");
     
-    if(name === "" || phone === "" || address === "" || window.cart.length === 0 || window.base64SlipData === ""){ alert("Please fill all details and upload payment slip."); return; }
+    if(name === "" || phone === "" || address === "" || window.cart.length === 0 || window.base64SlipData === ""){ 
+      alert("Please fill all details and upload payment slip."); 
+      return; 
+    }
+
+    // फोन नम्बर प्रमाणीकरण (Valid Phone Number Check)
+    const phoneRegex = /^9[0-9]{9}$/;
+    if (!phoneRegex.test(phone)) {
+      alert("❌ कृपया सही र वैध मोबाइल नम्बर राख्नुहोस् (१० अंकको, ९ बाट सुरु हुने)।");
+      document.getElementById("customerPhone").focus();
+      return;
+    }
     
     orderBtn.disabled = true;
     orderBtn.innerText = "Placing Order...";
@@ -419,8 +430,20 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     const grandTotal = subtotal + deliveryCharge;
     
     let fullAddress = `[District: ${zoneName}] ${address}`;
-    let orderNo = "ORD" + Math.floor(1000 + Math.random() * 9000);
     let timeStr = new Date().toLocaleString();
+
+    let nextSerialNo = 1;
+    if(supabaseClient) {
+      try {
+        let { count, error: countError } = await supabaseClient.from('orders').select('*', { count: 'exact', head: true });
+        if (!countError && count !== null) {
+          nextSerialNo = count + 1;
+        }
+      } catch(e) {}
+    }
+
+    let paddedNo = String(nextSerialNo).padStart(3, '0');
+    let orderNo = "ORD-" + paddedNo;
 
     if(supabaseClient) {
       let { error: insertError } = await supabaseClient.from('orders').insert([{
@@ -577,7 +600,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     if(!msg) return;
     inputEl.value = "";
     try {
-      await supabaseClient.postgrest.from('chats').insert([{
+      await supabaseClient.from('chats').insert([{
         session_id: window.currentChatOrderNo,
         customer_name: "Customer",
         support_type: window.currentChatCategory || "General",
