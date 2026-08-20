@@ -422,13 +422,8 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
     try {
       if(supabaseClient) {
-        let { data: existingOrders } = await supabaseClient.from('orders').select('order_no');
-        let nextId = 1001;
-        if (existingOrders && existingOrders.length > 0) {
-          let nums = existingOrders.map(o => parseInt(String(o.order_no || "").replace(/\D/g, "")) || 1000);
-          nextId = Math.max(...nums) + 1;
-        }
-        let orderNo = "ORD" + nextId;
+        // फिक्स: एरर नआउने गरी युनिक अर्डर नम्बर सिधै टाइमस्टाम्प र रेन्डम नम्बरबाट बनाइएको
+        let orderNo = "ORD" + Math.floor(1000 + Math.random() * 9000);
         let timeStr = new Date().toLocaleString();
 
         let { error: insertError } = await supabaseClient.from('orders').insert([{
