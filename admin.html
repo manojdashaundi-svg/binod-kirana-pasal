@@ -203,7 +203,7 @@
           <div style="color: #777; text-align: center; margin-top: 100px;">No conversation selected.</div>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 10px;">
-          <input type="text" id="adminChatInput" placeholder="Type a reply..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+          <input type="text" id="adminChatInput" placeholder="Type a reply..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc;" onkeypress="if(event.key === 'Enter') sendAdminChat();">
           <button onclick="sendAdminChat()" style="background: #1976D2; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">Send</button>
         </div>
       </div>
@@ -231,13 +231,16 @@
 </div>
 
 <script>
-  const SUPABASE_URL = 'https://odhdrvvgemwgiphipgv.supabase.co';
+  const SUPABASE_URL = 'https://odhdrhvvgemwgiphipgv.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   var myRole = "admin";
   var activeOrdersCache = [];
   var menuItemsCache = [];
+  var currentSelectedChatSession = null;
+  var chatSessionsList = [];
+  var lastAdminChatCount = {};
 
   function playTringTringBell() {
     try {
@@ -321,14 +324,21 @@
   async function loadOrders() {
     try {
       let { data, error } = await supabaseClient.from('orders').select('*');
-      if (!error && data) {
+      if (error) {
+        console.error("Error loading orders:", error);
+        document.getElementById("ordersTable").innerHTML = `<tr><td colspan="9" style="padding:20px; color:red;">❌ Error loading orders: ${error.message}</td></tr>`;
+        return;
+      }
+      if (data) {
         activeOrdersCache = data.sort((a, b) => (b.id || 0) - (a.id || 0));
         calculateDashboardStats(activeOrdersCache);
         renderActiveOrdersTable(activeOrdersCache);
         drawMonthlySalesChart(activeOrdersCache);
         drawHourlySalesChart(activeOrdersCache);
       }
-    } catch(err) {}
+    } catch(err) {
+      console.error("Exception loading orders:", err);
+    }
   };
 
   function renderActiveOrdersTable(ordersToRender) {
@@ -543,6 +553,97 @@
     }
   };
 
+  // 💬 Live Chat Admin Functions
+  async function loadAdminChatsList() {
+    try {
+      let { data, error } = await supabaseClient.from('chats').select('*').order('id', { ascending: true });
+      if(error || !data) return;
+      
+      let sessionsMap = {};
+      data.forEach(m => {
+        if(!sessionsMap[m.session_id]) {
+          sessionsMap[m.session_id] = [];
+        }
+        sessionsMap[m.session_id].push(m);
+      });
+
+      let container = document.getElementById("chatListContainer");
+      if(!container) return;
+      let html = "";
+      
+      Object.keys(sessionsMap).forEach(sessionId => {
+        let msgs = sessionsMap[sessionId];
+        let lastMsg = msgs[msgs.length - 1];
+        let isSelected = (currentSelectedChatSession === sessionId) ? "background:#e3f2fd;" : "";
+        
+        // नयाँ म्यासेज चेक गर्ने
+        if (lastAdminChatCount[sessionId] !== undefined && msgs.length > lastAdminChatCount[sessionId]) {
+          if (lastMsg.sender === "Customer") {
+            playTringTringBell();
+          }
+        }
+        lastAdminChatCount[sessionId] = msgs.length;
+
+        html += `<div onclick="selectChatSession('${sessionId}')" style="padding:10px; border-radius:8px; border:1px solid #ddd; cursor:pointer; ${isSelected}">
+          <div style="font-weight:bold; color:#1976D2;">${sessionId}</div>
+          <div style="font-size:12px; color:#666; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${lastMsg ? lastMsg.message : ''}</div>
+        </div>`;
+      });
+
+      if(html === "") {
+        html = `<div style="padding:10px; color:#666;">No chats available.</div>`;
+      }
+      container.innerHTML = html;
+
+      if(currentSelectedChatSession) {
+        renderAdminChatMessages(sessionsMap[currentSelectedChatSession] || []);
+      }
+    } catch(e) {}
+  }
+
+  function selectChatSession(sessionId) {
+    currentSelectedChatSession = sessionId;
+    document.getElementById("activeChatTitle").innerText = `Chat: ${sessionId}`;
+    loadAdminChatsList();
+  }
+
+  function renderAdminChatMessages(msgs) {
+    let box = document.getElementById("chatMessagesBox");
+    if(!box) return;
+    let html = "";
+    msgs.forEach(m => {
+      let align = (m.sender === "Customer") ? "text-align:left;" : "text-align:right;";
+      let bg = (m.sender === "Customer") ? "#fff; border:1px solid #ddd;" : "#1976D2; color:white;";
+      html += `<div style="${align} margin-bottom:8px;">
+        <span style="display:inline-block; padding:8px 12px; border-radius:8px; background:${bg}; max-width:80%; text-align:left;">
+          <small style="font-size:9px; opacity:0.8; display:block;">${m.sender} - ${m.time || ''}</small>
+          <div>${m.message}</div>
+        </span>
+      </div>`;
+    });
+    box.innerHTML = html;
+    box.scrollTop = box.scrollHeight;
+  }
+
+  async function sendAdminChat() {
+    if(!currentSelectedChatSession) { alert("Please select a chat first!"); return; }
+    let inputEl = document.getElementById("adminChatInput");
+    let msg = inputEl.value.trim();
+    if(!msg) return;
+    inputEl.value = "";
+    try {
+      await supabaseClient.from('chats').insert([{
+        session_id: currentSelectedChatSession,
+        customer_name: "Admin",
+        support_type: "Support",
+        sender: "Admin",
+        message: msg,
+        time: new Date().toLocaleString()
+      }]);
+      loadAdminChatsList();
+    } catch(e) {}
+  }
+
   function openImageViewer(imgUrl) {
     document.getElementById("viewerTargetImage").src = imgUrl;
     document.getElementById("imageViewerModal").style.display = "flex";
@@ -558,7 +659,11 @@
     loadDeliveryZones();
     loadMenuList();
     loadOrders();
-    setInterval(() => { loadOrders(); }, 15000);
+    loadAdminChatsList();
+    setInterval(() => { 
+      loadOrders(); 
+      loadAdminChatsList();
+    }, 5000);
   };
 
   function logout() { sessionStorage.clear(); window.location.reload(); };
