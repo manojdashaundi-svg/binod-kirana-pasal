@@ -114,14 +114,14 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
             <p style="font-size:14px; color:#444; font-weight:bold; margin-bottom: 8px;">रकम हेरेर क्युआर स्क्यान गर्नुहोस् र तल क्यामेरा वा ग्यालरीबाट स्लिप छान्नुहोस्。</p>
             
             <div class="file-upload-box">
-               <span style="color:#1976D2; display:block; margin-bottom:8px;">📁 Upload Payment Slip *</span>
-               
-               <div style="display: flex; gap: 10px; justify-content: center;">
-                   <button type="button" onclick="document.getElementById('paymentSlipFile').setAttribute('capture', 'environment'); document.getElementById('paymentSlipFile').click();" style="flex:1; padding:12px; background:#2196F3; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer;">📷 Camera</button>
-                   <button type="button" onclick="document.getElementById('paymentSlipFile').removeAttribute('capture'); document.getElementById('paymentSlipFile').click();" style="flex:1; padding:12px; background:#4CAF50; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer;">🖼️ Gallery</button>
-               </div>
+                <span style="color:#1976D2; display:block; margin-bottom:8px;">📁 Upload Payment Slip *</span>
+                
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button type="button" onclick="document.getElementById('paymentSlipFile').setAttribute('capture', 'environment'); document.getElementById('paymentSlipFile').click();" style="flex:1; padding:12px; background:#2196F3; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer;">📷 Camera</button>
+                    <button type="button" onclick="document.getElementById('paymentSlipFile').removeAttribute('capture'); document.getElementById('paymentSlipFile').click();" style="flex:1; padding:12px; background:#4CAF50; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer;">🖼️ Gallery</button>
+                </div>
 
-               <input id="paymentSlipFile" type="file" accept="image/*" onchange="window.previewFile()" style="display:none;">
+                <input id="paymentSlipFile" type="file" accept="image/*" onchange="window.previewFile()" style="display:none;">
             </div>
             <div id="fileStatus" style="font-size:13px; color:green; margin-top:5px; font-weight:bold;"></div>
         </div>
@@ -451,7 +451,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         phone: phone,
         total: Number(grandTotal.toFixed(2)),
         address: fullAddress,
-        payment_slip: "Slip Uploaded",
+        payment_slip: window.base64SlipData,  <!-- यहाँ "Slip Uploaded" को सट्टा अब Base64 फोटो डेटा पठाउने बनाइएको छ -->
         time: timeStr,
         status: "Pending",
         items: items,
@@ -528,17 +528,15 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   window.chatInterval = null;
   window.lastMessageCount = 0;
 
-  // भाइबर जस्तै मिठो रिप्लाइ घण्टी (Viber-like sweet incoming chime)
   function playViberRingtone() {
     try {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const now = audioCtx.currentTime;
 
-      // पहिलो सुमधुर टोन (Note 1)
       const osc1 = audioCtx.createOscillator();
       const gain1 = audioCtx.createGain();
       osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(880, now); // A5
+      osc1.frequency.setValueAtTime(880, now);
       gain1.gain.setValueAtTime(0.3, now);
       gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
       osc1.connect(gain1);
@@ -546,11 +544,10 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
       osc1.start(now);
       osc1.stop(now + 0.25);
 
-      // दोस्रो सुमधुर टोन (Note 2 - Viber style double chime)
       const osc2 = audioCtx.createOscillator();
       const gain2 = audioCtx.createGain();
       osc2.type = 'sine';
-      osc2.frequency.setValueAtTime(1318.51, now + 0.15); // E6
+      osc2.frequency.setValueAtTime(1318.51, now + 0.15);
       gain2.gain.setValueAtTime(0.3, now + 0.15);
       gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
       osc2.connect(gain2);
@@ -566,7 +563,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     var box = document.getElementById("customerChatBox");
     if(box.style.display === "none" || box.style.display === "") {
       box.style.display = "flex";
-      window.lastMessageCount = 0; // रिसेट
+      window.lastMessageCount = 0;
     } else {
       box.style.display = "none";
       if(window.chatInterval) clearInterval(window.chatInterval);
@@ -624,7 +621,6 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         return;
       }
 
-      // यदि नयाँ म्यासेज थपिएको छ र त्यो एड्मिन्/सपोर्टबाट आएको हो भने घण्टी बजाउने
       if (window.lastMessageCount > 0 && data.length > window.lastMessageCount) {
         let latestMsg = data[data.length - 1];
         if (latestMsg.sender !== "Customer") {
