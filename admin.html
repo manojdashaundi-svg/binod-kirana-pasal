@@ -23,8 +23,8 @@
     td{ padding:10px; border:1px solid #ddd; text-align:center; font-size:14px; vertical-align:middle; }
     select, input{ padding:8px; border-radius:6px; border:1px solid #ccc; margin:3px; box-sizing: border-box; }
     
-    .actionBtn { color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; display:block; margin:4px auto; width:130px; font-size:13px; text-align:center; }
-    .kotBtn { background:#FF9800; }
+    .actionBtn { color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; display:block; margin:4px auto; width:135px; font-size:13px; text-align:center; }
+    .rcvBtn { background:#4CAF50; }
     .billBtn { background:#9C27B0; }
     .dispatchBtn { background:#00BCD4; }
     .proofBtn { background:#3F51B5; }
@@ -135,8 +135,9 @@
     </div>
   </div>
 
-  <!-- Hidden Proof Upload Input (Camera/Gallery) -->
-  <input type="file" id="proofUploadInput" accept="image/*" style="display:none;" onchange="handleProofFileSelected(event)">
+  <!-- Hidden Proof Upload Inputs for Camera & Gallery -->
+  <input type="file" id="proofCameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleProofFileSelected(event)">
+  <input type="file" id="proofGalleryInput" accept="image/*" style="display:none;" onchange="handleProofFileSelected(event)">
 
   <!-- 🚚 Delivery Zone & District Rate Management -->
   <div class="invoice-section" style="background:#fff; padding:20px; border-radius:10px; margin-top:20px; border:1px solid #ddd;">
@@ -220,7 +221,7 @@
 
 </div>
 
-<!-- Print Modal for KOT / Bill -->
+<!-- Print Modal for Bill -->
 <div id="printModalBox" class="print-modal">
   <div class="print-box">
     <div id="printableInvoiceArea" class="print-area"></div>
@@ -231,7 +232,18 @@
   </div>
 </div>
 
-<!-- Image Viewer Modal (Payment Slip & Proof) -->
+<!-- Upload Source Selection Modal (Camera vs Gallery) -->
+<div id="uploadSourceModal" class="print-modal" style="display:none;">
+  <div class="print-box" style="width:300px; text-align:center;">
+    <h3>📷 Upload Delivery Proof</h3>
+    <p style="font-size:13px; color:#555; margin:10px 0;">तस्वीर कहाँबाट लिन चाहनुहुन्छ?</p>
+    <button class="actionBtn rcvBtn" onclick="openCameraInput()" style="width:100%; padding:12px; margin:8px 0; font-size:15px;">📸 Camera</button>
+    <button class="actionBtn dispatchBtn" onclick="openGalleryInput()" style="width:100%; padding:12px; margin:8px 0; font-size:15px;">🖼️ Gallery</button>
+    <button class="close-viewer-btn" onclick="closeUploadSourceModal()" style="width:100%; padding:10px; margin-top:10px;">Cancel</button>
+  </div>
+</div>
+
+<!-- Image Viewer Modal (Payment Slip & Proof click to enlarge) -->
 <div id="imageViewerModal" class="image-viewer-modal" onclick="closeImageViewer()">
   <div class="image-viewer-box" onclick="event.stopPropagation()">
     <img id="viewerTargetImage" src="" alt="Image Preview">
@@ -370,16 +382,14 @@
         <button class="updateBtn" onclick="manualUpdate('${o.order_no}')">Go</button>`;
 
         let actionButtons = "";
-        let safeOrderStr = encodeURIComponent(JSON.stringify(o));
-
         if(status === "Pending") {
-          actionButtons = `<button class="actionBtn kotBtn" onclick="openKOT('${o.order_no}')">🎫 Receive & KOT</button>`;
+          actionButtons = `<button class="actionBtn rcvBtn" onclick="markReceived('${o.order_no}')">🎫 Received</button>`;
         } else if(status === "Preparing") {
           actionButtons = `<button class="actionBtn billBtn" onclick="openBill('${o.order_no}')">🍳 Ready & Bill</button>`;
         } else if(status === "Ready") {
           actionButtons = `<button class="actionBtn dispatchBtn" onclick="updateOrderStatus('${o.order_no}', 'Out for Delivery')">🚚 Dispatch</button>`;
         } else if(status === "Out for Delivery") {
-          actionButtons = `<button class="actionBtn proofBtn" onclick="triggerProofUpload('${o.order_no}')">📸 Upload Proof</button>`;
+          actionButtons = `<button class="actionBtn proofBtn" onclick="promptUploadProof('${o.order_no}')">📸 Upload Proof</button>`;
         } else if(status === "Delivered") {
           actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button>`;
         } else {
@@ -423,55 +433,35 @@
     await updateOrderStatus(orderNo, s);
   };
 
-  // KOT Modal & Action
-  function openKOT(orderNo) {
-    let order = activeOrdersCache.find(o => o.order_no === orderNo);
-    if(!order) return;
-    
-    let kotHtml = `
-      <center><h3><b>POOJA EXPORT AND IMPORT</b></h3>
-      <p><b>KITCHEN ORDER TICKET (KOT)</b></p></center>
-      <hr style="border:1px dashed #000;">
-      <p><b>Order No:</b> ${order.order_no}</p>
-      <p><b>Customer:</b> ${order.customer_name} (${order.phone})</p>
-      <p><b>Time:</b> ${order.time}</p>
-      <hr style="border:1px dashed #000;">
-      <p><b>Items:</b></p>
-      <pre style="font-family:inherit; white-space:pre-line;">${order.items || ''}</pre>
-      <hr style="border:1px dashed #000;">
-    `;
-    document.getElementById("printableInvoiceArea").innerHTML = kotHtml;
-    document.getElementById("printModalBox").style.display = "flex";
-
-    // अटोमेटिक Status 'Preparing' मा बदल्ने
+  // Step 1: Received Action (Changes status to Preparing)
+  function markReceived(orderNo) {
     updateOrderStatus(orderNo, 'Preparing');
   }
 
-  // Bill Modal & Action
+  // Step 2: Ready & Bill Action (Shows Bill Modal & Changes status to Ready)
   function openBill(orderNo) {
     let order = activeOrdersCache.find(o => o.order_no === orderNo);
     if(!order) return;
 
     let billHtml = `
       <center><h3><b>POOJA EXPORT AND IMPORT TRADING</b></h3>
-      <p><b>TAX INVOICE / BILL</b></p></center>
+      <p><b>RETAIL TAX INVOICE / BILL</b></p></center>
       <hr style="border:1px dashed #000;">
       <p><b>Order No:</b> ${order.order_no}</p>
       <p><b>Customer:</b> ${order.customer_name} (${order.phone})</p>
       <p><b>Address:</b> ${order.address}</p>
       <p><b>Date:</b> ${order.time}</p>
       <hr style="border:1px dashed #000;">
-      <p><b>Particulars:</b></p>
+      <p><b>Items:</b></p>
       <pre style="font-family:inherit; white-space:pre-line;">${order.items || ''}</pre>
       <hr style="border:1px dashed #000;">
       <h3 style="text-align:right;">Grand Total: Rs. ${order.total}</h3>
       <hr style="border:1px dashed #000;">
-      <center><p>Thank you for your business!</p></center>
+      <center><p>Thank you for shopping with us!</p></center>
     `;
     document.getElementById("printableInvoiceArea").innerHTML = billHtml;
     document.getElementById("printModalBox").style.display = "flex";
 
-    // अटोमेटिक Status 'Ready' मा बदल्ने
     updateOrderStatus(orderNo, 'Ready');
   }
 
@@ -483,10 +473,24 @@
     document.getElementById("printModalBox").style.display = "none";
   }
 
-  // Upload Delivery Proof (Camera / Gallery)
-  function triggerProofUpload(orderNo) {
+  // Step 3 & 4: Upload Proof Options (Camera or Gallery)
+  function promptUploadProof(orderNo) {
     activeProofOrderNo = orderNo;
-    document.getElementById("proofUploadInput").click();
+    document.getElementById("uploadSourceModal").style.display = "flex";
+  }
+
+  function closeUploadSourceModal() {
+    document.getElementById("uploadSourceModal").style.display = "none";
+  }
+
+  function openCameraInput() {
+    closeUploadSourceModal();
+    document.getElementById("proofCameraInput").click();
+  }
+
+  function openGalleryInput() {
+    closeUploadSourceModal();
+    document.getElementById("proofGalleryInput").click();
   }
 
   function handleProofFileSelected(event) {
@@ -506,7 +510,8 @@
 
       alert("✅ Delivery Proof Uploaded Successfully & Order Marked as Delivered!");
       activeProofOrderNo = null;
-      document.getElementById("proofUploadInput").value = "";
+      document.getElementById("proofCameraInput").value = "";
+      document.getElementById("proofGalleryInput").value = "";
     };
     reader.readAsDataURL(file);
   }
@@ -751,7 +756,7 @@
     } catch(e) {}
   }
 
-  // Image Viewer Modal (Payment Slip & Proof)
+  // Image Viewer Modal (Payment Slip & Proof click to enlarge)
   function openImageViewer(imgUrl) {
     document.getElementById("viewerTargetImage").src = imgUrl;
     document.getElementById("imageViewerModal").style.display = "flex";
