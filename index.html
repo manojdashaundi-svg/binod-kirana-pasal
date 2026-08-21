@@ -41,7 +41,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 .food-price{ font-size:24px; font-weight:bold; color:#1976D2; }
 
 .food-card button, .qty-btn { background:#1976D2; color:#fff; border:none; border-radius:10px; padding:10px 22px; font-size:16px; font-weight:bold; cursor:pointer; }
-.out-of-stock-badge { background:#f44336; color:#fff; padding:8px 16px; border-radius:8px; font-size:14px; font-weight:bold; display:inline-block; }
+.out-of-stock-badge { background:#b0bec5; color:#fff; padding:10px 18px; border-radius:10px; font-size:15px; font-weight:bold; display:inline-flex; align-items:center; gap:6px; cursor:not-allowed; }
 
 .customer{ background:#fff; padding:20px 15px; border-radius:16px; margin-top:20px; box-shadow:0 3px 12px rgba(0,0,0,0.06); width: 100%; }
 .customer input, .customer textarea, .customer select{ width:100%; padding:14px; margin:8px 0; border:1px solid #ddd; border-radius:8px; font-size:17px; outline: none; background: #fafafa; }
@@ -322,7 +322,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
         let actionButtonHtml = '';
         if (stockStatus === "Out of Stock") {
-            actionButtonHtml = `<span class="out-of-stock-badge">🔴 Out of Stock</span>`;
+            actionButtonHtml = `<span class="out-of-stock-badge">🚫 Out of Stock</span>`;
         } else {
             actionButtonHtml = `<button onclick="window.addToCart('${safeName}', ${itemPrice})">🛒 Add</button>`;
         }
