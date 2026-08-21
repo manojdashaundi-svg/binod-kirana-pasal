@@ -36,6 +36,9 @@
     .saveBtn { background:#4CAF50; color:white; border:none; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; }
     .removeBtn { background:#f44336; color:white; border:none; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; }
 
+    .instock-toggle-btn { background:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; margin-bottom:4px; }
+    .outstock-toggle-btn { background:#f44336; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; margin-bottom:4px; }
+
     .staff-section, .menu-section, .inventory-section, .salary-section, .invoice-section, .chat-section { background:#fff; padding:20px; border-radius:10px; margin-top:40px; border:1px solid #ddd; display:block; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
     .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; display:flex; justify-content:center; align-items:center; z-index:99999; }
     .login-card { background:#fff; padding:30px; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1); width:100%; max-width:360px; text-align:center; }
@@ -177,7 +180,7 @@
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <input id="prodName" type="text" placeholder="Product Name" style="flex:2; min-width:180px;">
         <input id="prodPrice" type="number" placeholder="Price (Rs.)" style="flex:1; min-width:100px;">
-        <input id="prodUnit" type="text" placeholder="Unit (e.g. 1kg, 500g, 1pkt)" style="flex:1; min-width:140px;">
+        <input id="prodUnit" type="text" placeholder="Unit (e.g. 25kg)" style="flex:1; min-width:140px;">
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
         <input id="prodImg" type="text" placeholder="Image URL" style="flex:1; min-width:180px;">
@@ -188,7 +191,6 @@
     </div>
     
     <h4>Current Products</h4>
-    <!-- ५ वटा मात्र देखिने र बाँकी स्क्रोल हुने गरी उचाइ मिलाइएको छ -->
     <div style="overflow-x: auto; width:100%; max-height:360px; overflow-y:auto; border:1px solid #ddd; border-radius:6px;">
       <table>
         <thead>
@@ -196,10 +198,11 @@
             <th>ID</th>
             <th>Product Name</th>
             <th>Price</th>
-            <th>Unit (परिमाण)</th>
+            <th>Unit</th>
             <th>Image</th>
             <th>Description</th>
             <th>Category</th>
+            <th>Stock Status</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -724,7 +727,7 @@
     chart.draw(data, options);
   }
 
-  // Current Products लोड गर्ने र युनिट सहित इडिट गर्ने फङ्सन
+  // Current Products लोड गर्ने र In Stock / Out of Stock बटन सहित देखाउने
   async function loadMenuList() {
     let { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
     if (data) menuItemsCache = data;
@@ -732,6 +735,10 @@
     if(!menuList) return;
     let html = "";
     menuItemsCache.forEach((r, index) => {
+      let currentStockStatus = r.status ? String(r.status).trim() : "In Stock";
+      let stockBtnClass = (currentStockStatus === "Out of Stock") ? "outstock-toggle-btn" : "instock-toggle-btn";
+      let stockBtnText = (currentStockStatus === "Out of Stock") ? "🔴 Out of Stock" : "🟢 In Stock";
+
       html += `<tr id="prod_row_${r.id}">
         <td><b>${index + 1}</b></td>
         <td>
@@ -758,6 +765,9 @@
           <span id="prod_cat_txt_${r.id}"><b>${r.category || ''}</b></span>
           <input type="text" id="prod_cat_input_${r.id}" value="${r.category || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
         </td>
+        <td>
+          <button class="${stockBtnClass}" onclick="toggleStockStatus(${r.id}, '${currentStockStatus}')">${stockBtnText}</button>
+        </td>
         <td style="white-space: nowrap;">
           <button id="prod_edit_btn_${r.id}" class="editBtn" onclick="enableProductEdit(${r.id})">✏️ Edit</button>
           <button id="prod_save_btn_${r.id}" class="saveBtn" style="display:none;" onclick="saveProductEdit(${r.id})">💾 Save</button>
@@ -767,6 +777,17 @@
     });
     menuList.innerHTML = html;
   };
+
+  // In Stock र Out of Stock स्विच गर्ने फङ्सन
+  async function toggleStockStatus(id, currentStatus) {
+    let newStatus = (currentStatus === "Out of Stock") ? "In Stock" : "Out of Stock";
+    let { error } = await supabaseClient.from('menu_items').update({ status: newStatus }).eq('id', id);
+    if (error) {
+      alert("Error: " + error.message);
+    } else {
+      loadMenuList();
+    }
+  }
 
   function enableProductEdit(id) {
     document.getElementById(`prod_name_txt_${id}`).style.display = 'none';
@@ -829,7 +850,8 @@
       unit: unit,
       image: image, 
       description: description, 
-      category: category 
+      category: category,
+      status: "In Stock"
     }]);
 
     if (error) {
