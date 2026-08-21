@@ -39,6 +39,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
 .food-bottom{ display:flex; justify-content:space-between; align-items:center; width: 100%; }
 .food-price{ font-size:24px; font-weight:bold; color:#1976D2; }
+.food-unit { font-size:16px; font-weight:bold; color:#555; background:#e3f2fd; padding:3px 8px; border-radius:6px; margin-right:8px; display:inline-block; }
 
 .food-card button, .qty-btn { background:#1976D2; color:#fff; border:none; border-radius:10px; padding:10px 22px; font-size:16px; font-weight:bold; cursor:pointer; }
 .out-of-stock-badge { background:#b0bec5; color:#fff; padding:10px 18px; border-radius:10px; font-size:15px; font-weight:bold; display:inline-flex; align-items:center; gap:6px; cursor:not-allowed; }
@@ -204,6 +205,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     {
       name: "Basmati Rice (बासमती चामल)",
       price: 1500,
+      unit: "25kg",
       category: "Wholesale",
       description: "High quality imported rice.",
       image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500",
@@ -315,6 +317,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     let html = "";
     data.forEach(row => {
         const itemPrice = parseFloat(row.price) || 0;
+        const itemUnit = row.unit ? String(row.unit).trim() : "";
         const imgUrl = (row.image && String(row.image).startsWith("http")) ? String(row.image).trim() : "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500";
         const rawName = row.name ? String(row.name) : "Unnamed Item";
         const safeName = rawName.replace(/'/g, "\\'");
@@ -327,6 +330,8 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
             actionButtonHtml = `<button onclick="window.addToCart('${safeName}', ${itemPrice})">🛒 Add</button>`;
         }
 
+        let unitDisplayHtml = itemUnit ? `<span class="food-unit">${itemUnit}</span>` : "";
+
         html += `<div class="food-card" data-category="${row.category || 'General'}">
             <img src="${imgUrl}" alt="${rawName}" onerror="this.src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500'">
             <div class="food-info">
@@ -334,7 +339,10 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
                 <div class="rating">⭐⭐⭐⭐⭐ (5.0)</div>
                 <p class="food-desc">${row.description || ""}</p>
                 <div class="food-bottom">
-                    <span class="food-price">Rs. ${itemPrice}</span>
+                    <div>
+                        ${unitDisplayHtml}
+                        <span class="food-price">Rs. ${itemPrice}</span>
+                    </div>
                     ${actionButtonHtml}
                 </div>
             </div>
