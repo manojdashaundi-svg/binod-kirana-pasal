@@ -384,7 +384,6 @@
           deliveryTimeDisplay = "-";
         }
         
-        // यदि अर्डर क्यान्सिल गरिएको छ भने कारण देखाउने
         let cancelReasonDisplay = "";
         if (status === "Cancelled" && o.cancel_reason) {
           cancelReasonDisplay = `<br><small style="color:red; font-weight:bold;">Reason: ${o.cancel_reason}</small>`;
@@ -402,15 +401,15 @@
 
         let actionButtons = "";
         if(status === "Pending") {
-          actionButtons = `<button class="actionBtn rcvBtn" onclick="markReceived('${o.order_no}')">🎫 Received</button>`;
+          actionButtons = `<button class="actionBtn rcvBtn" onclick="markReceived('${o.order_no}')">🎫 Received</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
         } else if(status === "Preparing") {
-          actionButtons = `<button class="actionBtn billBtn" onclick="openBill('${o.order_no}')">🍳 Ready & Bill</button>`;
+          actionButtons = `<button class="actionBtn billBtn" onclick="openBill('${o.order_no}')">🍳 Ready & Bill</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
         } else if(status === "Ready") {
-          actionButtons = `<button class="actionBtn dispatchBtn" onclick="updateOrderStatus('${o.order_no}', 'Out for Delivery')">🚚 Dispatch</button>`;
+          actionButtons = `<button class="actionBtn dispatchBtn" onclick="updateOrderStatus('${o.order_no}', 'Out for Delivery')">🚚 Dispatch</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
         } else if(status === "Out for Delivery") {
-          actionButtons = `<button class="actionBtn proofBtn" onclick="promptUploadProof('${o.order_no}')">📸 Upload Proof</button>`;
+          actionButtons = `<button class="actionBtn proofBtn" onclick="promptUploadProof('${o.order_no}')">📸 Upload Proof</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
         } else if(status === "Delivered") {
-          actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+          actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button>`;
         } else {
           actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default;">❌ Cancelled</button>`;
         }
