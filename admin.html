@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" type="image/png" href="https://i.postimg.cc/0QBZjp0P/Chat-GPT-Image-Aug-20-2026-10-44-04-AM.png">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>POOJA EXPORT AND IMPORT - Admin Panel</title>
+  <title>PUJA EXPORT AND IMPORT - Admin Panel</title>
   <script src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -81,7 +81,7 @@
   <button id="globalLogoutBtn" class="logout" onclick="logout()">Logout</button>
   
   <h2>
-    📦 POOJA EXPORT & IMPORT - Admin Panel (<span id="userRoleBadge" style="color:#1976D2;">...</span>)
+    📦 PUJA EXPORT & IMPORT - Admin Panel (<span id="userRoleBadge" style="color:#1976D2;">...</span>)
     <span id="emailAutomationStatusBadge" class="automation-badge" style="display: inline-block;">🟢 Active</span>
   </h2>
 
@@ -596,7 +596,7 @@
     if(!order) return;
 
     let billHtml = `
-      <center><h3><b>POOJA EXPORT AND IMPORT TRADING</b></h3>
+      <center><h3><b>PUJA EXPORT AND IMPORT PVT. LTD.</b></h3>
       <p><b>RETAIL TAX INVOICE / BILL</b></p></center>
       <hr style="border:1px dashed #000;">
       <p><b>Order No:</b> ${order.order_no}</p>
@@ -863,7 +863,6 @@
     if(isNaN(stockVal)) stockVal = 0;
     if(isNaN(limitVal)) limitVal = 50;
 
-    // Local cache मा पनि सँगै अपडेट गर्ने ताकि तुरंत देखियोस्
     let item = menuItemsCache.find(r => String(r.id) === String(id));
     if(item) {
       item.stock = stockVal;
@@ -876,7 +875,6 @@
     }).eq('id', id);
 
     if(error) {
-      // यदि Supabase मा alert_limit वा stock स्तम्भ छैन भने कम्तिमा stock मात्र पठाएर प्रयास गर्ने
       let { error: err2 } = await supabaseClient.from('menu_items').update({ stock: stockVal }).eq('id', id);
       if(err2) {
         alert("Error saving stock: " + err2.message);
