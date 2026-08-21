@@ -18,7 +18,7 @@
     .logout{ position:fixed; top:15px; right:15px; background:#f44336; color:#fff; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight: bold; z-index: 1000; }
     .bell-btn { position:fixed; top:12px; right:125px; background:#fff; border:2px solid #1976D2; font-size:22px; padding:6px 10px; border-radius:50%; cursor:pointer; z-index: 1000; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
     .automation-badge { display: inline-block; background: #fff; border: 1px solid #4CAF50; color: #4CAF50; font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 20px; margin-left: 12px; vertical-align: middle; }
-    table { width:100%; border-collapse:collapse; background:#fff; margin-top:20px; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
+    table { width:100%; border-collapse:collapse; background:#fff; margin-top:0; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
     th{ background:#1976D2; color:#fff; padding:12px; font-size:14px; text-align:center; }
     td{ padding:10px; border:1px solid #ddd; text-align:center; font-size:14px; vertical-align:middle; }
     select, input{ padding:8px; border-radius:6px; border:1px solid #ccc; margin:3px; box-sizing: border-box; }
@@ -153,9 +153,8 @@
       <button class="addBtn" onclick="addDeliveryZone()" style="padding:10px 20px; background:#1976D2; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">+ जिल्ला थप्नुहोस्</button>
     </div>
     
-    <!-- यहाँ max-height: 280px राखेर ५ वटा मात्र देखिने र स्क्रोल हुने बनाइएको छ -->
     <div style="overflow-x: auto; max-height: 280px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px;">
-      <table style="margin-top:0;">
+      <table>
         <thead>
           <tr style="position:sticky; top:0; z-index:10;">
             <th style="background:#1976D2; color:#fff;">District Name (जिल्ला)</th>
@@ -183,8 +182,9 @@
       <button id="addProductBtn" class="addBtn" onclick="createNewProduct()" style="padding:10px 20px; background:#1976D2; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">+ Add Product</button>
     </div>
     <h4>Current Products</h4>
-    <div style="overflow-x: auto; width:100%; max-height:520px; overflow-y:auto; border:1px solid #ddd; border-radius:6px;">
-      <table style="margin-top:0;">
+    <!-- ५ वटा मात्र देखिने र बाँकी स्क्रोल हुने गरी max-height मिलाइएको छ -->
+    <div style="overflow-x: auto; width:100%; max-height:360px; overflow-y:auto; border:1px solid #ddd; border-radius:6px;">
+      <table>
         <thead>
           <tr style="position:sticky; top:0; z-index:10;">
             <th>ID</th>
@@ -308,7 +308,6 @@
     alert("❌ Invalid Username or Password!");
   };
 
-  // डेलिभरी जोन लिस्ट लोड गर्ने फङ्सन (इडिट सुविधा सहित)
   async function loadDeliveryZones() {
     let tbody = document.getElementById("deliveryZonesTableList");
     if (!tbody) return;
@@ -340,7 +339,6 @@
     } catch(e) {}
   };
 
-  // इडिट बटन थिच्दा इनपुट बक्स देखाउने
   function enableZoneEdit(id) {
     document.getElementById(`dz_name_txt_${id}`).style.display = 'none';
     document.getElementById(`dz_rate_txt_${id}`).style.display = 'none';
@@ -351,7 +349,6 @@
     document.getElementById(`dz_save_btn_${id}`).style.display = 'inline-block';
   }
 
-  // सेभ बटन थिच्दा नयाँ डाटा अपडेट गर्ने
   async function saveZoneEdit(id) {
     let newName = document.getElementById(`dz_name_input_${id}`).value.trim();
     let newRate = parseFloat(document.getElementById(`dz_rate_input_${id}`).value);
@@ -720,6 +717,7 @@
     chart.draw(data, options);
   }
 
+  // Current Products लोड गर्ने र इडिट सुविधा दिने फङ्सन
   async function loadMenuList() {
     let { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
     if (data) menuItemsCache = data;
@@ -727,20 +725,78 @@
     if(!menuList) return;
     let html = "";
     menuItemsCache.forEach((r, index) => {
-      html += `<tr>
+      html += `<tr id="prod_row_${r.id}">
         <td><b>${index + 1}</b></td>
-        <td><b>${r.name || ''}</b></td>
-        <td style="color:#1976D2; font-weight:bold;">Rs. ${r.price || 0}</td>
-        <td>${r.image ? `<img src="${r.image}" class="menu-thumb">` : 'No Image'}</td>
-        <td>${r.description || ''}</td>
-        <td><b>${r.category || ''}</b></td>
         <td>
-          <button class="removeBtn" onclick="deleteProduct(${r.id})">❌ Delete</button>
+          <span id="prod_name_txt_${r.id}"><b>${r.name || ''}</b></span>
+          <input type="text" id="prod_name_input_${r.id}" value="${r.name || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+        </td>
+        <td>
+          <span id="prod_price_txt_${r.id}" style="color:#1976D2; font-weight:bold;">Rs. ${r.price || 0}</span>
+          <input type="number" id="prod_price_input_${r.id}" value="${r.price || 0}" style="display:none; width:80px; padding:6px; border:1px solid #ccc; border-radius:4px;">
+        </td>
+        <td>
+          <span id="prod_img_txt_${r.id}">${r.image ? `<img src="${r.image}" class="menu-thumb">` : 'No Image'}</span>
+          <input type="text" id="prod_img_input_${r.id}" value="${r.image || ''}" placeholder="Image URL" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px; margin-top:4px;">
+        </td>
+        <td>
+          <span id="prod_desc_txt_${r.id}">${r.description || ''}</span>
+          <input type="text" id="prod_desc_input_${r.id}" value="${r.description || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+        </td>
+        <td>
+          <span id="prod_cat_txt_${r.id}"><b>${r.category || ''}</b></span>
+          <input type="text" id="prod_cat_input_${r.id}" value="${r.category || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+        </td>
+        <td style="white-space: nowrap;">
+          <button id="prod_edit_btn_${r.id}" class="editBtn" onclick="enableProductEdit(${r.id})">✏️ Edit</button>
+          <button id="prod_save_btn_${r.id}" class="saveBtn" style="display:none;" onclick="saveProductEdit(${r.id})">💾 Save</button>
+          <button class="removeBtn" onclick="deleteProduct(${r.id})" style="margin-left:5px;">❌ Delete</button>
         </td>
       </tr>`;
     });
     menuList.innerHTML = html;
   };
+
+  function enableProductEdit(id) {
+    document.getElementById(`prod_name_txt_${id}`).style.display = 'none';
+    document.getElementById(`prod_price_txt_${id}`).style.display = 'none';
+    document.getElementById(`prod_img_txt_${id}`).style.display = 'none';
+    document.getElementById(`prod_desc_txt_${id}`).style.display = 'none';
+    document.getElementById(`prod_cat_txt_${id}`).style.display = 'none';
+    document.getElementById(`prod_edit_btn_${id}`).style.display = 'none';
+    
+    document.getElementById(`prod_name_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`prod_price_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`prod_img_input_${id}`).style.display = 'block';
+    document.getElementById(`prod_desc_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`prod_cat_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`prod_save_btn_${id}`).style.display = 'inline-block';
+  }
+
+  async function saveProductEdit(id) {
+    let name = document.getElementById(`prod_name_input_${id}`).value.trim();
+    let price = parseFloat(document.getElementById(`prod_price_input_${id}`).value);
+    let image = document.getElementById(`prod_img_input_${id}`).value.trim();
+    let description = document.getElementById(`prod_desc_input_${id}`).value.trim();
+    let category = document.getElementById(`prod_cat_input_${id}`).value.trim();
+
+    if(!name || isNaN(price)) { alert("नाम र मूल्य सही भर्नुहोस्!"); return; }
+
+    let { error } = await supabaseClient.from('menu_items').update({
+      name: name,
+      price: price,
+      image: image,
+      description: description,
+      category: category
+    }).eq('id', id);
+
+    if (error) {
+      alert("Error: " + error.message);
+    } else {
+      alert("✅ उत्पादन सफलतापूर्वक अपडेट भयो!");
+      loadMenuList();
+    }
+  }
 
   async function createNewProduct() {
     var name = document.getElementById("prodName").value.trim();
