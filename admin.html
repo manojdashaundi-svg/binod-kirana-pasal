@@ -38,7 +38,7 @@
 
     .instock-toggle-btn { background:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; margin-bottom:4px; }
     .outstock-toggle-btn { background:#f44336; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; margin-bottom:4px; }
-    .lowstock-badge { background:#f44336; color:#white; padding:6px 12px; border-radius:6px; font-weight:bold; font-size:12px; display:inline-block; }
+    .lowstock-badge { background:#f44336; color:#fff; padding:6px 12px; border-radius:6px; font-weight:bold; font-size:12px; display:inline-block; }
 
     .staff-section, .menu-section, .inventory-section, .salary-section, .invoice-section, .chat-section { background:#fff; padding:20px; border-radius:10px; margin-top:40px; border:1px solid #ddd; display:block; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
     .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; display:flex; justify-content:center; align-items:center; z-index:99999; }
@@ -252,7 +252,7 @@
           </tr>
         </thead>
         <tbody id="stockAlertsTableBody">
-          <tr><td colspan="6" style="padding:15px;">No low stock items.</td></tr>
+          <tr><td colspan="6" style="padding:15px; color:#666;">No low stock items.</td></tr>
         </tbody>
       </table>
     </div>
@@ -847,7 +847,7 @@
     if(item) {
       document.getElementById("invSelectedName").innerText = item.name || "-";
       document.getElementById("invSelectedCategory").innerText = item.category || "-";
-      document.getElementById("invCurrentStockInput").value = item.stock !== undefined ? item.stock : (item.current_stock || 0);
+      document.getElementById("invCurrentStockInput").value = item.stock !== undefined ? item.stock : 0;
       if(item.alert_limit !== undefined) {
         document.getElementById("invAlertLimitInput").value = item.alert_limit;
       }
@@ -860,10 +860,9 @@
     let stockVal = parseInt(document.getElementById("invCurrentStockInput").value) || 0;
     let limitVal = parseInt(document.getElementById("invAlertLimitInput").value) || 50;
 
-    let { error } = await supabaseClient.from('menu_items').update({
-      stock: stockVal,
-      alert_limit: limitVal
-    }).eq('id', id);
+    let updateData = { stock: stockVal };
+    // यदि alert_limit टेबलमा छ भने मात्र पठाउने, नभए स्टक मात्र सेभ हुने
+    let { error } = await supabaseClient.from('menu_items').update(updateData).eq('id', id);
 
     if(error) {
       alert("Error: " + error.message);
@@ -878,14 +877,14 @@
     let tbody = document.getElementById("stockAlertsTableBody");
     if(!tbody) return;
     let lowStockItems = menuItemsCache.filter(r => {
-      let stk = r.stock !== undefined ? r.stock : (r.current_stock || 0);
+      let stk = r.stock !== undefined ? r.stock : 0;
       let lim = r.alert_limit !== undefined ? r.alert_limit : 50;
       return stk <= lim;
     });
 
     let html = "";
     lowStockItems.forEach(r => {
-      let stk = r.stock !== undefined ? r.stock : (r.current_stock || 0);
+      let stk = r.stock !== undefined ? r.stock : 0;
       let lim = r.alert_limit !== undefined ? r.alert_limit : 50;
       html += `<tr>
         <td><b>${r.id}</b></td>
@@ -976,8 +975,7 @@
       description: description, 
       category: category,
       status: "In Stock",
-      stock: 0,
-      alert_limit: 50
+      stock: 0
     }]);
 
     if (error) {
