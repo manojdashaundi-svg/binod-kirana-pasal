@@ -384,6 +384,12 @@
           deliveryTimeDisplay = "-";
         }
         
+        // यदि अर्डर क्यान्सिल गरिएको छ भने कारण देखाउने
+        let cancelReasonDisplay = "";
+        if (status === "Cancelled" && o.cancel_reason) {
+          cancelReasonDisplay = `<br><small style="color:red; font-weight:bold;">Reason: ${o.cancel_reason}</small>`;
+        }
+        
         let statusSelect = `<select id="status_${o.order_no}">
           <option value="Pending" ${status==="Pending"?"selected":""}>Pending</option>
           <option value="Preparing" ${status==="Preparing"?"selected":""}>Preparing</option>
@@ -404,7 +410,7 @@
         } else if(status === "Out for Delivery") {
           actionButtons = `<button class="actionBtn proofBtn" onclick="promptUploadProof('${o.order_no}')">📸 Upload Proof</button>`;
         } else if(status === "Delivered") {
-          actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button><button class="actionBtn cancelBtn" onclick="updateOrderStatus('${o.order_no}', 'Cancelled')" style="margin-top:5px;">❌ Cancel Order</button>`;
+          actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
         } else {
           actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default;">❌ Cancelled</button>`;
         }
@@ -412,7 +418,7 @@
         html += `<tr>
           <td style="font-size:12px; color:#555;">${o.time || '-'}</td>
           <td><b>${o.order_no || ''}</b></td>
-          <td style="text-align:left;"><b>${o.customer_name || '-'}</b><br><small style="color:#666;">${o.phone || ''}</small><br><small style="color:#333; white-space:pre-line;">${o.items || ''}</small><br><small style="color:#444;">${o.address || '-'}</small></td>
+          <td style="text-align:left;"><b>${o.customer_name || '-'}</b><br><small style="color:#666;">${o.phone || ''}</small><br><small style="color:#333; white-space:pre-line;">${o.items || ''}</small><br><small style="color:#444;">${o.address || '-'}</small>${cancelReasonDisplay}</td>
           <td style="color:#1976D2; font-weight:bold;">Rs. ${o.total || '0'}</td>
           <td>${slipHtml}</td>
           <td style="font-size:12px; color:#555;">${deliveryTimeDisplay}</td>
@@ -424,6 +430,14 @@
     }
     tableBody.innerHTML = html;
   };
+
+  function promptCancelOrder(orderNo) {
+    let reason = prompt("कृपया अर्डर क्यान्सिल गर्नुको कारण (Reason) लेख्नुहोस्:");
+    if (reason !== null) {
+      reason = reason.trim() === "" ? "No reason provided" : reason.trim();
+      updateOrderStatus(orderNo, 'Cancelled', { cancel_reason: reason });
+    }
+  }
 
   function filterActiveOrders() {
     let query = document.getElementById("orderSearchInput").value.trim().toLowerCase();
@@ -447,7 +461,13 @@
 
   async function manualUpdate(orderNo) {
     var s = document.getElementById("status_" + orderNo).value;
-    await updateOrderStatus(orderNo, s);
+    if (s === "Cancelled") {
+      let reason = prompt("कृपया अर्डर क्यान्सिल गर्नुको कारण (Reason) लेख्नुहोस्:");
+      reason = (reason && reason.trim() !== "") ? reason.trim() : "No reason provided";
+      await updateOrderStatus(orderNo, s, { cancel_reason: reason });
+    } else {
+      await updateOrderStatus(orderNo, s);
+    }
   };
 
   function markReceived(orderNo) {
