@@ -373,16 +373,16 @@
           slipHtml = `<img src="${slipSrc}" class="proof-thumb" onclick="openImageViewer('${slipSrc}')">`;
         }
 
-        // Delivery Proof चेक गर्ने (proof_img वा delivery_proof)
+        // Delivery Proof चेक गर्ने
         let delivSrc = o.proof_img || o.delivery_proof || "";
         let delivHtml = "None";
-        if (delivSrc && delivSrc !== "None" && delivSrc.length > 5) {
+        if (delivSrc && delivSrc !== "None" && delivSrc !== "EMPTY" && delivSrc.length > 5) {
           delivHtml = `<img src="${delivSrc}" class="proof-thumb" onclick="openImageViewer('${delivSrc}')">`;
         }
 
-        // Delivery Date & Time 
+        // Delivery Date & Time चेक गर्ने
         let deliveryTimeDisplay = o.delivery_time || o.delivery_date || "-";
-        if (status !== "Delivered" && (!o.delivery_time && !o.delivery_date)) {
+        if (!o.delivery_time && !o.delivery_date) {
           deliveryTimeDisplay = "-";
         }
         
@@ -441,7 +441,7 @@
     let updatePayload = { status: newStatus, ...extraData };
     let { error } = await supabaseClient.from('orders').update(updatePayload).eq('order_no', orderNo);
     if(error) {
-      console.warn("Retrying update...", error);
+      console.warn("Update error:", error);
       await supabaseClient.from('orders').update({ status: newStatus }).eq('order_no', orderNo);
     }
     loadOrders();
@@ -518,17 +518,23 @@
       let base64Image = reader.result;
       let currentDateTime = new Date().toLocaleString();
 
-      // दुवै सम्भावित कलमहरूमा (proof_img र delivery_time) एकसाथ पठाउने
-      await updateOrderStatus(activeProofOrderNo, 'Delivered', {
+      // Supabase मा proof_img र delivery_time मा डेटा पठाउँदै
+      let { error } = await supabaseClient.from('orders').update({
+        status: 'Delivered',
         proof_img: base64Image,
-        delivery_time: currentDateTime,
-        delivery_proof: base64Image
-      });
+        delivery_time: currentDateTime
+      }).eq('order_no', activeProofOrderNo);
 
-      alert("✅ Delivery Proof Uploaded Successfully & Order Marked as Delivered!");
+      if (error) {
+        alert("Error saving proof: " + error.message);
+      } else {
+        alert("✅ Delivery Proof Uploaded Successfully & Order Marked as Delivered!");
+      }
+
       activeProofOrderNo = null;
       document.getElementById("proofCameraInput").value = "";
       document.getElementById("proofGalleryInput").value = "";
+      loadOrders();
     };
     reader.readAsDataURL(file);
   }
