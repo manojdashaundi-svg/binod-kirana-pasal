@@ -367,8 +367,8 @@
       ordersToRender.forEach(function(o){
         let status = o.status ? String(o.status).trim() : "Pending";
         
-        // Payment Slip चेक गर्ने (payment_slip वा slip वा payment)
-        let slipSrc = o.payment_slip || o.slip || o.payment || "";
+        // Payment Slip चेक गर्ने (जुनसुकै सम्भावित स्तम्भबाट)
+        let slipSrc = o.payment_slip || o.slip || o.payment || o.qr_image || o.proof || "";
         let slipHtml = "No Slip";
         if (slipSrc && slipSrc !== "None" && slipSrc !== "Slip Uploaded" && slipSrc.length > 5) {
           slipHtml = `<img src="${slipSrc}" class="proof-thumb" onclick="openImageViewer('${slipSrc}')">`;
