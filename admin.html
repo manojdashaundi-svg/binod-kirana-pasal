@@ -245,7 +245,7 @@
 
 <!-- Image Viewer Modal (Payment Slip & Proof click to enlarge) -->
 <div id="imageViewerModal" class="image-viewer-modal" onclick="closeImageViewer()">
-  <div class="image-viewer-box" onclick="event.stopPropagation()">
+  <div class="image-viewer_box" onclick="event.stopPropagation()">
     <img id="viewerTargetImage" src="" alt="Image Preview">
     <br>
     <button class="close-viewer-btn" onclick="closeImageViewer()">Close ✕</button>
@@ -367,7 +367,6 @@
       ordersToRender.forEach(function(o){
         let status = o.status ? String(o.status).trim() : "Pending";
         
-        // Payment Slip Preview (Base64 वा Image URL भए देखाउने, नभए 'None')
         let slipSrc = o.payment_slip || o.proof_img || "";
         let slipHtml = "None";
         if (slipSrc && slipSrc !== "None" && slipSrc !== "Slip Uploaded") {
@@ -376,10 +375,9 @@
           slipHtml = `<span style="font-size:12px; color:#888;">No Slip</span>`;
         }
 
-        // Delivery Proof Preview
-        let delivSrc = o.proof_img || o.delivery_proof || "";
+        let delivSrc = o.proof_img || "";
         let delivHtml = "None";
-        if (status === "Delivered" && delivSrc && delivSrc !== "None" && delivSrc !== "Slip Uploaded") {
+        if (delivSrc && delivSrc !== "None") {
           delivHtml = `<img src="${delivSrc}" class="proof-thumb" onclick="openImageViewer('${delivSrc}')">`;
         } else {
           delivHtml = "None";
@@ -410,13 +408,15 @@
           actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default;">❌ Cancelled</button>`;
         }
 
+        let displayTime = o.delivery_time || o.time || '-';
+
         html += `<tr>
           <td style="font-size:12px; color:#555;">${o.time || '-'}</td>
           <td><b>${o.order_no || ''}</b></td>
           <td style="text-align:left;"><b>${o.customer_name || '-'}</b><br><small style="color:#666;">${o.phone || ''}</small><br><small style="color:#333; white-space:pre-line;">${o.items || ''}</small><br><small style="color:#444;">${o.address || '-'}</small></td>
           <td style="color:#1976D2; font-weight:bold;">Rs. ${o.total || '0'}</td>
           <td>${slipHtml}</td>
-          <td style="font-size:12px; color:#555;">${o.delivery_time || '-'}</td>
+          <td style="font-size:12px; color:#555;">${displayTime}</td>
           <td>${delivHtml}</td>
           <td>${statusSelect}</td>
           <td>${actionButtons}</td>
@@ -440,8 +440,9 @@
     let updatePayload = { status: newStatus, ...extraData };
     let { error } = await supabaseClient.from('orders').update(updatePayload).eq('order_no', orderNo);
     if(error) {
-      console.error("Update order error:", error);
-      alert("Error updating order: " + error.message);
+      console.warn("Retrying update without optional columns...", error);
+      // यदि कुनै स्तम्भ नभएर एरर आएमा आधारभूत status मात्र अपडेट गर्ने
+      await supabaseClient.from('orders').update({ status: newStatus }).eq('order_no', orderNo);
     }
     loadOrders();
   };
@@ -770,7 +771,6 @@
     } catch(e) {}
   }
 
-  // Image Viewer Modal (Payment Slip & Proof click to enlarge)
   function openImageViewer(imgUrl) {
     document.getElementById("viewerTargetImage").src = imgUrl;
     document.getElementById("imageViewerModal").style.display = "flex";
