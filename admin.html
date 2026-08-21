@@ -5,7 +5,847 @@
   <link rel="icon" type="image/png" href="https://i.postimg.cc/0QBZjp0P/Chat-GPT-Image-Aug-20-2026-10-44-04-AM.png">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>POOJA EXPORT AND IMPORT - Admin Panel</title>
+  <script src="https://www.<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/0QBZjp0P/Chat-GPT-Image-Aug-20-2026-10-44-04-AM.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>POOJA EXPORT AND IMPORT - Admin Panel</title>
   <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    try {
+      google.charts.load('current', {'packages':['corechart']});
+    } catch(e) { console.log("Google Charts load error: " + e); }
+  </script>
+  <style>
+    body{ font-family:Arial,sans-serif; background:#f5f5f5; margin:0; padding:20px; }
+    h2{ color:#1976D2; }
+    .logout{ position:fixed; top:15px; right:15px; background:#f44336; color:#fff; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight: bold; z-index: 1000; }
+    .bell-btn { position:fixed; top:12px; right:125px; background:#fff; border:2px solid #1976D2; font-size:22px; padding:6px 10px; border-radius:50%; cursor:pointer; z-index: 1000; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    .automation-badge { display: inline-block; background: #fff; border: 1px solid #4CAF50; color: #4CAF50; font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 20px; margin-left: 12px; vertical-align: middle; }
+    table { width:100%; border-collapse:collapse; background:#fff; margin-top:20px; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
+    th{ background:#1976D2; color:#fff; padding:12px; font-size:14px; text-align:center; }
+    td{ padding:10px; border:1px solid #ddd; text-align:center; font-size:14px; vertical-align:middle; }
+    select, input{ padding:8px; border-radius:6px; border:1px solid #ccc; margin:3px; box-sizing: border-box; }
+    
+    .actionBtn { color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; display:block; margin:4px auto; width:135px; font-size:13px; text-align:center; }
+    .rcvBtn { background:#4CAF50; }
+    .billBtn { background:#9C27B0; }
+    .dispatchBtn { background:#00BCD4; }
+    .proofBtn { background:#3F51B5; }
+    .deliveredBtn { background:#4CAF50; cursor:default; }
+    .cancelBtn { background:#f44336; }
+    .viewReasonBtn { background:#FF9800; color:white; border:none; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; display:inline-block; margin-top:5px; font-size:12px; }
+
+    .staff-section, .menu-section, .inventory-section, .salary-section, .invoice-section, .chat-section { background:#fff; padding:20px; border-radius:10px; margin-top:40px; border:1px solid #ddd; display:block; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+    .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; display:flex; justify-content:center; align-items:center; z-index:99999; }
+    .login-card { background:#fff; padding:30px; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1); width:100%; max-width:360px; text-align:center; }
+    .login-card input { width:100%; padding:12px; margin:10px 0; border:1px solid #ddd; border-radius:8px; font-size:16px; }
+    .login-card button { width:100%; padding:12px; background:#1976D2; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; }
+    .proof-thumb { width: 55px; height: 55px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid #1976D2; display: inline-block; background: #eee; }
+    
+    .image-viewer-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; justify-content:center; align-items:center; z-index:999999; }
+    .image-viewer-box { background:#fff; padding:20px; border-radius:12px; max-width:90%; max-height:90%; text-align:center; position:relative; }
+    .image-viewer-box img { max-width:100%; max-height:70vh; object-fit:contain; border-radius:8px; display:block; margin-bottom:15px; }
+    .close-viewer-btn { background:#f44336; color:white; border:none; padding:8px 15px; border-radius:6px; font-weight:bold; cursor:pointer; }
+
+    .print-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:none; justify-content:center; align-items:center; z-index:999999; }
+    .print-box { background:#fff; padding:25px; border-radius:12px; width:380px; max-height:85vh; overflow-y:auto; box-shadow:0 5px 20px rgba(0,0,0,0.3); text-align:left; }
+    .print-area { font-family: 'Courier New', Courier, monospace; font-size:13px; color:#000; line-height:1.4; background:#fff; padding:15px; border:1px dashed #333; }
+
+    .chart-container { background:#fff; padding:15px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.05); margin:20px 0; border:1px solid #ddd; width:100%; height: 280px; display:block; }
+    .menu-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+
+<audio id="notificationAudio" preload="auto">
+  <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+</audio>
+
+<div id="loginScreen" class="login-overlay">
+  <div class="login-card">
+    <img src="https://i.postimg.cc/0QBZjp0P/Chat-GPT-Image-Aug-20-2026-10-44-04-AM.png" style="width:70px; height:70px; object-fit:cover; border-radius:50%; margin-bottom:10px; border:2px solid #1976D2;" alt="Logo">
+    <h2>🔐 STAFF LOGIN</h2>
+    <input id="username" type="text" placeholder="Username / Email" autocomplete="off" value="">
+    <input id="password" type="password" placeholder="Password" autocomplete="off" value="">
+    <button id="loginBtn" type="button" onclick="handleLogin()">Login</button>
+  </div>
+</div>
+
+<div id="adminContent" style="display:none;">
+  <button id="systemBellAlertBtn" class="bell-btn" onclick="testBellSound()" title="Test Sound">🔔</button>
+  <button id="globalLogoutBtn" class="logout" onclick="logout()">Logout</button>
+  
+  <h2>
+    📦 POOJA EXPORT & IMPORT - Admin Panel (<span id="userRoleBadge" style="color:#1976D2;">...</span>)
+    <span id="emailAutomationStatusBadge" class="automation-badge" style="display: inline-block;">🟢 Active</span>
+  </h2>
+
+  <div id="salesDashboardBox" style="display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 140px; background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #2196F3; text-align: center;">
+      <span style="font-size: 13px; color: #777; font-weight: bold;">Total Orders</span>
+      <h2 id="dashTotalOrders" style="margin: 5px 0 0 0; color: #2196F3; font-size: 24px;">0</h2>
+    </div>
+    <div style="flex: 1; min-width: 140px; background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #4CAF50; text-align: center;">
+      <span style="font-size: 13px; color: #777; font-weight: bold;">Total Revenue</span>
+      <h2 id="dashTotalRevenue" style="margin: 5px 0 0 0; color: #4CAF50; font-size: 24px;">Rs. 0</h2>
+    </div>
+    <div style="flex: 1; min-width: 140px; background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #FF9800; text-align: center;">
+      <span style="font-size: 13px; color: #777; font-weight: bold;">Today's Sales</span>
+      <h2 id="dashTodaySales" style="margin: 5px 0 0 0; color: #FF9800; font-size: 24px;">Rs. 0</h2>
+    </div>
+    <div style="flex: 1; min-width: 140px; background: #fff; padding: 15px; border-radius: 10px; border-left: 5px solid #9C27B0; text-align: center;">
+      <span style="font-size: 13px; color: #777; font-weight: bold;">This Month Sales</span>
+      <h2 id="dashMonthSales" style="margin: 5px 0 0 0; color: #9C27B0; font-size: 24px;">Rs. 0</h2>
+    </div>
+  </div>
+
+  <!-- 📊 Monthly Sales Insights & Growth -->
+  <div class="chart-container">
+    <h3 style="color:#1976D2; margin: 0 0 10px 0; font-size: 16px;">📊 Monthly Sales Insights & Growth (Rs.)</h3>
+    <div id="monthlySalesChart" style="width: 100%; height: 220px;"></div>
+  </div>
+
+  <!-- 📈 Today's Hourly Sales Trend -->
+  <div class="chart-container">
+    <h3 style="color:#1976D2; margin: 0 0 10px 0; font-size: 16px;">📈 Today's Hourly Sales Trend (Rs.)</h3>
+    <div id="hourlySalesChart" style="width: 100%; height: 220px;"></div>
+  </div>
+
+  <!-- 🛒 Active Orders Section -->
+  <div id="mainOrdersTableSection">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+      <h3 style="margin: 0; color:#333;">🛒 Active Orders</h3>
+      <input type="text" id="orderSearchInput" onkeyup="filterActiveOrders()" placeholder="🔍 Search Order No / Customer..." style="padding: 8px 12px; width: 260px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px;">
+    </div>
+    <div style="overflow-x: auto; width:100%; max-height:520px; overflow-y:auto; border:1px solid #ddd; border-radius:6px;">
+      <table>
+        <thead>
+          <tr style="position:sticky; top:0; z-index:10;">
+            <th>Order Date & Time</th>
+            <th>Order No.</th>
+            <th>Customer & Items</th>
+            <th>Total</th>
+            <th>Payment Slip</th>
+            <th>Delivery Date & Time</th>
+            <th>Delivery Proof</th>
+            <th>Status / Change</th>
+            <th>Instant Action</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTable">
+          <tr><td colspan="9" style="padding:20px; font-weight:bold;">⏳ Loading Active Orders...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Hidden Proof Upload Inputs for Camera & Gallery -->
+  <input type="file" id="proofCameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleProofFileSelected(event)">
+  <input type="file" id="proofGalleryInput" accept="image/*" style="display:none;" onchange="handleProofFileSelected(event)">
+
+  <!-- 🚚 Delivery Zone & District Rate Management -->
+  <div class="invoice-section" style="background:#fff; padding:20px; border-radius:10px; margin-top:20px; border:1px solid #ddd;">
+    <h3 style="color:#1976D2; margin-bottom:15px;">🚚 Delivery Zone & District Rate Management (77 Districts)</h3>
+    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+      <input id="newDistrictName" type="text" placeholder="जिल्लाको नाम (District Name)" style="flex:2; padding:10px;">
+      <input id="newDistrictRate" type="number" placeholder="रेट (Rs.)" style="flex:1; padding:10px;">
+      <button class="addBtn" onclick="addDeliveryZone()" style="padding:10px 20px;">+ जिल्ला थप्नुहोस्</button>
+    </div>
+    <div style="overflow-x: auto; max-height: 250px; overflow-y: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th style="background:#1976D2;">District Name (जिल्ला)</th>
+            <th style="background:#1976D2;">Delivery Rate (Rs.)</th>
+            <th style="background:#1976D2;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="deliveryZonesTableList">
+          <tr><td colspan="3" style="padding:15px;">Loading Delivery Zones...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 📦 Product Management Section -->
+  <div id="menuManagementBox" class="menu-section">
+    <h3 style="color:#1976D2;">📦 Product Management</h3>
+    <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd;">
+      <h4>+ Add New Product</h4>
+      <input id="prodName" type="text" placeholder="Product Name">
+      <input id="prodPrice" type="number" placeholder="Price (Rs.)">
+      <input id="prodImg" type="text" placeholder="Image URL">
+      <input id="prodDesc" type="text" placeholder="Description">
+      <input id="prodCat" type="text" placeholder="Category (Imports/Exports/Trading/Wholesale)">
+      <button id="addProductBtn" class="addBtn" onclick="createNewProduct()">+ Add Product</button>
+    </div>
+    <h4>Current Products</h4>
+    <div style="overflow-x: auto; width:100%; max-height:520px; overflow-y:auto; border:1px solid #ddd; border-radius:6px;">
+      <table>
+        <thead>
+          <tr style="position:sticky; top:0; z-index:10;">
+            <th>ID</th>
+            <th>Product Name</th>
+            <th>Price</th>
+            <th>Image</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="menuTableList"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 💬 Live Support Chat Center -->
+  <div class="chat-section">
+    <h3 style="color: #1976D2; margin-bottom: 15px; font-size: 18px;">💬 Live Support Chat Center</h3>
+    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 280px; border-right: 1px solid #ddd; padding-right: 10px;">
+        <h4>Active Chats</h4>
+        <div id="chatListContainer" style="display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto;">
+          <div style="padding: 10px; color: #666;">Loading chats...</div>
+        </div>
+      </div>
+      <div style="flex: 2; min-width: 320px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 10px;">
+          <h4 style="margin: 0;" id="activeChatTitle">Select a chat from left</h4>
+        </div>
+        <div id="chatMessagesBox" style="background: #f9f9f9; padding: 15px; border-radius: 8px; height: 250px; overflow-y: auto; border: 1px solid #ddd; display: flex; flex-direction: column; gap: 10px;">
+          <div style="color: #777; text-align: center; margin-top: 100px;">No conversation selected.</div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <input type="text" id="adminChatInput" placeholder="Type a reply..." style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc;" onkeypress="if(event.key === 'Enter') sendAdminChat();">
+          <button onclick="sendAdminChat()" style="background: #1976D2; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Print Modal for Bill -->
+<div id="printModalBox" class="print-modal">
+  <div class="print-box">
+    <div id="printableInvoiceArea" class="print-area"></div>
+    <div style="margin-top:20px; text-align:center;">
+       <button class="rcvBtn" onclick="executeSystemPrint()" style="padding:10px 20px; background:#1976D2;">🖨 Print</button>
+       <button class="close-viewer-btn" onclick="closePrintModal()" style="padding:10px 20px; margin-left:10px;">Close ✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Source Selection Modal (Camera vs Gallery) -->
+<div id="uploadSourceModal" class="print-modal" style="display:none;">
+  <div class="print-box" style="width:300px; text-align:center;">
+    <h3>📷 Upload Delivery Proof</h3>
+    <p style="font-size:13px; color:#555; margin:10px 0;">तस्वीर कहाँबाट लिन चाहनुहुन्छ?</p>
+    <button class="actionBtn rcvBtn" onclick="openCameraInput()" style="width:100%; padding:12px; margin:8px 0; font-size:15px;">📸 Camera</button>
+    <button class="actionBtn dispatchBtn" onclick="openGalleryInput()" style="width:100%; padding:12px; margin:8px 0; font-size:15px;">🖼️ Gallery</button>
+    <button class="close-viewer-btn" onclick="closeUploadSourceModal()" style="width:100%; padding:10px; margin-top:10px;">Cancel</button>
+  </div>
+</div>
+
+<!-- Image Viewer Modal (Payment Slip & Proof click to enlarge) -->
+<div id="imageViewerModal" class="image-viewer-modal" onclick="closeImageViewer()">
+  <div class="image-viewer-box" onclick="event.stopPropagation()">
+    <img id="viewerTargetImage" src="" alt="Image Preview">
+    <br>
+    <button class="close-viewer-btn" onclick="closeImageViewer()">Close ✕</button>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://odhdrhvvgemwgiphipgv.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  var activeOrdersCache = [];
+  var menuItemsCache = [];
+  var currentSelectedChatSession = null;
+  var lastAdminChatCount = {};
+  var activeProofOrderNo = null;
+
+  function playTringTringBell() {
+    try {
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!window.audioCtx) window.audioCtx = new AudioContext();
+      if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
+      let osc = window.audioCtx.createOscillator();
+      let gain = window.audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1200, window.audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.8, window.audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.3);
+      osc.connect(gain);
+      gain.connect(window.audioCtx.destination);
+      osc.start();
+      osc.stop(window.audioCtx.currentTime + 0.3);
+    } catch(e) {}
+  };
+
+  function testBellSound() {
+    playTringTringBell();
+    alert("🔔 डेलिभरी घण्टी सुचारु भयो!");
+  };
+
+  async function handleLogin() {
+    var u = document.getElementById("username").value.trim();
+    var p = document.getElementById("password").value.trim();
+    if(u === "" || p === "") { alert("Enter credentials."); return; }
+    
+    if ((u.toLowerCase() === "admin@pooja.com" || u.toLowerCase() === "admin") && (p === "123456" || p === "123")) {
+      sessionStorage.setItem("ADMIN_LOGIN", "true");
+      sessionStorage.setItem("USER_ROLE", "admin");
+      sessionStorage.setItem("LOGGED_IN_USER", u);
+      showAdminPanel();
+      return;
+    }
+    alert("❌ Invalid Username or Password!");
+  };
+
+  async function loadDeliveryZones() {
+    let tbody = document.getElementById("deliveryZonesTableList");
+    if (!tbody) return;
+    try {
+      let { data, error } = await supabaseClient.from('delivery_zones').select('*').order('district_name', { ascending: true });
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="padding:15px;">No delivery zones found.</td></tr>`;
+        return;
+      }
+      let html = "";
+      data.forEach(z => {
+        html += `<tr>
+          <td><b>${z.district_name}</b></td>
+          <td style="color:#1976D2; font-weight:bold;">Rs. ${z.rate}</td>
+          <td><button class="removeBtn" onclick="deleteDeliveryZone(${z.id})">❌ Delete</button></td>
+        </tr>`;
+      });
+      tbody.innerHTML = html;
+    } catch(e) {}
+  };
+
+  async function addDeliveryZone() {
+    let dName = document.getElementById("newDistrictName").value.trim();
+    let dRate = parseFloat(document.getElementById("newDistrictRate").value);
+    if (!dName || isNaN(dRate)) { alert("कृपया जिल्लाको नाम र रेट सही भर्नुहोस्!"); return; }
+    let { error } = await supabaseClient.from('delivery_zones').insert([{ district_name: dName, rate: dRate }]);
+    if (error) { alert("Error: " + error.message); return; }
+    alert("✅ जिल्ला र रेट सफलतापूर्वक थपियो!");
+    document.getElementById("newDistrictName").value = "";
+    document.getElementById("newDistrictRate").value = "";
+    loadDeliveryZones();
+  };
+
+  async function deleteDeliveryZone(id) {
+    if (confirm("के तपाई यो जिल्ला हटाउन चाहनुहुन्छ?")) {
+      await supabaseClient.from('delivery_zones').delete().eq('id', id);
+      loadDeliveryZones();
+    }
+  };
+
+  async function loadOrders() {
+    try {
+      let { data, error } = await supabaseClient.from('orders').select('*');
+      if (error) {
+        console.error("Error loading orders:", error);
+        return;
+      }
+      if (data) {
+        activeOrdersCache = data.sort((a, b) => (b.id || 0) - (a.id || 0));
+        calculateDashboardStats(activeOrdersCache);
+        renderActiveOrdersTable(activeOrdersCache);
+        drawMonthlySalesChart(activeOrdersCache);
+        drawHourlySalesChart(activeOrdersCache);
+      }
+    } catch(err) {}
+  };
+
+  function renderActiveOrdersTable(ordersToRender) {
+    let tableBody = document.getElementById("ordersTable");
+    if(!tableBody) return;
+    let html = "";
+    if(ordersToRender.length === 0) {
+      html = `<tr><td colspan="9" style="padding:20px;">No Active Orders Found.</td></tr>`;
+    } else {
+      ordersToRender.forEach(function(o){
+        let status = o.status ? String(o.status).trim() : "Pending";
+        
+        let slipSrc = o.payment_slip || o.slip || o.payment || o.qr_image || o.proof || "";
+        let slipHtml = "No Slip";
+        if (slipSrc && slipSrc !== "None" && slipSrc !== "Slip Uploaded" && slipSrc.length > 5) {
+          slipHtml = `<img src="${slipSrc}" class="proof-thumb" onclick="openImageViewer('${slipSrc}')">`;
+        }
+
+        let delivSrc = o.proof_img || o.delivery_proof || "";
+        let delivHtml = "None";
+        if (delivSrc && delivSrc !== "None" && delivSrc !== "EMPTY" && delivSrc.length > 5) {
+          delivHtml = `<img src="${delivSrc}" class="proof-thumb" onclick="openImageViewer('${delivSrc}')">`;
+        }
+
+        let deliveryTimeDisplay = o.delivery_time || o.delivery_date || "-";
+        if (!o.delivery_time && !o.delivery_date) {
+          deliveryTimeDisplay = "-";
+        }
+        
+        let statusSelect = `<select id="status_${o.order_no}">
+          <option value="Pending" ${status==="Pending"?"selected":""}>Pending</option>
+          <option value="Preparing" ${status==="Preparing"?"selected":""}>Preparing</option>
+          <option value="Ready" ${status==="Ready"?"selected":""}>Ready</option>
+          <option value="Out for Delivery" ${status==="Out for Delivery"?"selected":""}>Out for Delivery</option>
+          <option value="Delivered" ${status==="Delivered"?"selected":""}>Delivered</option>
+          <option value="Cancelled" ${status==="Cancelled"?"selected":""} style="color:red; font-weight:bold;">Cancelled</option>
+        </select> 
+        <button class="updateBtn" onclick="manualUpdate('${o.order_no}')">Go</button>`;
+
+        let actionButtons = "";
+        if(status === "Pending") {
+          actionButtons = `<button class="actionBtn rcvBtn" onclick="markReceived('${o.order_no}')">🎫 Received</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+        } else if(status === "Preparing") {
+          actionButtons = `<button class="actionBtn billBtn" onclick="openBill('${o.order_no}')">🍳 Ready & Bill</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+        } else if(status === "Ready") {
+          actionButtons = `<button class="actionBtn dispatchBtn" onclick="updateOrderStatus('${o.order_no}', 'Out for Delivery')">🚚 Dispatch</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+        } else if(status === "Out for Delivery") {
+          actionButtons = `<button class="actionBtn proofBtn" onclick="promptUploadProof('${o.order_no}')">📸 Upload Proof</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+        } else if(status === "Delivered") {
+          actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button>`;
+        } else if(status === "Cancelled") {
+          let reasonText = o.cancel_reason || "No reason provided";
+          let adminBy = o.cancelled_by || "Admin";
+          actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default; background:#f44336;">❌ Cancelled</button>
+                           <button class="viewReasonBtn" onclick="viewCancelReason('${encodeURIComponent(reasonText)}', '${encodeURIComponent(adminBy)}')">👁️ View Reason</button>`;
+        } else {
+          actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default;">❌ Cancelled</button>`;
+        }
+
+        html += `<tr>
+          <td style="font-size:12px; color:#555;">${o.time || '-'}</td>
+          <td><b>${o.order_no || ''}</b></td>
+          <td style="text-align:left;"><b>${o.customer_name || '-'}</b><br><small style="color:#666;">${o.phone || ''}</small><br><small style="color:#333; white-space:pre-line;">${o.items || ''}</small><br><small style="color:#444;">${o.address || '-'}</small></td>
+          <td style="color:#1976D2; font-weight:bold;">Rs. ${o.total || '0'}</td>
+          <td>${slipHtml}</td>
+          <td style="font-size:12px; color:#555;">${deliveryTimeDisplay}</td>
+          <td>${delivHtml}</td>
+          <td>${statusSelect}</td>
+          <td>${actionButtons}</td>
+        </tr>`;
+      });
+    }
+    tableBody.innerHTML = html;
+  };
+
+  function promptCancelOrder(orderNo) {
+    let reason = prompt("कृपया अर्डर क्यान्सिल गर्नुको कारण (Reason) लेख्नुहोस्:");
+    if (reason !== null) {
+      reason = reason.trim() === "" ? "No reason provided" : reason.trim();
+      let currentAdmin = sessionStorage.getItem("LOGGED_IN_USER") || "Admin";
+      updateOrderStatus(orderNo, 'Cancelled', { 
+        cancel_reason: reason, 
+        cancelled_by: currentAdmin 
+      });
+    }
+  }
+
+  function viewCancelReason(encodedReason, encodedAdmin) {
+    let reason = decodeURIComponent(encodedReason);
+    let admin = decodeURIComponent(encodedAdmin);
+    alert(`❌ Cancellation Details:\n\n👤 Cancelled By: ${admin}\n📝 Reason: ${reason}`);
+  }
+
+  function filterActiveOrders() {
+    let query = document.getElementById("orderSearchInput").value.trim().toLowerCase();
+    if(!query) { renderActiveOrdersTable(activeOrdersCache); return; }
+    let filtered = activeOrdersCache.filter(o => 
+      String(o.order_no || '').toLowerCase().includes(query) || 
+      String(o.customer_name || '').toLowerCase().includes(query)
+    );
+    renderActiveOrdersTable(filtered);
+  };
+
+  async function updateOrderStatus(orderNo, newStatus, extraData = {}) {
+    let updatePayload = { status: newStatus, ...extraData };
+    let { error } = await supabaseClient.from('orders').update(updatePayload).eq('order_no', orderNo);
+    if(error) {
+      console.warn("Update error:", error);
+      await supabaseClient.from('orders').update({ status: newStatus }).eq('order_no', orderNo);
+    }
+    loadOrders();
+  };
+
+  async function manualUpdate(orderNo) {
+    var s = document.getElementById("status_" + orderNo).value;
+    if (s === "Cancelled") {
+      let reason = prompt("कृपया अर्डर क्यान्सिल गर्नुको कारण (Reason) लेख्नुहोस्:");
+      reason = (reason && reason.trim() !== "") ? reason.trim() : "No reason provided";
+      let currentAdmin = sessionStorage.getItem("LOGGED_IN_USER") || "Admin";
+      await updateOrderStatus(orderNo, s, { cancel_reason: reason, cancelled_by: currentAdmin });
+    } else {
+      await updateOrderStatus(orderNo, s);
+    }
+  };
+
+  function markReceived(orderNo) {
+    updateOrderStatus(orderNo, 'Preparing');
+  }
+
+  function openBill(orderNo) {
+    let order = activeOrdersCache.find(o => o.order_no === orderNo);
+    if(!order) return;
+
+    let billHtml = `
+      <center><h3><b>POOJA EXPORT AND IMPORT TRADING</b></h3>
+      <p><b>RETAIL TAX INVOICE / BILL</b></p></center>
+      <hr style="border:1px dashed #000;">
+      <p><b>Order No:</b> ${order.order_no}</p>
+      <p><b>Customer:</b> ${order.customer_name} (${order.phone})</p>
+      <p><b>Address:</b> ${order.address}</p>
+      <p><b>Date:</b> ${order.time}</p>
+      <hr style="border:1px dashed #000;">
+      <p><b>Items:</b></p>
+      <pre style="font-family:inherit; white-space:pre-line;">${order.items || ''}</pre>
+      <hr style="border:1px dashed #000;">
+      <h3 style="text-align:right;">Grand Total: Rs. ${order.total}</h3>
+      <hr style="border:1px dashed #000;">
+      <center><p>Thank you for shopping with us!</p></center>
+    `;
+    document.getElementById("printableInvoiceArea").innerHTML = billHtml;
+    document.getElementById("printModalBox").style.display = "flex";
+
+    updateOrderStatus(orderNo, 'Ready');
+  }
+
+  function executeSystemPrint() {
+    window.print();
+  }
+
+  function closePrintModal() {
+    document.getElementById("printModalBox").style.display = "none";
+  }
+
+  function promptUploadProof(orderNo) {
+    activeProofOrderNo = orderNo;
+    document.getElementById("uploadSourceModal").style.display = "flex";
+  }
+
+  function closeUploadSourceModal() {
+    document.getElementById("uploadSourceModal").style.display = "none";
+  }
+
+  function openCameraInput() {
+    closeUploadSourceModal();
+    document.getElementById("proofCameraInput").click();
+  }
+
+  function openGalleryInput() {
+    closeUploadSourceModal();
+    document.getElementById("proofGalleryInput").click();
+  }
+
+  function handleProofFileSelected(event) {
+    const file = event.target.files[0];
+    if(!file || !activeProofOrderNo) return;
+
+    const reader = new FileReader();
+    reader.onloadend = async function() {
+      let base64Image = reader.result;
+      let currentDateTime = new Date().toLocaleString();
+
+      let { error } = await supabaseClient.from('orders').update({
+        status: 'Delivered',
+        proof_img: base64Image,
+        delivery_time: currentDateTime
+      }).eq('order_no', activeProofOrderNo);
+
+      if (error) {
+        alert("Error saving proof: " + error.message);
+      } else {
+        alert("✅ Delivery Proof Uploaded Successfully & Order Marked as Delivered!");
+      }
+
+      activeProofOrderNo = null;
+      document.getElementById("proofCameraInput").value = "";
+      document.getElementById("proofGalleryInput").value = "";
+      loadOrders();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function calculateDashboardStats(orders) {
+    let totalOrders = orders.length;
+    let totalRevenue = 0, todaySales = 0, monthSales = 0;
+    let now = new Date();
+
+    orders.forEach(o => {
+      let amount = parseFloat(o.total) || 0;
+      totalRevenue += amount;
+      if (o.time) {
+        let orderDate = new Date(o.time);
+        if (!isNaN(orderDate.getTime())) {
+          if (orderDate.getDate() === now.getDate() && orderDate.getMonth() === now.getMonth()) todaySales += amount;
+          if (orderDate.getMonth() === now.getMonth()) monthSales += amount;
+        }
+      }
+    });
+
+    document.getElementById("dashTotalOrders").innerText = totalOrders;
+    document.getElementById("dashTotalRevenue").innerText = "Rs. " + totalRevenue.toFixed(2);
+    document.getElementById("dashTodaySales").innerText = "Rs. " + todaySales.toFixed(2);
+    document.getElementById("dashMonthSales").innerText = "Rs. " + monthSales.toFixed(2);
+  };
+
+  function drawMonthlySalesChart(orders) {
+    if (typeof google === 'undefined' || !google.visualization) return;
+    let monthlyTotals = {};
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    orders.forEach(o => {
+      let amount = parseFloat(o.total) || 0;
+      if (o.time) {
+        let d = new Date(o.time);
+        if (!isNaN(d.getTime())) {
+          let mKey = monthNames[d.getMonth()] + " " + d.getFullYear();
+          monthlyTotals[mKey] = (monthlyTotals[mKey] || 0) + amount;
+        }
+      }
+    });
+
+    let chartDataArray = [['Month', 'Sales (Rs.)']];
+    let keys = Object.keys(monthlyTotals);
+    if(keys.length === 0) {
+      chartDataArray.push(['Current', 0]);
+    } else {
+      keys.forEach(k => { chartDataArray.push([k, monthlyTotals[k]]); });
+    }
+
+    let data = google.visualization.arrayToDataTable(chartDataArray);
+    let options = {
+      title: 'Monthly Sales Insights & Growth',
+      colors: ['#1976D2'],
+      legend: { position: 'none' },
+      hAxis: { title: 'Month' },
+      vAxis: { title: 'Sales (Rs.)' },
+      backgroundColor: 'transparent'
+    };
+    let chart = new google.visualization.ColumnChart(document.getElementById('monthlySalesChart'));
+    chart.draw(data, options);
+  }
+
+  function drawHourlySalesChart(orders) {
+    if (typeof google === 'undefined' || !google.visualization) return;
+    let hourlyTotals = {};
+    for(let i=0; i<24; i++) {
+      let hLabel = (i < 10 ? "0" + i : i) + ":00";
+      hourlyTotals[hLabel] = 0;
+    }
+
+    let now = new Date();
+    orders.forEach(o => {
+      let amount = parseFloat(o.total) || 0;
+      if (o.time) {
+        let d = new Date(o.time);
+        if (!isNaN(d.getTime())) {
+          if (d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+            let hr = d.getHours();
+            let hLabel = (hr < 10 ? "0" + hr : hr) + ":00";
+            hourlyTotals[hLabel] = (hourlyTotals[hLabel] || 0) + amount;
+          }
+        }
+      }
+    });
+
+    let chartDataArray = [['Hour', 'Sales (Rs.)']];
+    Object.keys(hourlyTotals).forEach(h => {
+      chartDataArray.push([h, hourlyTotals[h]]);
+    });
+
+    let data = google.visualization.arrayToDataTable(chartDataArray);
+    let options = {
+      title: "Today's Hourly Sales Trend",
+      colors: ['#2196F3'],
+      legend: { position: 'none' },
+      hAxis: { title: 'Time (Hour)' },
+      vAxis: { title: 'Sales (Rs.)' },
+      backgroundColor: 'transparent'
+    };
+    let chart = new google.visualization.LineChart(document.getElementById('hourlySalesChart'));
+    chart.draw(data, options);
+  }
+
+  async function loadMenuList() {
+    let { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
+    if (data) menuItemsCache = data;
+    var menuList = document.getElementById("menuTableList");
+    if(!menuList) return;
+    let html = "";
+    menuItemsCache.forEach((r, index) => {
+      html += `<tr>
+        <td><b>${index + 1}</b></td>
+        <td><b>${r.name || ''}</b></td>
+        <td style="color:#1976D2; font-weight:bold;">Rs. ${r.price || 0}</td>
+        <td>${r.image ? `<img src="${r.image}" class="menu-thumb">` : 'No Image'}</td>
+        <td>${r.description || ''}</td>
+        <td><b>${r.category || ''}</b></td>
+        <td>
+          <button class="removeBtn" onclick="deleteProduct(${r.id})">❌ Delete</button>
+        </td>
+      </tr>`;
+    });
+    menuList.innerHTML = html;
+  };
+
+  async function createNewProduct() {
+    var name = document.getElementById("prodName").value.trim();
+    var price = parseFloat(document.getElementById("prodPrice").value) || 0;
+    if(!name || !price) { alert("Enter Name and Price!"); return; }
+    await supabaseClient.from('menu_items').insert([{ 
+      name: name, 
+      price: price, 
+      image: document.getElementById("prodImg").value.trim(), 
+      description: document.getElementById("prodDesc").value.trim(), 
+      category: document.getElementById("prodCat").value.trim() || "Wholesale" 
+    }]);
+    alert("✅ Product Added!");
+    document.getElementById("prodName").value = "";
+    document.getElementById("prodPrice").value = "";
+    document.getElementById("prodImg").value = "";
+    document.getElementById("prodDesc").value = "";
+    document.getElementById("prodCat").value = "";
+    loadMenuList();
+  };
+
+  async function deleteProduct(rowId) {
+    if(confirm("Delete item?")) {
+      await supabaseClient.from('menu_items').delete().eq('id', rowId);
+      loadMenuList();
+    }
+  };
+
+  async function loadAdminChatsList() {
+    try {
+      let { data, error } = await supabaseClient.from('chats').select('*').order('id', { ascending: true });
+      if(error || !data) return;
+      
+      let sessionsMap = {};
+      data.forEach(m => {
+        if(!sessionsMap[m.session_id]) {
+          sessionsMap[m.session_id] = [];
+        }
+        sessionsMap[m.session_id].push(m);
+      });
+
+      let container = document.getElementById("chatListContainer");
+      if(!container) return;
+      let html = "";
+      
+      Object.keys(sessionsMap).forEach(sessionId => {
+        let msgs = sessionsMap[sessionId];
+        let lastMsg = msgs[msgs.length - 1];
+        let isSelected = (currentSelectedChatSession === sessionId) ? "background:#e3f2fd;" : "";
+        
+        if (lastAdminChatCount[sessionId] !== undefined && msgs.length > lastAdminChatCount[sessionId]) {
+          if (lastMsg.sender === "Customer") {
+            playTringTringBell();
+          }
+        }
+        lastAdminChatCount[sessionId] = msgs.length;
+
+        html += `<div onclick="selectChatSession('${sessionId}')" style="padding:10px; border-radius:8px; border:1px solid #ddd; cursor:pointer; ${isSelected}">
+          <div style="font-weight:bold; color:#1976D2;">${sessionId}</div>
+          <div style="font-size:12px; color:#666; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${lastMsg ? lastMsg.message : ''}</div>
+        </div>`;
+      });
+
+      if(html === "") {
+        html = `<div style="padding:10px; color:#666;">No chats available.</div>`;
+      }
+      container.innerHTML = html;
+
+      if(currentSelectedChatSession) {
+        renderAdminChatMessages(sessionsMap[currentSelectedChatSession] || []);
+      }
+    } catch(e) {}
+  }
+
+  function selectChatSession(sessionId) {
+    currentSelectedChatSession = sessionId;
+    document.getElementById("activeChatTitle").innerText = `Chat: ${sessionId}`;
+    loadAdminChatsList();
+  }
+
+  function renderAdminChatMessages(msgs) {
+    let box = document.getElementById("chatMessagesBox");
+    if(!box) return;
+    let html = "";
+    msgs.forEach(m => {
+      let align = (m.sender === "Customer") ? "text-align:left;" : "text-align:right;";
+      let bg = (m.sender === "Customer") ? "#fff; border:1px solid #ddd;" : "#1976D2; color:white;";
+      html += `<div style="${align} margin-bottom:8px;">
+        <span style="display:inline-block; padding:8px 12px; border-radius:8px; background:${bg}; max-width:80%; text-align:left;">
+          <small style="font-size:9px; opacity:0.8; display:block;">${m.sender} - ${m.time || ''}</small>
+          <div>${m.message}</div>
+        </span>
+      </div>`;
+    });
+    box.innerHTML = html;
+    box.scrollTop = box.scrollHeight;
+  }
+
+  async function sendAdminChat() {
+    if(!currentSelectedChatSession) { alert("Please select a chat first!"); return; }
+    let inputEl = document.getElementById("adminChatInput");
+    let msg = inputEl.value.trim();
+    if(!msg) return;
+    inputEl.value = "";
+    try {
+      await supabaseClient.from('chats').insert([{
+        session_id: currentSelectedChatSession,
+        customer_name: "Admin",
+        support_type: "Support",
+        sender: "Admin",
+        message: msg,
+        time: new Date().toLocaleString()
+      }]);
+      loadAdminChatsList();
+    } catch(e) {}
+  }
+
+  function openImageViewer(imgUrl) {
+    document.getElementById("viewerTargetImage").src = imgUrl;
+    document.getElementById("imageViewerModal").style.display = "flex";
+  };
+
+  function closeImageViewer() {
+    document.getElementById("imageViewerModal").style.display = "none";
+  };
+
+  function showAdminPanel() {
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("adminContent").style.display = "block";
+    loadDeliveryZones();
+    loadMenuList();
+    loadOrders();
+    loadAdminChatsList();
+    setInterval(() => { 
+      loadOrders(); 
+      loadAdminChatsList();
+    }, 5000);
+  };
+
+  function logout() { sessionStorage.clear(); window.location.reload(); };
+
+  if (sessionStorage.getItem("ADMIN_LOGIN") === "true") {
+    showAdminPanel();
+  } else {
+    document.getElementById("loginScreen").style.display = "flex";
+  }
+</script>
+</body>
+</html>gstatic.com/charts/loader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     try {
