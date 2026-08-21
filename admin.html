@@ -38,6 +38,7 @@
 
     .instock-toggle-btn { background:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; margin-bottom:4px; }
     .outstock-toggle-btn { background:#f44336; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; margin-bottom:4px; }
+    .lowstock-badge { background:#f44336; color:#white; padding:6px 12px; border-radius:6px; font-weight:bold; font-size:12px; display:inline-block; }
 
     .staff-section, .menu-section, .inventory-section, .salary-section, .invoice-section, .chat-section { background:#fff; padding:20px; border-radius:10px; margin-top:40px; border:1px solid #ddd; display:block; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
     .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; display:flex; justify-content:center; align-items:center; z-index:99999; }
@@ -207,6 +208,52 @@
           </tr>
         </thead>
         <tbody id="menuTableList"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 📊 Inventory Management Section -->
+  <div class="inventory-section">
+    <h3 style="color:#1976D2; margin-bottom:15px;">📦 Inventory Management</h3>
+    <div style="background:#f9f9f9; padding:20px; border-radius:8px; border:1px solid #ddd;">
+      <div style="margin-bottom:15px;">
+        <select id="inventoryItemSelect" onchange="handleInventorySelectChange()" style="width:100%; padding:12px; font-size:16px;">
+          <option value="">-- Item ID छान्नुहोस् --</option>
+        </select>
+      </div>
+      <div style="margin-bottom:15px; font-size:15px; line-height:1.6;">
+        <div><b>Name:</b> <span id="invSelectedName">-</span></div>
+        <div><b>Category:</b> <span id="invSelectedCategory">-</span></div>
+      </div>
+      <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:15px;">
+        <div style="flex:1; min-width:200px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:14px;">Current Stock:</label>
+          <input id="invCurrentStockInput" type="number" placeholder="Enter Current Stock" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:200px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:14px;">Alert Limit:</label>
+          <input id="invAlertLimitInput" type="number" value="50" style="width:100%; padding:10px;">
+        </div>
+      </div>
+      <button onclick="saveInventoryStock()" style="background:#4CAF50; color:white; border:none; padding:12px 25px; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer;">Save Stock</button>
+    </div>
+
+    <h3 style="color:#f44336; margin:25px 0 15px 0;">⚠️ Stock Alert Items</h3>
+    <div style="overflow-x:auto; border:1px solid #ddd; border-radius:6px;">
+      <table>
+        <thead>
+          <tr style="background:#e91e63; color:#fff;">
+            <th>ItemID</th>
+            <th>ItemName</th>
+            <th>Category</th>
+            <th>Current</th>
+            <th>Limit</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="stockAlertsTableBody">
+          <tr><td colspan="6" style="padding:15px;">No low stock items.</td></tr>
+        </tbody>
       </table>
     </div>
   </div>
@@ -469,7 +516,7 @@
           let reasonText = o.cancel_reason || "No reason provided";
           let adminBy = o.cancelled_by || "Admin";
           actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default; background:#f44336;">❌ Cancelled</button>
-                           <button class="viewReasonBtn" onclick="viewCancelReason('${encodeURIComponent(reasonText)}', '${encodeURIComponent(adminBy)}')">👁️ View Reason</button>`;
+                             <button class="viewReasonBtn" onclick="viewCancelReason('${encodeURIComponent(reasonText)}', '${encodeURIComponent(adminBy)}')">👁️ View Reason</button>`;
         } else {
           actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default;">❌ Cancelled</button>`;
         }
@@ -727,7 +774,6 @@
     chart.draw(data, options);
   }
 
-  // Current Products लोड गर्ने र In Stock / Out of Stock बटन सहित देखाउने
   async function loadMenuList() {
     let { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
     if (data) menuItemsCache = data;
@@ -776,9 +822,87 @@
       </tr>`;
     });
     menuList.innerHTML = html;
+    loadInventoryDropdown();
   };
 
-  // In Stock र Out of Stock स्विच गर्ने फङ्सन
+  function loadInventoryDropdown() {
+    let selectEl = document.getElementById("inventoryItemSelect");
+    if(!selectEl) return;
+    let html = `<option value="">-- Item ID छान्नुहोस् --</option>`;
+    menuItemsCache.forEach(r => {
+      html += `<option value="${r.id}">${r.id} - ${r.name}</option>`;
+    });
+    selectEl.innerHTML = html;
+  }
+
+  function handleInventorySelectChange() {
+    let id = document.getElementById("inventoryItemSelect").value;
+    if(!id) {
+      document.getElementById("invSelectedName").innerText = "-";
+      document.getElementById("invSelectedCategory").innerText = "-";
+      document.getElementById("invCurrentStockInput").value = "";
+      return;
+    }
+    let item = menuItemsCache.find(r => String(r.id) === String(id));
+    if(item) {
+      document.getElementById("invSelectedName").innerText = item.name || "-";
+      document.getElementById("invSelectedCategory").innerText = item.category || "-";
+      document.getElementById("invCurrentStockInput").value = item.stock !== undefined ? item.stock : (item.current_stock || 0);
+      if(item.alert_limit !== undefined) {
+        document.getElementById("invAlertLimitInput").value = item.alert_limit;
+      }
+    }
+  }
+
+  async function saveInventoryStock() {
+    let id = document.getElementById("inventoryItemSelect").value;
+    if(!id) { alert("कृपया Item छान्नुहोस्!"); return; }
+    let stockVal = parseInt(document.getElementById("invCurrentStockInput").value) || 0;
+    let limitVal = parseInt(document.getElementById("invAlertLimitInput").value) || 50;
+
+    let { error } = await supabaseClient.from('menu_items').update({
+      stock: stockVal,
+      alert_limit: limitVal
+    }).eq('id', id);
+
+    if(error) {
+      alert("Error: " + error.message);
+    } else {
+      alert("✅ स्टक सफलतापूर्वक सेभ भयो!");
+      loadMenuList();
+      loadStockAlerts();
+    }
+  }
+
+  function loadStockAlerts() {
+    let tbody = document.getElementById("stockAlertsTableBody");
+    if(!tbody) return;
+    let lowStockItems = menuItemsCache.filter(r => {
+      let stk = r.stock !== undefined ? r.stock : (r.current_stock || 0);
+      let lim = r.alert_limit !== undefined ? r.alert_limit : 50;
+      return stk <= lim;
+    });
+
+    let html = "";
+    lowStockItems.forEach(r => {
+      let stk = r.stock !== undefined ? r.stock : (r.current_stock || 0);
+      let lim = r.alert_limit !== undefined ? r.alert_limit : 50;
+      html += `<tr>
+        <td><b>${r.id}</b></td>
+        <td style="text-align:left;"><b>${r.name}</b></td>
+        <td>${r.category || '-'}</td>
+        <td style="color:red; font-weight:bold;">${stk}</td>
+        <td>${lim}</td>
+        <td><span class="lowstock-badge">🔴 Low Stock</span></td>
+      </tr>`;
+    });
+
+    if(html === "") {
+      html = `<tr><td colspan="6" style="padding:15px; color:#666;">No low stock items.</td></tr>`;
+    }
+    tbody.innerHTML = html;
+  }
+
   async function toggleStockStatus(id, currentStatus) {
     let newStatus = (currentStatus === "Out of Stock") ? "In Stock" : "Out of Stock";
     let { error } = await supabaseClient.from('menu_items').update({ status: newStatus }).eq('id', id);
@@ -851,7 +975,9 @@
       image: image, 
       description: description, 
       category: category,
-      status: "In Stock"
+      status: "In Stock",
+      stock: 0,
+      alert_limit: 50
     }]);
 
     if (error) {
@@ -981,9 +1107,11 @@
     loadMenuList();
     loadOrders();
     loadAdminChatsList();
+    setTimeout(() => { loadStockAlerts(); }, 1000);
     setInterval(() => { 
       loadOrders(); 
       loadAdminChatsList();
+      loadStockAlerts();
     }, 5000);
   };
 
