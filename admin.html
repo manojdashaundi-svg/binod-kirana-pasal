@@ -20,14 +20,17 @@
     .automation-badge { display: inline-block; background: #fff; border: 1px solid #4CAF50; color: #4CAF50; font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 20px; margin-left: 12px; vertical-align: middle; }
     table { width:100%; border-collapse:collapse; background:#fff; margin-top:20px; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
     th{ background:#1976D2; color:#fff; padding:12px; font-size:14px; text-align:center; }
-    td{ padding:10px; border:1px solid #ddd; text-align:center; font-size:14px; }
+    td{ padding:10px; border:1px solid #ddd; text-align:center; font-size:14px; vertical-align:middle; }
     select, input{ padding:8px; border-radius:6px; border:1px solid #ccc; margin:3px; box-sizing: border-box; }
-    .rcvBtn { background:#4CAF50; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; display:inline-block; margin:2px; }
-    .dispatchBtn { background:#ff9800; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; display:inline-block; margin:2px; }
-    .cancelBtn { background:#f44336; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; display:inline-block; margin:2px; }
-    .updateBtn { background:#2196F3; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; }
-    .addBtn { background:#1976D2; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; }
-    .removeBtn { background:#f44336; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; }
+    
+    .actionBtn { color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; display:block; margin:4px auto; width:130px; font-size:13px; text-align:center; }
+    .kotBtn { background:#FF9800; }
+    .billBtn { background:#9C27B0; }
+    .dispatchBtn { background:#00BCD4; }
+    .proofBtn { background:#3F51B5; }
+    .deliveredBtn { background:#4CAF50; cursor:default; }
+    .cancelBtn { background:#f44336; }
+
     .staff-section, .menu-section, .inventory-section, .salary-section, .invoice-section, .chat-section { background:#fff; padding:20px; border-radius:10px; margin-top:40px; border:1px solid #ddd; display:block; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
     .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; display:flex; justify-content:center; align-items:center; z-index:99999; }
     .login-card { background:#fff; padding:30px; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.1); width:100%; max-width:360px; text-align:center; }
@@ -41,8 +44,8 @@
     .close-viewer-btn { background:#f44336; color:white; border:none; padding:8px 15px; border-radius:6px; font-weight:bold; cursor:pointer; }
 
     .print-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:none; justify-content:center; align-items:center; z-index:999999; }
-    .print-box { background:#fff; padding:25px; border-radius:12px; width:360px; max-height:85vh; overflow-y:auto; box-shadow:0 5px 20px rgba(0,0,0,0.3); }
-    .print-area { font-family: 'Courier New', Courier, monospace; font-size:14px; color:#000; line-height:1.4; }
+    .print-box { background:#fff; padding:25px; border-radius:12px; width:380px; max-height:85vh; overflow-y:auto; box-shadow:0 5px 20px rgba(0,0,0,0.3); text-align:left; }
+    .print-area { font-family: 'Courier New', Courier, monospace; font-size:13px; color:#000; line-height:1.4; background:#fff; padding:15px; border:1px dashed #333; }
 
     .chart-container { background:#fff; padding:15px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.05); margin:20px 0; border:1px solid #ddd; width:100%; height: 280px; display:block; }
     .menu-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
@@ -116,7 +119,7 @@
           <tr style="position:sticky; top:0; z-index:10;">
             <th>Order Date & Time</th>
             <th>Order No.</th>
-            <th>Customer</th>
+            <th>Customer & Items</th>
             <th>Total</th>
             <th>Payment Slip</th>
             <th>Delivery Date & Time</th>
@@ -131,6 +134,9 @@
       </table>
     </div>
   </div>
+
+  <!-- Hidden Proof Upload Input (Camera/Gallery) -->
+  <input type="file" id="proofUploadInput" accept="image/*" style="display:none;" onchange="handleProofFileSelected(event)">
 
   <!-- 🚚 Delivery Zone & District Rate Management -->
   <div class="invoice-section" style="background:#fff; padding:20px; border-radius:10px; margin-top:20px; border:1px solid #ddd;">
@@ -214,19 +220,21 @@
 
 </div>
 
+<!-- Print Modal for KOT / Bill -->
 <div id="printModalBox" class="print-modal">
   <div class="print-box">
     <div id="printableInvoiceArea" class="print-area"></div>
     <div style="margin-top:20px; text-align:center;">
-       <button class="rcvBtn" onclick="executeSystemPrint()" style="padding:10px 20px;">🖨 Print</button>
+       <button class="rcvBtn" onclick="executeSystemPrint()" style="padding:10px 20px; background:#1976D2;">🖨 Print</button>
        <button class="close-viewer-btn" onclick="closePrintModal()" style="padding:10px 20px; margin-left:10px;">Close ✕</button>
     </div>
   </div>
 </div>
 
+<!-- Image Viewer Modal (Payment Slip & Proof) -->
 <div id="imageViewerModal" class="image-viewer-modal" onclick="closeImageViewer()">
   <div class="image-viewer-box" onclick="event.stopPropagation()">
-    <img id="viewerTargetImage" src="" alt="Payment Proof">
+    <img id="viewerTargetImage" src="" alt="Image Preview">
     <br>
     <button class="close-viewer-btn" onclick="closeImageViewer()">Close ✕</button>
   </div>
@@ -237,11 +245,11 @@
   const SUPABASE_ANON_KEY = 'sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  var myRole = "admin";
   var activeOrdersCache = [];
   var menuItemsCache = [];
   var currentSelectedChatSession = null;
   var lastAdminChatCount = {};
+  var activeProofOrderNo = null;
 
   function playTringTringBell() {
     try {
@@ -298,9 +306,7 @@
         </tr>`;
       });
       tbody.innerHTML = html;
-    } catch(e) {
-      tbody.innerHTML = `<tr><td colspan="3" style="padding:15px;">Error loading zones.</td></tr>`;
-    }
+    } catch(e) {}
   };
 
   async function addDeliveryZone() {
@@ -327,7 +333,6 @@
       let { data, error } = await supabaseClient.from('orders').select('*');
       if (error) {
         console.error("Error loading orders:", error);
-        document.getElementById("ordersTable").innerHTML = `<tr><td colspan="9" style="padding:20px; color:red;">❌ Error loading orders: ${error.message}</td></tr>`;
         return;
       }
       if (data) {
@@ -337,9 +342,7 @@
         drawMonthlySalesChart(activeOrdersCache);
         drawHourlySalesChart(activeOrdersCache);
       }
-    } catch(err) {
-      console.error("Exception loading orders:", err);
-    }
+    } catch(err) {}
   };
 
   function renderActiveOrdersTable(ordersToRender) {
@@ -367,25 +370,29 @@
         <button class="updateBtn" onclick="manualUpdate('${o.order_no}')">Go</button>`;
 
         let actionButtons = "";
-        if(status === "Delivered") {
-          actionButtons = `<button class="rcvBtn" style="background:#4CAF50; cursor:default;">✔ Delivered</button>`;
-        } else if(status === "Cancelled") {
-          actionButtons = `<button class="cancelBtn" style="background:#f44336; cursor:default;">❌ Cancelled</button>`;
+        let safeOrderStr = encodeURIComponent(JSON.stringify(o));
+
+        if(status === "Pending") {
+          actionButtons = `<button class="actionBtn kotBtn" onclick="openKOT('${o.order_no}')">🎫 Receive & KOT</button>`;
+        } else if(status === "Preparing") {
+          actionButtons = `<button class="actionBtn billBtn" onclick="openBill('${o.order_no}')">🍳 Ready & Bill</button>`;
+        } else if(status === "Ready") {
+          actionButtons = `<button class="actionBtn dispatchBtn" onclick="updateOrderStatus('${o.order_no}', 'Out for Delivery')">🚚 Dispatch</button>`;
+        } else if(status === "Out for Delivery") {
+          actionButtons = `<button class="actionBtn proofBtn" onclick="triggerProofUpload('${o.order_no}')">📸 Upload Proof</button>`;
+        } else if(status === "Delivered") {
+          actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button>`;
         } else {
-          actionButtons = `
-            <button class="dispatchBtn" onclick="updateOrderStatus('${o.order_no}', 'Out for Delivery')">🚚 Dispatch</button>
-            <button class="rcvBtn" onclick="updateOrderStatus('${o.order_no}', 'Delivered')">✅ Delivered</button>
-            <button class="cancelBtn" onclick="updateOrderStatus('${o.order_no}', 'Cancelled')">❌ Cancel</button>
-          `;
+          actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default;">❌ Cancelled</button>`;
         }
 
         html += `<tr>
           <td style="font-size:12px; color:#555;">${o.time || '-'}</td>
           <td><b>${o.order_no || ''}</b></td>
-          <td style="text-align:left;"><b>${o.customer_name || '-'}</b><br><small style="color:#666;">${o.phone || ''}</small><br><small style="color:#444;">${o.address || '-'}</small></td>
+          <td style="text-align:left;"><b>${o.customer_name || '-'}</b><br><small style="color:#666;">${o.phone || ''}</small><br><small style="color:#333; white-space:pre-line;">${o.items || ''}</small><br><small style="color:#444;">${o.address || '-'}</small></td>
           <td style="color:#1976D2; font-weight:bold;">Rs. ${o.total || '0'}</td>
           <td>${slipHtml}</td>
-          <td style="font-size:12px; color:#555;">${o.delivery_time || o.time || '-'}</td>
+          <td style="font-size:12px; color:#555;">${o.delivery_time || '-'}</td>
           <td>${delivHtml}</td>
           <td>${statusSelect}</td>
           <td>${actionButtons}</td>
@@ -405,8 +412,9 @@
     renderActiveOrdersTable(filtered);
   };
 
-  async function updateOrderStatus(orderNo, newStatus) {
-    await supabaseClient.from('orders').update({ status: newStatus }).eq('order_no', orderNo);
+  async function updateOrderStatus(orderNo, newStatus, extraData = {}) {
+    let updatePayload = { status: newStatus, ...extraData };
+    await supabaseClient.from('orders').update(updatePayload).eq('order_no', orderNo);
     loadOrders();
   };
 
@@ -414,6 +422,94 @@
     var s = document.getElementById("status_" + orderNo).value;
     await updateOrderStatus(orderNo, s);
   };
+
+  // KOT Modal & Action
+  function openKOT(orderNo) {
+    let order = activeOrdersCache.find(o => o.order_no === orderNo);
+    if(!order) return;
+    
+    let kotHtml = `
+      <center><h3><b>POOJA EXPORT AND IMPORT</b></h3>
+      <p><b>KITCHEN ORDER TICKET (KOT)</b></p></center>
+      <hr style="border:1px dashed #000;">
+      <p><b>Order No:</b> ${order.order_no}</p>
+      <p><b>Customer:</b> ${order.customer_name} (${order.phone})</p>
+      <p><b>Time:</b> ${order.time}</p>
+      <hr style="border:1px dashed #000;">
+      <p><b>Items:</b></p>
+      <pre style="font-family:inherit; white-space:pre-line;">${order.items || ''}</pre>
+      <hr style="border:1px dashed #000;">
+    `;
+    document.getElementById("printableInvoiceArea").innerHTML = kotHtml;
+    document.getElementById("printModalBox").style.display = "flex";
+
+    // अटोमेटिक Status 'Preparing' मा बदल्ने
+    updateOrderStatus(orderNo, 'Preparing');
+  }
+
+  // Bill Modal & Action
+  function openBill(orderNo) {
+    let order = activeOrdersCache.find(o => o.order_no === orderNo);
+    if(!order) return;
+
+    let billHtml = `
+      <center><h3><b>POOJA EXPORT AND IMPORT TRADING</b></h3>
+      <p><b>TAX INVOICE / BILL</b></p></center>
+      <hr style="border:1px dashed #000;">
+      <p><b>Order No:</b> ${order.order_no}</p>
+      <p><b>Customer:</b> ${order.customer_name} (${order.phone})</p>
+      <p><b>Address:</b> ${order.address}</p>
+      <p><b>Date:</b> ${order.time}</p>
+      <hr style="border:1px dashed #000;">
+      <p><b>Particulars:</b></p>
+      <pre style="font-family:inherit; white-space:pre-line;">${order.items || ''}</pre>
+      <hr style="border:1px dashed #000;">
+      <h3 style="text-align:right;">Grand Total: Rs. ${order.total}</h3>
+      <hr style="border:1px dashed #000;">
+      <center><p>Thank you for your business!</p></center>
+    `;
+    document.getElementById("printableInvoiceArea").innerHTML = billHtml;
+    document.getElementById("printModalBox").style.display = "flex";
+
+    // अटोमेटिक Status 'Ready' मा बदल्ने
+    updateOrderStatus(orderNo, 'Ready');
+  }
+
+  function executeSystemPrint() {
+    window.print();
+  }
+
+  function closePrintModal() {
+    document.getElementById("printModalBox").style.display = "none";
+  }
+
+  // Upload Delivery Proof (Camera / Gallery)
+  function triggerProofUpload(orderNo) {
+    activeProofOrderNo = orderNo;
+    document.getElementById("proofUploadInput").click();
+  }
+
+  function handleProofFileSelected(event) {
+    const file = event.target.files[0];
+    if(!file || !activeProofOrderNo) return;
+
+    const reader = new FileReader();
+    reader.onloadend = async function() {
+      let base64Image = reader.result;
+      let currentDateTime = new Date().toLocaleString();
+
+      // Status 'Delivered' र Proof तथा Delivery Date & Time अपडेट गर्ने
+      await updateOrderStatus(activeProofOrderNo, 'Delivered', {
+        proof_img: base64Image,
+        delivery_time: currentDateTime
+      });
+
+      alert("✅ Delivery Proof Uploaded Successfully & Order Marked as Delivered!");
+      activeProofOrderNo = null;
+      document.getElementById("proofUploadInput").value = "";
+    };
+    reader.readAsDataURL(file);
+  }
 
   function calculateDashboardStats(orders) {
     let totalOrders = orders.length;
@@ -643,7 +739,7 @@
     if(!msg) return;
     inputEl.value = "";
     try {
-      let { error } = await supabaseClient.from('chats').insert([{
+      await supabaseClient.from('chats').insert([{
         session_id: currentSelectedChatSession,
         customer_name: "Admin",
         support_type: "Support",
@@ -651,13 +747,11 @@
         message: msg,
         time: new Date().toLocaleString()
       }]);
-      if(error) {
-        console.error("Admin chat error:", error);
-      }
       loadAdminChatsList();
     } catch(e) {}
   }
 
+  // Image Viewer Modal (Payment Slip & Proof)
   function openImageViewer(imgUrl) {
     document.getElementById("viewerTargetImage").src = imgUrl;
     document.getElementById("imageViewerModal").style.display = "flex";
