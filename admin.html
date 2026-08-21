@@ -643,7 +643,7 @@
     if(!msg) return;
     inputEl.value = "";
     try {
-      await supabaseClient.from('chats').insert([{
+      let { error } = await supabaseClient.from('chats').insert([{
         session_id: currentSelectedChatSession,
         customer_name: "Admin",
         support_type: "Support",
@@ -651,6 +651,9 @@
         message: msg,
         time: new Date().toLocaleString()
       }]);
+      if(error) {
+        console.error("Admin chat error:", error);
+      }
       loadAdminChatsList();
     } catch(e) {}
   }
