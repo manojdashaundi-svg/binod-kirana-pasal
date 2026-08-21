@@ -245,7 +245,7 @@
 
 <!-- Image Viewer Modal (Payment Slip & Proof click to enlarge) -->
 <div id="imageViewerModal" class="image-viewer-modal" onclick="closeImageViewer()">
-  <div class="image-viewer_box" onclick="event.stopPropagation()">
+  <div class="image-viewer-box" onclick="event.stopPropagation()">
     <img id="viewerTargetImage" src="" alt="Image Preview">
     <br>
     <button class="close-viewer-btn" onclick="closeImageViewer()">Close ✕</button>
@@ -367,21 +367,22 @@
       ordersToRender.forEach(function(o){
         let status = o.status ? String(o.status).trim() : "Pending";
         
-        let slipSrc = o.payment_slip || o.proof_img || "";
-        let slipHtml = "None";
-        if (slipSrc && slipSrc !== "None" && slipSrc !== "Slip Uploaded") {
+        // Payment Slip चेक गर्ने (payment_slip वा slip वा payment)
+        let slipSrc = o.payment_slip || o.slip || o.payment || "";
+        let slipHtml = "No Slip";
+        if (slipSrc && slipSrc !== "None" && slipSrc !== "Slip Uploaded" && slipSrc.length > 5) {
           slipHtml = `<img src="${slipSrc}" class="proof-thumb" onclick="openImageViewer('${slipSrc}')">`;
-        } else {
-          slipHtml = `<span style="font-size:12px; color:#888;">No Slip</span>`;
         }
 
-        let delivSrc = o.proof_img || "";
+        // Delivery Proof चेक गर्ने
+        let delivSrc = o.proof_img || o.delivery_proof || "";
         let delivHtml = "None";
-        if (delivSrc && delivSrc !== "None") {
+        if (status === "Delivered" && delivSrc && delivSrc !== "None") {
           delivHtml = `<img src="${delivSrc}" class="proof-thumb" onclick="openImageViewer('${delivSrc}')">`;
-        } else {
-          delivHtml = "None";
         }
+
+        // Delivery Date & Time (डेलिभरी भएपछि मात्र देखाउने, नभए '-')
+        let deliveryTimeDisplay = (o.delivery_time && status === "Delivered") ? o.delivery_time : "-";
         
         let statusSelect = `<select id="status_${o.order_no}">
           <option value="Pending" ${status==="Pending"?"selected":""}>Pending</option>
@@ -408,15 +409,13 @@
           actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default;">❌ Cancelled</button>`;
         }
 
-        let displayTime = o.delivery_time || o.time || '-';
-
         html += `<tr>
           <td style="font-size:12px; color:#555;">${o.time || '-'}</td>
           <td><b>${o.order_no || ''}</b></td>
           <td style="text-align:left;"><b>${o.customer_name || '-'}</b><br><small style="color:#666;">${o.phone || ''}</small><br><small style="color:#333; white-space:pre-line;">${o.items || ''}</small><br><small style="color:#444;">${o.address || '-'}</small></td>
           <td style="color:#1976D2; font-weight:bold;">Rs. ${o.total || '0'}</td>
           <td>${slipHtml}</td>
-          <td style="font-size:12px; color:#555;">${displayTime}</td>
+          <td style="font-size:12px; color:#555;">${deliveryTimeDisplay}</td>
           <td>${delivHtml}</td>
           <td>${statusSelect}</td>
           <td>${actionButtons}</td>
@@ -440,8 +439,6 @@
     let updatePayload = { status: newStatus, ...extraData };
     let { error } = await supabaseClient.from('orders').update(updatePayload).eq('order_no', orderNo);
     if(error) {
-      console.warn("Retrying update without optional columns...", error);
-      // यदि कुनै स्तम्भ नभएर एरर आएमा आधारभूत status मात्र अपडेट गर्ने
       await supabaseClient.from('orders').update({ status: newStatus }).eq('order_no', orderNo);
     }
     loadOrders();
