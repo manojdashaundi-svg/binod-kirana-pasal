@@ -823,6 +823,7 @@
     });
     menuList.innerHTML = html;
     loadInventoryDropdown();
+    loadStockAlerts();
   };
 
   function loadInventoryDropdown() {
@@ -841,54 +842,69 @@
       document.getElementById("invSelectedName").innerText = "-";
       document.getElementById("invSelectedCategory").innerText = "-";
       document.getElementById("invCurrentStockInput").value = "";
+      document.getElementById("invAlertLimitInput").value = "50";
       return;
     }
     let item = menuItemsCache.find(r => String(r.id) === String(id));
     if(item) {
       document.getElementById("invSelectedName").innerText = item.name || "-";
       document.getElementById("invSelectedCategory").innerText = item.category || "-";
-      document.getElementById("invCurrentStockInput").value = item.stock !== undefined ? item.stock : 0;
-      if(item.alert_limit !== undefined) {
-        document.getElementById("invAlertLimitInput").value = item.alert_limit;
-      }
+      document.getElementById("invCurrentStockInput").value = (item.stock !== undefined && item.stock !== null) ? item.stock : 0;
+      document.getElementById("invAlertLimitInput").value = (item.alert_limit !== undefined && item.alert_limit !== null) ? item.alert_limit : 50;
     }
   }
 
   async function saveInventoryStock() {
     let id = document.getElementById("inventoryItemSelect").value;
     if(!id) { alert("कृपया Item छान्नुहोस्!"); return; }
-    let stockVal = parseInt(document.getElementById("invCurrentStockInput").value) || 0;
-    let limitVal = parseInt(document.getElementById("invAlertLimitInput").value) || 50;
+    let stockVal = parseInt(document.getElementById("invCurrentStockInput").value);
+    let limitVal = parseInt(document.getElementById("invAlertLimitInput").value);
+    
+    if(isNaN(stockVal)) stockVal = 0;
+    if(isNaN(limitVal)) limitVal = 50;
 
-    let updateData = { stock: stockVal };
-    // यदि alert_limit टेबलमा छ भने मात्र पठाउने, नभए स्टक मात्र सेभ हुने
-    let { error } = await supabaseClient.from('menu_items').update(updateData).eq('id', id);
+    // Local cache मा पनि सँगै अपडेट गर्ने ताकि तुरंत देखियोस्
+    let item = menuItemsCache.find(r => String(r.id) === String(id));
+    if(item) {
+      item.stock = stockVal;
+      item.alert_limit = limitVal;
+    }
+
+    let { error } = await supabaseClient.from('menu_items').update({
+      stock: stockVal,
+      alert_limit: limitVal
+    }).eq('id', id);
 
     if(error) {
-      alert("Error: " + error.message);
-    } else {
-      alert("✅ स्टक सफलतापूर्वक सेभ भयो!");
-      loadMenuList();
-      loadStockAlerts();
+      // यदि Supabase मा alert_limit वा stock स्तम्भ छैन भने कम्तिमा stock मात्र पठाएर प्रयास गर्ने
+      let { error: err2 } = await supabaseClient.from('menu_items').update({ stock: stockVal }).eq('id', id);
+      if(err2) {
+        alert("Error saving stock: " + err2.message);
+        return;
+      }
     }
+
+    alert("✅ स्टक सफलतापूर्वक सेभ भयो!");
+    loadStockAlerts();
   }
 
   function loadStockAlerts() {
     let tbody = document.getElementById("stockAlertsTableBody");
     if(!tbody) return;
+    
     let lowStockItems = menuItemsCache.filter(r => {
-      let stk = r.stock !== undefined ? r.stock : 0;
-      let lim = r.alert_limit !== undefined ? r.alert_limit : 50;
+      let stk = (r.stock !== undefined && r.stock !== null) ? parseInt(r.stock) : 0;
+      let lim = (r.alert_limit !== undefined && r.alert_limit !== null) ? parseInt(r.alert_limit) : 50;
       return stk <= lim;
     });
 
     let html = "";
     lowStockItems.forEach(r => {
-      let stk = r.stock !== undefined ? r.stock : 0;
-      let lim = r.alert_limit !== undefined ? r.alert_limit : 50;
+      let stk = (r.stock !== undefined && r.stock !== null) ? r.stock : 0;
+      let lim = (r.alert_limit !== undefined && r.alert_limit !== null) ? r.alert_limit : 50;
       html += `<tr>
         <td><b>${r.id}</b></td>
-        <td style="text-align:left;"><b>${r.name}</b></td>
+        <td style="text-align:left;"><b>${r.name || ''}</b></td>
         <td>${r.category || '-'}</td>
         <td style="color:red; font-weight:bold;">${stk}</td>
         <td>${lim}</td>
@@ -975,7 +991,8 @@
       description: description, 
       category: category,
       status: "In Stock",
-      stock: 0
+      stock: 0,
+      alert_limit: 50
     }]);
 
     if (error) {
@@ -1105,7 +1122,6 @@
     loadMenuList();
     loadOrders();
     loadAdminChatsList();
-    setTimeout(() => { loadStockAlerts(); }, 1000);
     setInterval(() => { 
       loadOrders(); 
       loadAdminChatsList();
