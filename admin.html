@@ -19,10 +19,12 @@
     .bell-btn { position:fixed; top:12px; right:125px; background:#fff; border:2px solid #1976D2; font-size:22px; padding:6px 10px; border-radius:50%; cursor:pointer; z-index: 1000; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
     .automation-badge { display: inline-block; background: #fff; border: 1px solid #4CAF50; color: #4CAF50; font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 20px; margin-left: 12px; vertical-align: middle; }
     table { width:100%; border-collapse:collapse; background:#fff; margin-top:20px; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
-    th{ background:#1976D2; color:#fff; padding:12px; font-size:14px; }
+    th{ background:#1976D2; color:#fff; padding:12px; font-size:14px; text-align:center; }
     td{ padding:10px; border:1px solid #ddd; text-align:center; font-size:14px; }
     select, input{ padding:8px; border-radius:6px; border:1px solid #ccc; margin:3px; box-sizing: border-box; }
-    .rcvBtn { background:#4CAF50; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; }
+    .rcvBtn { background:#4CAF50; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; display:inline-block; margin:2px; }
+    .dispatchBtn { background:#ff9800; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; display:inline-block; margin:2px; }
+    .cancelBtn { background:#f44336; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; display:inline-block; margin:2px; }
     .updateBtn { background:#2196F3; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; }
     .addBtn { background:#1976D2; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; }
     .removeBtn { background:#f44336; color:white; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; margin:2px; }
@@ -90,37 +92,37 @@
     </div>
   </div>
 
-  <!-- 📊 Monthly Sales Insights & Growth (RM) -->
+  <!-- 📊 Monthly Sales Insights & Growth -->
   <div class="chart-container">
-    <h3 style="color:#1976D2; margin: 0 0 10px 0; font-size: 16px;">📊 Monthly Sales Insights & Growth (RM)</h3>
+    <h3 style="color:#1976D2; margin: 0 0 10px 0; font-size: 16px;">📊 Monthly Sales Insights & Growth (Rs.)</h3>
     <div id="monthlySalesChart" style="width: 100%; height: 220px;"></div>
   </div>
 
-  <!-- 📈 Today's Hourly Sales Trend (RM) -->
+  <!-- 📈 Today's Hourly Sales Trend -->
   <div class="chart-container">
-    <h3 style="color:#1976D2; margin: 0 0 10px 0; font-size: 16px;">📈 Today's Hourly Sales Trend (RM)</h3>
+    <h3 style="color:#1976D2; margin: 0 0 10px 0; font-size: 16px;">📈 Today's Hourly Sales Trend (Rs.)</h3>
     <div id="hourlySalesChart" style="width: 100%; height: 220px;"></div>
   </div>
 
   <!-- 🛒 Active Orders Section -->
   <div id="mainOrdersTableSection">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
-      <h3 style="margin: 0;">🛒 Active Orders</h3>
+      <h3 style="margin: 0; color:#333;">🛒 Active Orders</h3>
       <input type="text" id="orderSearchInput" onkeyup="filterActiveOrders()" placeholder="🔍 Search Order No / Customer..." style="padding: 8px 12px; width: 260px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px;">
     </div>
     <div style="overflow-x: auto; width:100%; max-height:520px; overflow-y:auto; border:1px solid #ddd; border-radius:6px;">
       <table>
         <thead>
-          <tr style="position:sticky; top:0; z-index:10; background:#1976D2;">
-            <th style="background:#1976D2;">Order Date & Time</th>
-            <th style="background:#1976D2;">Order No.</th>
-            <th style="background:#1976D2;">Customer</th>
-            <th style="background:#1976D2;">Total</th>
-            <th style="background:#1976D2;">Payment Slip</th>
-            <th style="background:#1976D2;">Delivery District & Address</th>
-            <th style="background:#1976D2;">Delivery Proof</th>
-            <th style="background:#1976D2;">Status / Change</th>
-            <th style="background:#1976D2;">Instant Action</th>
+          <tr style="position:sticky; top:0; z-index:10;">
+            <th>Order Date & Time</th>
+            <th>Order No.</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Payment Slip</th>
+            <th>Delivery Date & Time</th>
+            <th>Delivery Proof</th>
+            <th>Status / Change</th>
+            <th>Instant Action</th>
           </tr>
         </thead>
         <tbody id="ordersTable">
@@ -136,15 +138,15 @@
     <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #ddd; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
       <input id="newDistrictName" type="text" placeholder="जिल्लाको नाम (District Name)" style="flex:2; padding:10px;">
       <input id="newDistrictRate" type="number" placeholder="रेट (Rs.)" style="flex:1; padding:10px;">
-      <button class="addBtn" onclick="addDeliveryZone()" style="background:#1976D2; padding:10px 20px;">+ जिल्ला थप्नुहोस्</button>
+      <button class="addBtn" onclick="addDeliveryZone()" style="padding:10px 20px;">+ जिल्ला थप्नुहोस्</button>
     </div>
     <div style="overflow-x: auto; max-height: 250px; overflow-y: auto;">
       <table>
         <thead>
           <tr>
-            <th>District Name (जिल्ला)</th>
-            <th>Delivery Rate (Rs.)</th>
-            <th>Action</th>
+            <th style="background:#1976D2;">District Name (जिल्ला)</th>
+            <th style="background:#1976D2;">Delivery Rate (Rs.)</th>
+            <th style="background:#1976D2;">Action</th>
           </tr>
         </thead>
         <tbody id="deliveryZonesTableList">
@@ -170,14 +172,14 @@
     <div style="overflow-x: auto; width:100%; max-height:520px; overflow-y:auto; border:1px solid #ddd; border-radius:6px;">
       <table>
         <thead>
-          <tr style="position:sticky; top:0; z-index:10; background:#1976D2;">
-            <th style="background:#1976D2;">ID</th>
-            <th style="background:#1976D2;">Product Name</th>
-            <th style="background:#1976D2;">Price</th>
-            <th style="background:#1976D2;">Image</th>
-            <th style="background:#1976D2;">Description</th>
-            <th style="background:#1976D2;">Category</th>
-            <th style="background:#1976D2;">Action</th>
+          <tr style="position:sticky; top:0; z-index:10;">
+            <th>ID</th>
+            <th>Product Name</th>
+            <th>Price</th>
+            <th>Image</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody id="menuTableList"></tbody>
@@ -239,7 +241,6 @@
   var activeOrdersCache = [];
   var menuItemsCache = [];
   var currentSelectedChatSession = null;
-  var chatSessionsList = [];
   var lastAdminChatCount = {};
 
   function playTringTringBell() {
@@ -365,15 +366,26 @@
         </select> 
         <button class="updateBtn" onclick="manualUpdate('${o.order_no}')">Go</button>`;
 
-        let actionButtons = `<button class="rcvBtn" onclick="updateOrderStatus('${o.order_no}', 'Delivered')">✅ Mark Delivered</button>`;
+        let actionButtons = "";
+        if(status === "Delivered") {
+          actionButtons = `<button class="rcvBtn" style="background:#4CAF50; cursor:default;">✔ Delivered</button>`;
+        } else if(status === "Cancelled") {
+          actionButtons = `<button class="cancelBtn" style="background:#f44336; cursor:default;">❌ Cancelled</button>`;
+        } else {
+          actionButtons = `
+            <button class="dispatchBtn" onclick="updateOrderStatus('${o.order_no}', 'Out for Delivery')">🚚 Dispatch</button>
+            <button class="rcvBtn" onclick="updateOrderStatus('${o.order_no}', 'Delivered')">✅ Delivered</button>
+            <button class="cancelBtn" onclick="updateOrderStatus('${o.order_no}', 'Cancelled')">❌ Cancel</button>
+          `;
+        }
 
         html += `<tr>
           <td style="font-size:12px; color:#555;">${o.time || '-'}</td>
           <td><b>${o.order_no || ''}</b></td>
-          <td>${o.customer_name || '-'}<br><small style="color:#666;">${o.phone || ''}</small></td>
+          <td style="text-align:left;"><b>${o.customer_name || '-'}</b><br><small style="color:#666;">${o.phone || ''}</small><br><small style="color:#444;">${o.address || '-'}</small></td>
           <td style="color:#1976D2; font-weight:bold;">Rs. ${o.total || '0'}</td>
           <td>${slipHtml}</td>
-          <td style="font-size:13px;">${o.address || '-'}</td>
+          <td style="font-size:12px; color:#555;">${o.delivery_time || o.time || '-'}</td>
           <td>${delivHtml}</td>
           <td>${statusSelect}</td>
           <td>${actionButtons}</td>
@@ -442,7 +454,7 @@
       }
     });
 
-    let chartDataArray = [['Month', 'Sales (RM)']];
+    let chartDataArray = [['Month', 'Sales (Rs.)']];
     let keys = Object.keys(monthlyTotals);
     if(keys.length === 0) {
       chartDataArray.push(['Current', 0]);
@@ -456,7 +468,7 @@
       colors: ['#1976D2'],
       legend: { position: 'none' },
       hAxis: { title: 'Month' },
-      vAxis: { title: 'Sales (RM)' },
+      vAxis: { title: 'Sales (Rs.)' },
       backgroundColor: 'transparent'
     };
     let chart = new google.visualization.ColumnChart(document.getElementById('monthlySalesChart'));
@@ -486,7 +498,7 @@
       }
     });
 
-    let chartDataArray = [['Hour', 'Sales (RM)']];
+    let chartDataArray = [['Hour', 'Sales (Rs.)']];
     Object.keys(hourlyTotals).forEach(h => {
       chartDataArray.push([h, hourlyTotals[h]]);
     });
@@ -497,7 +509,7 @@
       colors: ['#2196F3'],
       legend: { position: 'none' },
       hAxis: { title: 'Time (Hour)' },
-      vAxis: { title: 'Sales (RM)' },
+      vAxis: { title: 'Sales (Rs.)' },
       backgroundColor: 'transparent'
     };
     let chart = new google.visualization.LineChart(document.getElementById('hourlySalesChart'));
@@ -576,7 +588,6 @@
         let lastMsg = msgs[msgs.length - 1];
         let isSelected = (currentSelectedChatSession === sessionId) ? "background:#e3f2fd;" : "";
         
-        // नयाँ म्यासेज चेक गर्ने
         if (lastAdminChatCount[sessionId] !== undefined && msgs.length > lastAdminChatCount[sessionId]) {
           if (lastMsg.sender === "Customer") {
             playTringTringBell();
