@@ -373,14 +373,12 @@
           slipHtml = `<img src="${slipSrc}" class="proof-thumb" onclick="openImageViewer('${slipSrc}')">`;
         }
 
-        // Delivery Proof चेक गर्ने
         let delivSrc = o.proof_img || o.delivery_proof || "";
         let delivHtml = "None";
         if (delivSrc && delivSrc !== "None" && delivSrc !== "EMPTY" && delivSrc.length > 5) {
           delivHtml = `<img src="${delivSrc}" class="proof-thumb" onclick="openImageViewer('${delivSrc}')">`;
         }
 
-        // Delivery Date & Time चेक गर्ने
         let deliveryTimeDisplay = o.delivery_time || o.delivery_date || "-";
         if (!o.delivery_time && !o.delivery_date) {
           deliveryTimeDisplay = "-";
@@ -406,7 +404,7 @@
         } else if(status === "Out for Delivery") {
           actionButtons = `<button class="actionBtn proofBtn" onclick="promptUploadProof('${o.order_no}')">📸 Upload Proof</button>`;
         } else if(status === "Delivered") {
-          actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button>`;
+          actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button><button class="actionBtn cancelBtn" onclick="updateOrderStatus('${o.order_no}', 'Cancelled')" style="margin-top:5px;">❌ Cancel Order</button>`;
         } else {
           actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default;">❌ Cancelled</button>`;
         }
@@ -518,7 +516,6 @@
       let base64Image = reader.result;
       let currentDateTime = new Date().toLocaleString();
 
-      // Supabase मा proof_img र delivery_time मा डेटा पठाउँदै
       let { error } = await supabaseClient.from('orders').update({
         status: 'Delivered',
         proof_img: base64Image,
@@ -689,7 +686,6 @@
     }
   };
 
-  // 💬 Live Chat Admin Functions
   async function loadAdminChatsList() {
     try {
       let { data, error } = await supabaseClient.from('chats').select('*').order('id', { ascending: true });
