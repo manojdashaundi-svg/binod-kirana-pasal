@@ -41,6 +41,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 .food-price{ font-size:24px; font-weight:bold; color:#1976D2; }
 
 .food-card button, .qty-btn { background:#1976D2; color:#fff; border:none; border-radius:10px; padding:10px 22px; font-size:16px; font-weight:bold; cursor:pointer; }
+.out-of-stock-badge { background:#f44336; color:#fff; padding:8px 16px; border-radius:8px; font-size:14px; font-weight:bold; display:inline-block; }
 
 .customer{ background:#fff; padding:20px 15px; border-radius:16px; margin-top:20px; box-shadow:0 3px 12px rgba(0,0,0,0.06); width: 100%; }
 .customer input, .customer textarea, .customer select{ width:100%; padding:14px; margin:8px 0; border:1px solid #ddd; border-radius:8px; font-size:17px; outline: none; background: #fafafa; }
@@ -82,26 +83,26 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     <div class="customer cart-section">
         <h2>Shopping Cart</h2>
         <div id="cart" style="margin:15px 0; font-size:18px; line-height:2;">Your cart is empty.</div>
-        
+
         <div id="cartSummaryPriceBox" style="font-size: 16px; margin: 10px 0; text-align: left; line-height: 1.6;">
           <div>Items Subtotal: Rs. <span id="subtotalPrice">0.00</span></div>
           <div style="color: #555;">Delivery Charge: Rs. <span id="deliveryPriceLabel">0.00</span></div>
         </div>
         <h2>Total : Rs. <span id="total">0</span></h2>
-        
+
         <br><hr style="border: 0; border-top: 1px dashed #ddd; margin: 15px 0;"><br>
 
         <h2>Customer Information</h2>
         <input id="customerName" type="text" placeholder="Customer Name (नाम लेख्नुहोस्)">
-        
+
         <label style="font-weight: bold; font-size: 14px; color: #555; display: block; margin-top: 8px;">Select Delivery District (77 Districts):</label>
         <select id="deliveryZoneSelect" onchange="window.handleZoneChange()">
           <!-- Supabase बाट ७७ जिल्लाहरू यहाँ लोड हुनेछन् -->
           <option value="0" data-name="Self-Pickup / अफिसबाटै लिने">📦 Self-Pickup / अफिसबाटै लिने (Rs. 0)</option>
         </select>
-        
+
         <input id="customerPhone" type="tel" placeholder="Phone Number (फोन नम्बर)">
-        
+
         <div id="deliveryAddressBox" style="display:block; margin-top: 10px;">
           <textarea id="customerAddress" placeholder="Delivery Address / Complete Location (ठेगाना लेख्नुहोस्)"></textarea>
         </div>
@@ -112,10 +113,10 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
             <h2 style="color:#1976D2; font-size: 21px;">💳 Scan to Pay (Nepal SBI Bank QR)</h2>
             <img src="https://i.postimg.cc/QCqQ51pN/ca-ma-ma.png" class="qr-img" alt="Nepal SBI Bank QR">
             <p style="font-size:14px; color:#444; font-weight:bold; margin-bottom: 8px;">रकम हेरेर क्युआर स्क्यान गर्नुहोस् र तल क्यामेरा वा ग्यालरीबाट स्लिप छान्नुहोस्。</p>
-            
+
             <div class="file-upload-box">
                 <span style="color:#1976D2; display:block; margin-bottom:8px;">📁 Upload Payment Slip *</span>
-                
+
                 <div style="display: flex; gap: 10px; justify-content: center;">
                     <button type="button" onclick="document.getElementById('paymentSlipFile').setAttribute('capture', 'environment'); document.getElementById('paymentSlipFile').click();" style="flex:1; padding:12px; background:#2196F3; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer;">📷 Camera</button>
                     <button type="button" onclick="document.getElementById('paymentSlipFile').removeAttribute('capture'); document.getElementById('paymentSlipFile').click();" style="flex:1; padding:12px; background:#4CAF50; color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer;">🖼️ Gallery</button>
@@ -146,7 +147,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     <span id="chatHeaderTitle">💬 Live Support</span>
     <button onclick="window.toggleCustomerChat()" style="background:none; border:none; color:#fff; font-size:16px; cursor:pointer;">✕</button>
   </div>
-  
+
   <div id="chatInitBlock" style="padding:15px; text-align:center;">
     <input id="chatOrderNo" type="text" placeholder="Enter Order No or Name" style="width:100%; padding:8px; margin-bottom:10px; border:1px solid #ddd; border-radius:6px; color:#333;">
     <button class="place-btn" style="padding:8px; font-size:14px; margin:0; background:#1976D2;" onclick="window.initChatOptions()">Next</button>
@@ -191,7 +192,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 <script>
   const SUPABASE_URL = 'https://odhdrhvvgemwgiphipgv.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k';
-  
+
   let supabaseClient = null;
   try {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -205,7 +206,8 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
       price: 1500,
       category: "Wholesale",
       description: "High quality imported rice.",
-      image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500"
+      image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500",
+      status: "In Stock"
     }
   ];
 
@@ -266,7 +268,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   async function loadDeliveryZones() {
     let selectEl = document.getElementById("deliveryZoneSelect");
     if (!selectEl) return;
-    
+
     let zones = defaultNepaliDistricts;
     if (supabaseClient) {
       try {
@@ -316,7 +318,15 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         const imgUrl = (row.image && String(row.image).startsWith("http")) ? String(row.image).trim() : "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500";
         const rawName = row.name ? String(row.name) : "Unnamed Item";
         const safeName = rawName.replace(/'/g, "\\'");
-        
+        const stockStatus = row.status ? String(row.status).trim() : "In Stock";
+
+        let actionButtonHtml = '';
+        if (stockStatus === "Out of Stock") {
+            actionButtonHtml = `<span class="out-of-stock-badge">🔴 Out of Stock</span>`;
+        } else {
+            actionButtonHtml = `<button onclick="window.addToCart('${safeName}', ${itemPrice})">🛒 Add</button>`;
+        }
+
         html += `<div class="food-card" data-category="${row.category || 'General'}">
             <img src="${imgUrl}" alt="${rawName}" onerror="this.src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500'">
             <div class="food-info">
@@ -325,7 +335,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
                 <p class="food-desc">${row.description || ""}</p>
                 <div class="food-bottom">
                     <span class="food-price">Rs. ${itemPrice}</span>
-                    <button onclick="window.addToCart('${safeName}', ${itemPrice})">🛒 Add</button>
+                    ${actionButtonHtml}
                 </div>
             </div>
         </div>`;
@@ -373,11 +383,11 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
             html += `<div style='padding: 0 5px;'><p><b>${item.food}</b><br><button class="qty-btn" style='padding:5px 12px; font-size:13px;' onclick="window.decreaseQty(${i})">−</button> <span style='margin:0 10px;font-weight:bold;'>${item.qty}</span> <button class="qty-btn" style='padding:5px 12px; font-size:13px;' onclick="window.increaseQty(${i})">+</button> &nbsp;&nbsp; Rs. ${itemTotal} <button onclick="window.removeItem(${i})" style="background:red;color:white;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;margin-left:10px;">✕</button></p></div><hr style="margin:10px 0; border:0; border-top:1px dashed #ccc;">`; 
         });
     }
-    
+
     let zoneSelect = document.getElementById("deliveryZoneSelect");
     let deliveryCharge = zoneSelect ? parseFloat(zoneSelect.value) : 0;
     let grandTotal = subtotal + deliveryCharge;
-    
+
     document.getElementById("cart").innerHTML = html; 
     if(document.getElementById("subtotalPrice")) document.getElementById("subtotalPrice").innerText = subtotal.toFixed(2);
     if(document.getElementById("deliveryPriceLabel")) document.getElementById("deliveryPriceLabel").innerText = deliveryCharge.toFixed(2);
@@ -400,15 +410,15 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   window.placeOrder = async function(){
     const name = document.getElementById("customerName").value.trim();
     const phone = document.getElementById("customerPhone").value.trim();
-    
+
     let zoneSelect = document.getElementById("deliveryZoneSelect");
     let zoneName = zoneSelect ? zoneSelect.options[zoneSelect.selectedIndex].dataset.name : "District";
     let deliveryCharge = zoneSelect ? parseFloat(zoneSelect.value) : 0;
-    
+
     let addressEl = document.getElementById("customerAddress");
     let address = addressEl ? addressEl.value.trim() : "";
     const orderBtn = document.getElementById("submitOrderBtn");
-    
+
     if(name === "" || phone === "" || address === "" || window.cart.length === 0 || window.base64SlipData === ""){ 
       alert("Please fill all details and upload payment slip."); 
       return; 
@@ -420,14 +430,14 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
       document.getElementById("customerPhone").focus();
       return;
     }
-    
+
     orderBtn.disabled = true;
     orderBtn.innerText = "Placing Order...";
 
     const items = window.cart.map(item => `${item.food} x ${item.qty} (Rs. ${item.price * item.qty})`).join("\n");
     const subtotal = window.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
     const grandTotal = subtotal + deliveryCharge;
-    
+
     let fullAddress = `[District: ${zoneName}] ${address}`;
     let timeStr = new Date().toLocaleString();
 
@@ -451,7 +461,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         phone: phone,
         total: Number(grandTotal.toFixed(2)),
         address: fullAddress,
-        payment_slip: window.base64SlipData,  <!-- यहाँ "Slip Uploaded" को सट्टा अब Base64 फोटो डेटा पठाउने बनाइएको छ -->
+        payment_slip: window.base64SlipData, 
         time: timeStr,
         status: "Pending",
         items: items,
@@ -466,12 +476,12 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         return;
       }
     }
-      
+
     alert("✅ Order Placed Successfully! Order No: " + orderNo);
-      
+
     const rm = `📦 NEW ORDER (QR PAID - POOJA EXPORT)\n\nOrder No: ${orderNo}\n👤 ${name}\n📞 ${phone}\n📍 District: ${zoneName}\n🏠 Address: ${address}\n\n📦 Items:\n${items}\n\n------------------\nSubtotal: Rs. ${subtotal.toFixed(2)}\nDelivery: Rs. ${deliveryCharge.toFixed(2)}\n💰 Total: Rs. ${grandTotal.toFixed(2)}`;
     window.open("https://wa.me/9769338427?text=" + encodeURIComponent(rm), "_blank");
-      
+
     window.cart = []; 
     window.showCart(); 
     document.getElementById("customerName").value = ""; 
@@ -507,7 +517,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   window.showTrackingResult = function(order){
     let progress = 25, color = "#FF9800";
     let s = order.status ? order.status.trim() : "Pending";
-    
+
     if(s === "Pending" || s === "Order Received"){ progress = 25; color = "#FF9800"; }
     else if(s === "Preparing"){ progress = 50; color = "#2196F3"; }
     else if(s === "Ready"){ progress = 75; color = "#9C27B0"; }
@@ -599,7 +609,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     if(role === 'delivery') window.currentChatCategory = "Delivery Inquiry";
     else if(role === 'order_taker') window.currentChatCategory = "Order Inquiry";
     else window.currentChatCategory = "General Info";
-    
+
     document.getElementById("chatOptionsBlock").style.display = "none";
     document.getElementById("chatActiveWindow").style.display = "flex";
     window.lastMessageCount = 0;
@@ -614,7 +624,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
       let { data, error } = await supabaseClient.from('chats').select('*').eq('session_id', window.currentChatOrderNo).order('id', { ascending: true });
       var area = document.getElementById("chatMessageArea");
       if(!area) return;
-      
+
       if(error || !data || data.length === 0) {
         area.innerHTML = `<div style="text-align:center; color:#888; margin-top:20px;">No messages yet. Start chatting below!</div>`;
         window.lastMessageCount = 0;
