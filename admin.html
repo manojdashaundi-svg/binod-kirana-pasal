@@ -121,44 +121,17 @@
     <h3 style="color:#1976D2; margin-bottom:15px;">📊 Sales Report Generator & Export</h3>
     <div style="background:#f9f9f9; padding:20px; border-radius:8px; border:1px solid #ddd; display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
       <div style="flex:1; min-width:180px;">
-        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px;">From Date:</label>
+        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px;">Start Date:</label>
         <input id="reportStartDate" type="date" style="width:100%; padding:10px;">
       </div>
       <div style="flex:1; min-width:180px;">
-        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px;">To Date:</label>
+        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px;">End Date:</label>
         <input id="reportEndDate" type="date" style="width:100%; padding:10px;">
       </div>
-      <div style="flex:1; min-width:180px;">
-        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px;">Status Filter:</label>
-        <select id="reportStatusFilter" style="width:100%; padding:10px;">
-          <option value="ALL">All Status</option>
-          <option value="Delivered">Delivered</option>
-          <option value="Pending">Pending</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
+      <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
+        <button onclick="exportReportCSV()" style="flex:1; padding:10px; background:#2E7D32; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">📥 Export Excel (.CSV)</button>
+        <button onclick="printReportPDF()" style="flex:1; padding:10px; background:#C62828; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🖨️ Print / Download PDF</button>
       </div>
-      <div style="flex:1; min-width:200px; display:flex; gap:10px; margin-top:20px;">
-        <button onclick="generateSalesReport()" style="flex:1; padding:10px; background:#1976D2; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🔍 Generate</button>
-        <button onclick="exportReportCSV()" style="flex:1; padding:10px; background:#4CAF50; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">📥 Export CSV</button>
-      </div>
-    </div>
-
-    <div style="margin-top:20px; overflow-x:auto; border:1px solid #ddd; border-radius:6px; max-height:300px; overflow-y:auto;">
-      <table>
-        <thead>
-          <tr style="background:#1976D2; color:#fff;">
-            <th>Date & Time</th>
-            <th>Order No.</th>
-            <th>Customer Name</th>
-            <th>Phone</th>
-            <th>Total (Rs.)</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="salesReportTableBody">
-          <tr><td colspan="6" style="padding:15px; color:#666;">Select date range and click Generate to view report.</td></tr>
-        </tbody>
-      </table>
     </div>
   </div>
 
@@ -873,14 +846,11 @@
     chart.draw(data, options);
   }
 
-  function generateSalesReport() {
+  function exportReportCSV() {
     let startDate = document.getElementById("reportStartDate").value;
     let endDate = document.getElementById("reportEndDate").value;
-    let statusFilter = document.getElementById("reportStatusFilter").value;
-    let tbody = document.getElementById("salesReportTableBody");
-
     if(!startDate || !endDate) {
-      alert("कृपया सुरु र अन्तिम मिति (Start & End Date) छान्नुहोस्!");
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
       return;
     }
 
@@ -892,52 +862,25 @@
       if(!o.time) return false;
       let oDate = new Date(o.time);
       if(isNaN(oDate.getTime())) return false;
-      
-      let dateMatch = (oDate >= start && oDate <= end);
-      let statusMatch = (statusFilter === "ALL" || String(o.status).trim() === statusFilter);
-      return dateMatch && statusMatch;
+      return (oDate >= start && oDate <= end);
     });
 
-    let html = "";
-    filtered.forEach(o => {
-      html += `<tr>
-        <td>${o.time}</td>
-        <td><b>${o.order_no}</b></td>
-        <td>${o.customer_name || '-'}</td>
-        <td>${o.phone || '-'}</td>
-        <td style="color:#1976D2; font-weight:bold;">Rs. ${o.total || 0}</td>
-        <td><b>${o.status || 'Pending'}</b></td>
-      </tr>`;
-    });
-
-    if(html === "") {
-      html = `<tr><td colspan="6" style="padding:15px; color:#666;">No orders found for selected criteria.</td></tr>`;
-    }
-    tbody.innerHTML = html;
-  }
-
-  function exportReportCSV() {
-    let tbody = document.getElementById("salesReportTableBody");
-    let rows = tbody.querySelectorAll("tr");
-    if(rows.length === 0 || tbody.innerText.includes("Select date range") || tbody.innerText.includes("No orders found")) {
-      alert("कृपया पहिले रिपोर्ट जेनेरेट (Generate) गर्नुहोस्!");
+    if(filtered.length === 0) {
+      alert("चयनित मितिभित्र कुनै अर्डर भेटिएन!");
       return;
     }
 
     let csvContent = "data:text/csv;charset=utf-8,Date & Time,Order No,Customer Name,Phone,Total (Rs.),Status\n";
-    rows.forEach(row => {
-      let cols = row.querySelectorAll("td");
-      if(cols.length >= 6) {
-        let rowData = [
-          `"${cols[0].innerText}"`,
-          `"${cols[1].innerText}"`,
-          `"${cols[2].innerText}"`,
-          `"${cols[3].innerText}"`,
-          `"${cols[4].innerText.replace('Rs. ', '')}"`,
-          `"${cols[5].innerText}"`
-        ];
-        csvContent += rowData.join(",") + "\n";
-      }
+    filtered.forEach(o => {
+      let rowData = [
+        `"${o.time || ''}"`,
+        `"${o.order_no || ''}"`,
+        `"${o.customer_name || ''}"`,
+        `"${o.phone || ''}"`,
+        `"${o.total || '0'}"`,
+        `"${o.status || 'Pending'}"`
+      ];
+      csvContent += rowData.join(",") + "\n";
     });
 
     let encodedUri = encodeURI(csvContent);
@@ -947,6 +890,46 @@
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  function printReportPDF() {
+    let startDate = document.getElementById("reportStartDate").value;
+    let endDate = document.getElementById("reportEndDate").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = activeOrdersCache.filter(o => {
+      if(!o.time) return false;
+      let oDate = new Date(o.time);
+      if(isNaN(oDate.getTime())) return false;
+      return (oDate >= start && oDate <= end);
+    });
+
+    let printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>Sales Report</title>');
+    printWindow.document.write('<style>body{font-family:Arial,sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;margin-top:20px;} th,td{border:1px solid #ddd;padding:8px;text-align:center;font-size:12px;} th{background:#1976D2;color:white;}</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<center><h2>PUJA EXPORT AND IMPORT PVT. LTD.</h2><h3>Sales Report (' + startDate + ' to ' + endDate + ')</h3></center>');
+    printWindow.document.write('<table><thead><tr><th>Date & Time</th><th>Order No.</th><th>Customer Name</th><th>Phone</th><th>Total (Rs.)</th><th>Status</th></tr></thead><tbody>');
+    
+    let totalSum = 0;
+    filtered.forEach(o => {
+      totalSum += parseFloat(o.total) || 0;
+      printWindow.document.write(`<tr><td>${o.time || ''}</td><td><b>${o.order_no || ''}</b></td><td>${o.customer_name || ''}</td><td>${o.phone || ''}</td><td>Rs. ${o.total || '0'}</td><td>${o.status || ''}</td></tr>`);
+    });
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<h3 style="text-align:right; margin-top:20px;">Total Revenue: Rs. ' + totalSum.toFixed(2) + '</h3>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
   }
 
   async function loadMenuList() {
