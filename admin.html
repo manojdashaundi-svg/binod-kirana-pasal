@@ -648,10 +648,10 @@
     }
 
     try {
-      let { data, error } = await supabaseClient.from('staff').select('*').eq('email', u).single();
+      let { data, error } = await supabaseClient.from('admin').select('*').eq('email', u).single();
       if (!error && data && data.password === p) {
         sessionStorage.setItem("ADMIN_LOGIN", "true");
-        sessionStorage.setItem("USER_ROLE", data.role || "Staff");
+        sessionStorage.setItem("USER_ROLE", data.role || "Admin");
         sessionStorage.setItem("LOGGED_IN_USER", data.name || u);
         showAdminPanel();
         return;
@@ -1670,7 +1670,7 @@
     let selectEl = document.getElementById("voucherStaffSelect");
     if(!selectEl) return;
     try {
-      let { data, error } = await supabaseClient.from('staff').select('*').order('id', { ascending: true });
+      let { data, error } = await supabaseClient.from('admin').select('*').order('id', { ascending: true });
       if (error || !data || data.length === 0) {
         selectEl.innerHTML = `<option value="">-- कामदार रोज्नुहोस् --</option>`;
         return;
@@ -1687,7 +1687,7 @@
       document.getElementById("incomeReportEnd").value = now.toISOString().split('T')[0];
 
       data.forEach(s => {
-        selectHtml += `<option value="${s.id}">${s.name} (${s.role || 'Staff'})</option>`;
+        selectHtml += `<option value="${s.id}">${s.name} (${s.role || 'Admin'})</option>`;
       });
       selectEl.innerHTML = selectHtml;
     } catch(e) {}
@@ -1702,7 +1702,7 @@
       return;
     }
 
-    let { error } = await supabaseClient.from('staff').insert([{
+    let { error } = await supabaseClient.from('admin').insert([{
       name: fullName,
       email: fullName.toLowerCase().replace(/\s+/g, '') + "@pooja.com",
       password: "123",
@@ -1732,7 +1732,7 @@
     }
     let st = staffListCache.find(s => String(s.id) === String(staffId));
     if(st) {
-      document.getElementById("voucherStaffDesignation").value = st.role || "Staff";
+      document.getElementById("voucherStaffDesignation").value = st.role || "Admin";
       let earnInputs = document.querySelectorAll(".earn-amt");
       if(earnInputs.length > 0) {
         earnInputs[0].value = (st.basic_salary !== undefined && st.basic_salary !== null) ? st.basic_salary : 0;
@@ -2138,7 +2138,7 @@
     let tbody = document.getElementById("staffTableList");
     if(!tbody) return;
     try {
-      let { data, error } = await supabaseClient.from('staff').select('*').order('id', { ascending: true });
+      let { data, error } = await supabaseClient.from('admin').select('*').order('id', { ascending: true });
       if (error || !data || data.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">No staff members found.</td></tr>`;
         return;
@@ -2161,7 +2161,7 @@
             <input type="text" id="staff_pass_input_${s.id}" value="${s.password || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
           </td>
           <td>
-            <span id="staff_role_txt_${s.id}"><b>${s.role || 'Staff'}</b></span>
+            <span id="staff_role_txt_${s.id}"><b>${s.role || 'Admin'}</b></span>
             <select id="staff_role_input_${s.id}" style="display:none; padding:6px; border:1px solid #ccc; border-radius:4px;">
               <option value="Admin" ${s.role==='Admin'?'selected':''}>Admin</option>
               <option value="Manager" ${s.role==='Manager'?'selected':''}>Manager</option>
@@ -2207,17 +2207,11 @@
       return;
     }
 
-    let { error } = await supabaseClient.from('staff').update({
+    let { error } = await supabaseClient.from('admin').update({
       name: name,
       email: email,
       password: password,
       role: role
-    }).eq('id', id);
-
-    let { error: errAdmin } = await supabaseClient.from('admin').update({
-      name: name,
-      email: email,
-      password: password
     }).eq('id', id);
 
     if(error) {
@@ -2239,25 +2233,19 @@
       return;
     }
 
-    let { error: errStaff } = await supabaseClient.from('staff').insert([{
+    let { error } = await supabaseClient.from('admin').insert([{
       name: name,
       email: email,
       password: password,
       role: role
     }]);
 
-    let { error: errAdmin } = await supabaseClient.from('admin').insert([{
-      name: name,
-      email: email,
-      password: password
-    }]);
-
-    if(errStaff && errAdmin) {
-      alert("Error adding staff: " + errStaff.message);
+    if(error) {
+      alert("Error adding staff: " + error.message);
       return;
     }
 
-    alert("✅ नयाँ स्टाफ सफलताપूर्वक स्टाफ र एडमिन दुवै टेबलमा थपियो!");
+    alert("✅ नयाँ स्टाफ सफलतापूर्वक एडमिन टेबलमा थपियो!");
     document.getElementById("staffNameInput").value = "";
     document.getElementById("staffEmailInput").value = "";
     document.getElementById("staffPassInput").value = "";
@@ -2266,8 +2254,7 @@
 
   async function deleteStaff(id) {
     if(confirm("के तपाइँ यो स्टाफलाई हटाउन चाहनुहुन्छ?")) {
-      let { error } = await supabaseClient.from('staff').delete().eq('id', id);
-      let { error: errAdmin } = await supabaseClient.from('admin').delete().eq('id', id);
+      let { error } = await supabaseClient.from('admin').delete().eq('id', id);
       
       if(error) {
         alert("Error deleting staff: " + error.message);
