@@ -401,19 +401,33 @@
         </div>
       </div>
 
+      <!-- Earnings & Allowances Container with Add/Remove -->
       <div style="margin-bottom:12px;">
-        <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Earnings & Allowances:</label>
-        <div style="display:flex; gap:10px; align-items:center; margin-bottom:6px;">
-          <input type="text" value="MONTHLY BASIC SALARY PAYED" style="flex:2; padding:8px;" readonly>
-          <input id="voucherBasicInput" type="number" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <label style="font-weight:bold; font-size:13px;">Earnings & Allowances:</label>
+          <button type="button" onclick="addEarningsRow()" style="background:#4CAF50; color:white; border:none; padding:4px 10px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:12px;">+ Add</button>
+        </div>
+        <div id="earningsContainer" style="display:flex; flex-direction:column; gap:6px;">
+          <div class="earnings-row" style="display:flex; gap:10px; align-items:center;">
+            <input type="text" class="earn-desc" value="MONTHLY BASIC SALARY PAYED" style="flex:2; padding:8px;" readonly>
+            <input type="number" class="earn-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+            <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+          </div>
         </div>
       </div>
 
+      <!-- Deductions Container with Add/Remove -->
       <div style="margin-bottom:12px;">
-        <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Deductions:</label>
-        <div style="display:flex; gap:10px; align-items:center; margin-bottom:6px;">
-          <input id="voucherDedDesc" type="text" placeholder="Deduction Description" style="flex:2; padding:8px;" value="Advance / Deduction">
-          <input id="voucherDedInput" type="number" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <label style="font-weight:bold; font-size:13px;">Deductions:</label>
+          <button type="button" onclick="addDeductionsRow()" style="background:#4CAF50; color:white; border:none; padding:4px 10px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:12px;">+ Add</button>
+        </div>
+        <div id="deductionsContainer" style="display:flex; flex-direction:column; gap:6px;">
+          <div class="deductions-row" style="display:flex; gap:10px; align-items:center;">
+            <input type="text" class="ded-desc" placeholder="Deduction Description" value="Advance / Deduction" style="flex:2; padding:8px;">
+            <input type="number" class="ded-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+            <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+          </div>
         </div>
       </div>
 
@@ -1249,22 +1263,88 @@
     let staffId = document.getElementById("voucherStaffSelect").value;
     if(!staffId) {
       document.getElementById("voucherStaffDesignation").value = "";
-      document.getElementById("voucherBasicInput").value = 0;
+      let earnInputs = document.querySelectorAll(".earn-amt");
+      if(earnInputs.length > 0) earnInputs[0].value = 0;
       calculateVoucherNet();
       return;
     }
     let st = staffListCache.find(s => String(s.id) === String(staffId));
     if(st) {
       document.getElementById("voucherStaffDesignation").value = st.role || "Staff";
-      document.getElementById("voucherBasicInput").value = (st.basic_salary !== undefined && st.basic_salary !== null) ? st.basic_salary : 0;
+      let earnInputs = document.querySelectorAll(".earn-amt");
+      if(earnInputs.length > 0) {
+        earnInputs[0].value = (st.basic_salary !== undefined && st.basic_salary !== null) ? st.basic_salary : 0;
+      }
       calculateVoucherNet();
     }
   }
 
+  function addEarningsRow() {
+    let container = document.getElementById("earningsContainer");
+    let div = document.createElement("div");
+    div.className = "earnings-row";
+    div.style.cssText = "display:flex; gap:10px; align-items:center;";
+    div.innerHTML = `
+      <input type="text" class="earn-desc" placeholder="Allowance / Earnings Description" style="flex:2; padding:8px;">
+      <input type="number" class="earn-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+      <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">❌</button>
+    `;
+    container.appendChild(div);
+    updateRemoveButtonsState();
+  }
+
+  function addDeductionsRow() {
+    let container = document.getElementById("deductionsContainer");
+    let div = document.createElement("div");
+    div.className = "deductions-row";
+    div.style.cssText = "display:flex; gap:10px; align-items:center;";
+    div.innerHTML = `
+      <input type="text" class="ded-desc" placeholder="Deduction Description" style="flex:2; padding:8px;">
+      <input type="number" class="ded-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+      <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">❌</button>
+    `;
+    container.appendChild(div);
+    updateRemoveButtonsState();
+  }
+
+  function removeRow(btn) {
+    let row = btn.parentElement;
+    let container = row.parentElement;
+    if(container.children.length > 1) {
+      container.removeChild(row);
+      updateRemoveButtonsState();
+      calculateVoucherNet();
+    }
+  }
+
+  function updateRemoveButtonsState() {
+    let earnRows = document.querySelectorAll(".earnings-row");
+    if(earnRows.length === 1) {
+      earnRows[0].querySelector("button").disabled = true;
+    } else {
+      earnRows.forEach(r => r.querySelector("button").disabled = false);
+    }
+
+    let dedRows = document.querySelectorAll(".deductions-row");
+    if(dedRows.length === 1) {
+      dedRows[0].querySelector("button").disabled = true;
+    } else {
+      dedRows.forEach(r => r.querySelector("button").disabled = false);
+    }
+  }
+
   function calculateVoucherNet() {
-    let basic = parseFloat(document.getElementById("voucherBasicInput").value) || 0;
-    let ded = parseFloat(document.getElementById("voucherDedInput").value) || 0;
-    let net = basic - ded;
+    let totalEarnings = 0;
+    document.querySelectorAll(".earn-amt").forEach(input => {
+      totalEarnings += parseFloat(input.value) || 0;
+    });
+
+    let totalDeductions = 0;
+    document.querySelectorAll(".ded-amt").forEach(input => {
+      totalDeductions += parseFloat(input.value) || 0;
+    });
+
+    let net = totalEarnings - totalDeductions;
     document.getElementById("voucherNetDisplay").innerText = "NET Salary: Rs. " + net.toFixed(2);
   }
 
@@ -1281,11 +1361,27 @@
     let day = document.getElementById("voucherDay").value;
     let month = document.getElementById("voucherMonth").value;
     let year = document.getElementById("voucherYear").value;
-    let basic = parseFloat(document.getElementById("voucherBasicInput").value) || 0;
-    let dedDesc = document.getElementById("voucherDedDesc").value || "Deduction";
-    let ded = parseFloat(document.getElementById("voucherDedInput").value) || 0;
     let pMode = document.getElementById("voucherPaymentMode").value;
-    let net = basic - ded;
+
+    let earningsHTML = "";
+    let totalEarnings = 0;
+    document.querySelectorAll(".earnings-row").forEach(row => {
+      let desc = row.querySelector(".earn-desc").value || "Earnings";
+      let amt = parseFloat(row.querySelector(".earn-amt").value) || 0;
+      totalEarnings += amt;
+      earningsHTML += `<p>${desc}: Rs. ${amt.toFixed(2)}</p>`;
+    });
+
+    let deductionsHTML = "";
+    let totalDeductions = 0;
+    document.querySelectorAll(".deductions-row").forEach(row => {
+      let desc = row.querySelector(".ded-desc").value || "Deduction";
+      let amt = parseFloat(row.querySelector(".ded-amt").value) || 0;
+      totalDeductions += amt;
+      deductionsHTML += `<p>${desc}: Rs. ${amt.toFixed(2)}</p>`;
+    });
+
+    let net = totalEarnings - totalDeductions;
 
     let printWindow = window.open('', '', 'height=650,width=450');
     printWindow.document.write('<html><head><title>Salary Voucher</title>');
@@ -1298,8 +1394,11 @@
     printWindow.document.write('<p><b>Date:</b> ' + day + '/' + month + '/' + year + '</p>');
     printWindow.document.write('<p><b>Payment Mode:</b> ' + pMode + '</p>');
     printWindow.document.write('<hr>');
-    printWindow.document.write('<p>MONTHLY BASIC SALARY: Rs. ' + basic.toFixed(2) + '</p>');
-    printWindow.document.write('<p>' + dedDesc + ': Rs. ' + ded.toFixed(2) + '</p>');
+    printWindow.document.write('<b>Earnings & Allowances:</b>');
+    printWindow.document.write(earningsHTML);
+    printWindow.document.write('<hr>');
+    printWindow.document.write('<b>Deductions:</b>');
+    printWindow.document.write(deductionsHTML);
     printWindow.document.write('<hr>');
     printWindow.document.write('<h3>NET Salary: Rs. ' + net.toFixed(2) + '</h3>');
     printWindow.document.write('<hr><br><br>');
