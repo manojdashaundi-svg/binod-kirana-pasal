@@ -354,29 +354,6 @@
       <div style="color:#388E3C;">जम्मा Net Profit: <span id="summaryNetProfit">Rs. 0.00</span></div>
     </div>
 
-    <!-- 💰 Staff Salary Sheet & Voucher System -->
-    <div style="background:#f9f9f9; padding:20px; border-radius:8px; border:1px solid #ddd; margin-top:30px;">
-      <h3 style="color:#1976D2; margin-top:0;">💰 Staff Salary Sheet & Voucher System</h3>
-      <div style="overflow-x:auto;">
-        <table>
-          <thead>
-            <tr style="background:#1976D2; color:#fff;">
-              <th>Staff Name</th>
-              <th>Role</th>
-              <th>Basic Salary (Rs.)</th>
-              <th>Bonus (Rs.)</th>
-              <th>Deduction (Rs.)</th>
-              <th>Net Salary (Rs.)</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="salaryTableList">
-            <tr><td colspan="7" style="padding:15px; color:#666;">Loading Staff Salaries...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
   </div>
 
   <!-- 💬 Live Support Chat Center -->
@@ -1135,104 +1112,6 @@
     setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
   }
 
-  async function loadSalarySheet() {
-    let tbody = document.getElementById("salaryTableList");
-    if(!tbody) return;
-    try {
-      let { data, error } = await supabaseClient.from('staff').select('*').order('id', { ascending: true });
-      if (error || !data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="padding:15px; color:#666;">No staff found for salary.</td></tr>`;
-        return;
-      }
-      let html = "";
-      data.forEach(s => {
-        let basic = s.basic_salary !== undefined && s.basic_salary !== null ? s.basic_salary : 0;
-        let bonus = s.bonus !== undefined && s.bonus !== null ? s.bonus : 0;
-        let deduction = s.deduction !== undefined && s.deduction !== null ? s.deduction : 0;
-        let net = basic + bonus - deduction;
-
-        html += `<tr id="salary_row_${s.id}">
-          <td><b>${s.name || ''}</b></td>
-          <td>${s.role || 'Staff'}</td>
-          <td>
-            <span id="sal_basic_txt_${s.id}">${basic}</span>
-            <input type="number" id="sal_basic_input_${s.id}" value="${basic}" style="display:none; width:80px; padding:6px;">
-          </td>
-          <td>
-            <span id="sal_bonus_txt_${s.id}">${bonus}</span>
-            <input type="number" id="sal_bonus_input_${s.id}" value="${bonus}" style="display:none; width:80px; padding:6px;">
-          </td>
-          <td>
-            <span id="sal_ded_txt_${s.id}">${deduction}</span>
-            <input type="number" id="sal_ded_input_${s.id}" value="${deduction}" style="display:none; width:80px; padding:6px;">
-          </td>
-          <td style="color:#1976D2; font-weight:bold;">Rs. <span id="sal_net_${s.id}">${net}</span></td>
-          <td style="white-space: nowrap;">
-            <button id="sal_edit_btn_${s.id}" class="editBtn" onclick="enableSalaryEdit(${s.id})">✏️ Edit</button>
-            <button id="sal_save_btn_${s.id}" class="saveBtn" style="display:none;" onclick="saveSalaryEdit(${s.id})">💾 Save</button>
-            <button class="actionBtn billBtn" onclick="printSalaryVoucher('${s.name}', '${s.role}', ${basic}, ${bonus}, ${deduction}, ${net})" style="display:inline-block; width:auto; padding:6px 12px; margin-left:5px;">🖨️ Voucher</button>
-          </td>
-        </tr>`;
-      });
-      tbody.innerHTML = html;
-    } catch(e) {}
-  }
-
-  function enableSalaryEdit(id) {
-    document.getElementById(`sal_basic_txt_${id}`).style.display = 'none';
-    document.getElementById(`sal_bonus_txt_${id}`).style.display = 'none';
-    document.getElementById(`sal_ded_txt_${id}`).style.display = 'none';
-    document.getElementById(`sal_edit_btn_${id}`).style.display = 'none';
-
-    document.getElementById(`sal_basic_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`sal_bonus_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`sal_ded_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`sal_save_btn_${id}`).style.display = 'inline-block';
-  }
-
-  async function saveSalaryEdit(id) {
-    let basic = parseFloat(document.getElementById(`sal_basic_input_${id}`).value) || 0;
-    let bonus = parseFloat(document.getElementById(`sal_bonus_input_${id}`).value) || 0;
-    let deduction = parseFloat(document.getElementById(`sal_ded_input_${id}`).value) || 0;
-
-    let { error } = await supabaseClient.from('staff').update({
-      basic_salary: basic,
-      bonus: bonus,
-      deduction: deduction
-    }).eq('id', id);
-
-    if(error) {
-      alert("Error updating salary: " + error.message);
-    } else {
-      alert("✅ तलब सफलतापूर्वक अपडेट भयो!");
-      loadSalarySheet();
-    }
-  }
-
-  function printSalaryVoucher(name, role, basic, bonus, deduction, net) {
-    let printWindow = window.open('', '', 'height=600,width=400');
-    printWindow.document.write('<html><head><title>Salary Voucher</title>');
-    printWindow.document.write('<style>body{font-family:Courier New,monospace;padding:20px;font-size:13px;line-height:1.4;} .center{text-align:center;} hr{border:1px dashed #000;}</style>');
-    printWindow.document.write('</head><body>');
-    printWindow.document.write('<div class="center"><h3>PUJA EXPORT AND IMPORT</h3><p><b>SALARY VOUCHER / SLIP</b></p></div>');
-    printWindow.document.write('<hr>');
-    printWindow.document.write('<p><b>Staff Name:</b> ' + name + '</p>');
-    printWindow.document.write('<p><b>Role:</b> ' + role + '</p>');
-    printWindow.document.write('<p><b>Date:</b> ' + new Date().toLocaleDateString() + '</p>');
-    printWindow.document.write('<hr>');
-    printWindow.document.write('<p>Basic Salary: Rs. ' + basic.toFixed(2) + '</p>');
-    printWindow.document.write('<p>Bonus: Rs. ' + bonus.toFixed(2) + '</p>');
-    printWindow.document.write('<p>Deduction: Rs. ' + deduction.toFixed(2) + '</p>');
-    printWindow.document.write('<hr>');
-    printWindow.document.write('<h3>Net Salary: Rs. ' + net.toFixed(2) + '</h3>');
-    printWindow.document.write('<hr><br><br>');
-    printWindow.document.write('<table width="100%"><tr><td align="center">___________________<br>Prepared By</td><td align="center">___________________<br>Receiver Signature</td></tr></table>');
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
-  }
-
   async function loadMenuList() {
     let { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
     if (data) menuItemsCache = data;
@@ -1516,7 +1395,6 @@
         </tr>`;
       });
       tbody.innerHTML = html;
-      loadSalarySheet();
     } catch(e) {
       tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">Error loading staff.</td></tr>`;
     }
