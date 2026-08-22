@@ -266,7 +266,7 @@
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <input id="staffNameInput" type="text" placeholder="Staff Name (नाम)" style="flex:2; min-width:180px;">
         <input id="staffEmailInput" type="email" placeholder="Email / Username" style="flex:2; min-width:180px;">
-        <input id="staffPassInput" type="password" placeholder="Password" style="flex:1; min-width:140px;">
+        <input id="staffPassInput" type="text" placeholder="Password" style="flex:1; min-width:140px;">
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; align-items:center;">
         <select id="staffRoleSelect" style="flex:1; min-width:160px; padding:10px;">
@@ -286,12 +286,13 @@
             <th>ID</th>
             <th>Staff Name</th>
             <th>Email / Username</th>
+            <th>Password</th>
             <th>Role</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody id="staffTableList">
-          <tr><td colspan="5" style="padding:15px; color:#666;">Loading Staff Members...</td></tr>
+          <tr><td colspan="6" style="padding:15px; color:#666;">Loading Staff Members...</td></tr>
         </tbody>
       </table>
     </div>
@@ -1073,25 +1074,84 @@
     try {
       let { data, error } = await supabaseClient.from('staff').select('*').order('id', { ascending: true });
       if (error || !data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="padding:15px; color:#666;">No staff members found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">No staff members found.</td></tr>`;
         return;
       }
       staffListCache = data;
       let html = "";
       data.forEach((s, idx) => {
-        html += `<tr>
+        html += `<tr id="staff_row_${s.id}">
           <td><b>${idx + 1}</b></td>
-          <td><b>${s.name || ''}</b></td>
-          <td>${s.email || ''}</td>
-          <td><b>${s.role || 'Staff'}</b></td>
           <td>
-            <button class="removeBtn" onclick="deleteStaff(${s.id})">❌ Delete</button>
+            <span id="staff_name_txt_${s.id}"><b>${s.name || ''}</b></span>
+            <input type="text" id="staff_name_input_${s.id}" value="${s.name || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </td>
+          <td>
+            <span id="staff_email_txt_${s.id}">${s.email || ''}</span>
+            <input type="text" id="staff_email_input_${s.id}" value="${s.email || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </td>
+          <td>
+            <span id="staff_pass_txt_${s.id}">${s.password || ''}</span>
+            <input type="text" id="staff_pass_input_${s.id}" value="${s.password || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </td>
+          <td>
+            <span id="staff_role_txt_${s.id}"><b>${s.role || 'Staff'}</b></span>
+            <select id="staff_role_input_${s.id}" style="display:none; padding:6px; border:1px solid #ccc; border-radius:4px;">
+              <option value="Admin" ${s.role==='Admin'?'selected':''}>Admin</option>
+              <option value="Manager" ${s.role==='Manager'?'selected':''}>Manager</option>
+              <option value="Staff" ${s.role==='Staff'?'selected':''}>Staff</option>
+            </select>
+          </td>
+          <td style="white-space: nowrap;">
+            <button id="staff_edit_btn_${s.id}" class="editBtn" onclick="enableStaffEdit(${s.id})">✏️ Edit</button>
+            <button id="staff_save_btn_${s.id}" class="saveBtn" style="display:none;" onclick="saveStaffEdit(${s.id})">💾 Save</button>
+            <button class="removeBtn" onclick="deleteStaff(${s.id})" style="margin-left:5px;">❌ Delete</button>
           </td>
         </tr>`;
       });
       tbody.innerHTML = html;
     } catch(e) {
-      tbody.innerHTML = `<tr><td colspan="5" style="padding:15px; color:#666;">Error loading staff.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">Error loading staff.</td></tr>`;
+    }
+  }
+
+  function enableStaffEdit(id) {
+    document.getElementById(`staff_name_txt_${id}`).style.display = 'none';
+    document.getElementById(`staff_email_txt_${id}`).style.display = 'none';
+    document.getElementById(`staff_pass_txt_${id}`).style.display = 'none';
+    document.getElementById(`staff_role_txt_${id}`).style.display = 'none';
+    document.getElementById(`staff_edit_btn_${id}`).style.display = 'none';
+
+    document.getElementById(`staff_name_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`staff_email_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`staff_pass_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`staff_role_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`staff_save_btn_${id}`).style.display = 'inline-block';
+  }
+
+  async function saveStaffEdit(id) {
+    let name = document.getElementById(`staff_name_input_${id}`).value.trim();
+    let email = document.getElementById(`staff_email_input_${id}`).value.trim();
+    let password = document.getElementById(`staff_pass_input_${id}`).value.trim();
+    let role = document.getElementById(`staff_role_input_${id}`).value;
+
+    if(!name || !email || !password) {
+      alert("कृपया नाम, इमेल र पासवर्ड सबै भर्नुहोस्!");
+      return;
+    }
+
+    let { error } = await supabaseClient.from('staff').update({
+      name: name,
+      email: email,
+      password: password,
+      role: role
+    }).eq('id', id);
+
+    if(error) {
+      alert("Error updating staff: " + error.message);
+    } else {
+      alert("✅ स्टाफ सफलतापूर्वक अपडेट भयो!");
+      loadStaffList();
     }
   }
 
