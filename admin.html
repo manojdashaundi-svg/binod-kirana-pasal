@@ -357,23 +357,15 @@
     <!-- 💰 Staff Salary Sheet & Voucher System -->
     <div style="background:#f9f9f9; padding:20px; border-radius:8px; border:1px solid #ddd; margin-bottom:20px;">
       <h3 style="color:#1976D2; margin-top:0;">💰 Staff Salary Sheet & Voucher System</h3>
-      <div style="overflow-x:auto;">
-        <table>
-          <thead>
-            <tr style="background:#1976D2; color:#fff;">
-              <th>Staff Name</th>
-              <th>Role</th>
-              <th>Basic Salary (Rs.)</th>
-              <th>Bonus (Rs.)</th>
-              <th>Deduction (Rs.)</th>
-              <th>Net Salary (Rs.)</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="salaryTableList">
-            <tr><td colspan="7" style="padding:15px; color:#666;">Loading Staff Salaries...</td></tr>
-          </tbody>
-        </table>
+      
+      <!-- + Add New Staff & Designation Form -->
+      <div style="background:#fff; padding:15px; border-radius:8px; border:1px solid #ddd; margin-bottom:15px;">
+        <h4 style="margin-top:0; color:#333;">+ Add New Staff & Designation</h4>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+          <input id="newStaffFullName" type="text" placeholder="Full Name (e.g. Shova Kumari)" style="flex:2; min-width:200px; padding:10px;">
+          <input id="newStaffDesignationInput" type="text" placeholder="Designation (e.g. order_taker, delivery)" style="flex:2; min-width:220px; padding:10px;">
+          <button onclick="addNewStaffDesignation()" style="padding:10px 25px; background:#e91e63; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">+ Add Staff</button>
+        </div>
       </div>
     </div>
 
@@ -1199,18 +1191,15 @@
   }
 
   async function loadSalarySheet() {
-    let tbody = document.getElementById("salaryTableList");
     let selectEl = document.getElementById("voucherStaffSelect");
-    if(!tbody) return;
+    if(!selectEl) return;
     try {
       let { data, error } = await supabaseClient.from('staff').select('*').order('id', { ascending: true });
       if (error || !data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="padding:15px; color:#666;">No staff found for salary.</td></tr>`;
-        if(selectEl) selectEl.innerHTML = `<option value="">-- कामदार रोज्नुहोस् --</option>`;
+        selectEl.innerHTML = `<option value="">-- कामदार रोज्नुहोस् --</option>`;
         return;
       }
       staffListCache = data;
-      let html = "";
       let selectHtml = `<option value="">-- कामदार रोज्नुहोस् --</option>`;
 
       let now = new Date();
@@ -1219,38 +1208,41 @@
       document.getElementById("voucherYear").value = now.getFullYear();
 
       data.forEach(s => {
-        let basic = s.basic_salary !== undefined && s.basic_salary !== null ? s.basic_salary : 0;
-        let bonus = s.bonus !== undefined && s.bonus !== null ? s.bonus : 0;
-        let deduction = s.deduction !== undefined && s.deduction !== null ? s.deduction : 0;
-        let net = basic + bonus - deduction;
-
         selectHtml += `<option value="${s.id}">${s.name} (${s.role || 'Staff'})</option>`;
-
-        html += `<tr id="salary_row_${s.id}">
-          <td><b>${s.name || ''}</b></td>
-          <td>${s.role || 'Staff'}</td>
-          <td>
-            <span id="sal_basic_txt_${s.id}">${basic}</span>
-            <input type="number" id="sal_basic_input_${s.id}" value="${basic}" style="display:none; width:80px; padding:6px;">
-          </td>
-          <td>
-            <span id="sal_bonus_txt_${s.id}">${bonus}</span>
-            <input type="number" id="sal_bonus_input_${s.id}" value="${bonus}" style="display:none; width:80px; padding:6px;">
-          </td>
-          <td>
-            <span id="sal_ded_txt_${s.id}">${deduction}</span>
-            <input type="number" id="sal_ded_input_${s.id}" value="${deduction}" style="display:none; width:80px; padding:6px;">
-          </td>
-          <td style="color:#1976D2; font-weight:bold;">Rs. <span id="sal_net_${s.id}">${net}</span></td>
-          <td style="white-space: nowrap;">
-            <button id="sal_edit_btn_${s.id}" class="editBtn" onclick="enableSalaryEdit(${s.id})">✏️ Edit</button>
-            <button id="sal_save_btn_${s.id}" class="saveBtn" style="display:none;" onclick="saveSalaryEdit(${s.id})">💾 Save</button>
-          </td>
-        </tr>`;
       });
-      tbody.innerHTML = html;
-      if(selectEl) selectEl.innerHTML = selectHtml;
+      selectEl.innerHTML = selectHtml;
     } catch(e) {}
+  }
+
+  async function addNewStaffDesignation() {
+    let fullName = document.getElementById("newStaffFullName").value.trim();
+    let designation = document.getElementById("newStaffDesignationInput").value.trim();
+
+    if(!fullName || !designation) {
+      alert("कृपया पूरा नाम र पद (Designation) दुवै भर्नुहोस्!");
+      return;
+    }
+
+    let { error } = await supabaseClient.from('staff').insert([{
+      name: fullName,
+      email: fullName.toLowerCase().replace(/\s+/g, '') + "@pooja.com",
+      password: "123",
+      role: designation,
+      basic_salary: 0,
+      bonus: 0,
+      deduction: 0
+    }]);
+
+    if(error) {
+      alert("Error adding staff: " + error.message);
+      return;
+    }
+
+    alert("✅ नयाँ कर्मचारी र पद सफलतापूर्वक थपियो!");
+    document.getElementById("newStaffFullName").value = "";
+    document.getElementById("newStaffDesignationInput").value = "";
+    loadStaffList();
+    loadSalarySheet();
   }
 
   function handleVoucherStaffSelect() {
@@ -1316,37 +1308,6 @@
     printWindow.document.close();
     printWindow.focus();
     setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
-  }
-
-  function enableSalaryEdit(id) {
-    document.getElementById(`sal_basic_txt_${id}`).style.display = 'none';
-    document.getElementById(`sal_bonus_txt_${id}`).style.display = 'none';
-    document.getElementById(`sal_ded_txt_${id}`).style.display = 'none';
-    document.getElementById(`sal_edit_btn_${id}`).style.display = 'none';
-
-    document.getElementById(`sal_basic_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`sal_bonus_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`sal_ded_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`sal_save_btn_${id}`).style.display = 'inline-block';
-  }
-
-  async function saveSalaryEdit(id) {
-    let basic = parseFloat(document.getElementById(`sal_basic_input_${id}`).value) || 0;
-    let bonus = parseFloat(document.getElementById(`sal_bonus_input_${id}`).value) || 0;
-    let deduction = parseFloat(document.getElementById(`sal_ded_input_${id}`).value) || 0;
-
-    let { error } = await supabaseClient.from('staff').update({
-      basic_salary: basic,
-      bonus: bonus,
-      deduction: deduction
-    }).eq('id', id);
-
-    if(error) {
-      alert("Error updating salary: " + error.message);
-    } else {
-      alert("✅ तलब सफलतापूर्वक अपडेट भयो!");
-      loadSalarySheet();
-    }
   }
 
   async function loadMenuList() {
