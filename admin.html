@@ -370,6 +370,24 @@
           <button onclick="addNewStaffDesignation()" style="padding:10px 22px; background:#e91e63; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(233,30,99,0.3);">+ Add Staff</button>
         </div>
       </div>
+
+      <!-- ✨ Staff Table with Edit & Delete System ✨ -->
+      <h4 style="color:#444; margin-bottom:10px;">Staff List (Manage Staff & Designation)</h4>
+      <div style="overflow-x:auto; max-height: 250px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; background:#fff;">
+        <table>
+          <thead>
+            <tr style="position:sticky; top:0; z-index:10; background:#e91e63; color:#fff;">
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Designation</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="salaryStaffTableList">
+            <tr><td colspan="4" style="padding:15px; color:#666;">Loading Staff List...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- 🧾 Create Salary Voucher Form -->
@@ -1668,15 +1686,19 @@
 
   async function loadSalarySheet() {
     let selectEl = document.getElementById("voucherStaffSelect");
-    if(!selectEl) return;
+    let salaryTableTbody = document.getElementById("salaryStaffTableList");
+    if(!selectEl || !salaryTableTbody) return;
+
     try {
       let { data, error } = await supabaseClient.from('staff').select('*').order('id', { ascending: true });
       if (error || !data || data.length === 0) {
         selectEl.innerHTML = `<option value="">-- कामदार रोज्नुहोस् --</option>`;
+        salaryTableTbody.innerHTML = `<tr><td colspan="4" style="padding:15px; color:#666;">No staff members found.</td></tr>`;
         return;
       }
       staffListCache = data;
       let selectHtml = `<option value="">-- कामदार रोज्नुहोस् --</option>`;
+      let tableHtml = "";
 
       let now = new Date();
       document.getElementById("voucherDay").value = now.getDate();
@@ -1686,11 +1708,74 @@
       document.getElementById("incomeReportStart").value = now.toISOString().split('T')[0];
       document.getElementById("incomeReportEnd").value = now.toISOString().split('T')[0];
 
-      data.forEach(s => {
+      data.forEach((s, idx) => {
         selectHtml += `<option value="${s.id}">${s.name} (${s.role || 'Staff'})</option>`;
+
+        tableHtml += `<tr id="salary_staff_row_${s.id}">
+          <td><b>${idx + 1}</b></td>
+          <td>
+            <span id="sal_staff_name_txt_${s.id}"><b>${s.name || ''}</b></span>
+            <input type="text" id="sal_staff_name_input_${s.id}" value="${s.name || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </td>
+          <td>
+            <span id="sal_staff_role_txt_${s.id}"><b>${s.role || ''}</b></span>
+            <input type="text" id="sal_staff_role_input_${s.id}" value="${s.role || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </td>
+          <td style="white-space: nowrap;">
+            <button id="sal_staff_edit_btn_${s.id}" class="editBtn" onclick="enableSalaryStaffEdit(${s.id})">✏️ Edit</button>
+            <button id="sal_staff_save_btn_${s.id}" class="saveBtn" style="display:none;" onclick="saveSalaryStaffEdit(${s.id})">💾 Save</button>
+            <button class="removeBtn" onclick="deleteSalaryStaff(${s.id})" style="margin-left:5px;">❌ Delete</button>
+          </td>
+        </tr>`;
       });
+
       selectEl.innerHTML = selectHtml;
+      salaryTableTbody.innerHTML = tableHtml;
     } catch(e) {}
+  }
+
+  function enableSalaryStaffEdit(id) {
+    document.getElementById(`sal_staff_name_txt_${id}`).style.display = 'none';
+    document.getElementById(`sal_staff_role_txt_${id}`).style.display = 'none';
+    document.getElementById(`sal_staff_edit_btn_${id}`).style.display = 'none';
+
+    document.getElementById(`sal_staff_name_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`sal_staff_role_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`sal_staff_save_btn_${id}`).style.display = 'inline-block';
+  }
+
+  async function saveSalaryStaffEdit(id) {
+    let name = document.getElementById(`sal_staff_name_input_${id}`).value.trim();
+    let role = document.getElementById(`sal_staff_role_input_${id}`).value.trim();
+
+    if(!name || !role) {
+      alert("कृपया नाम र पद (Designation) दुवै भर्नुहोस्!");
+      return;
+    }
+
+    let { error } = await supabaseClient.from('staff').update({
+      name: name,
+      role: role
+    }).eq('id', id);
+
+    if(error) {
+      alert("Error updating staff: " + error.message);
+    } else {
+      alert("✅ स्टाफ विवरण सफलतापूर्वक अपडेट भयो!");
+      loadSalarySheet();
+    }
+  }
+
+  async function deleteSalaryStaff(id) {
+    if(confirm("के तपाइँ यो स्टाफलाई हटाउन चाहनुहुन्छ?")) {
+      let { error } = await supabaseClient.from('staff').delete().eq('id', id);
+      if(error) {
+        alert("Error deleting staff: " + error.message);
+      } else {
+        alert("✅ स्टाफ सफलतापूर्वक हटाइयो!");
+        loadSalarySheet();
+      }
+    }
   }
 
   // ✨ ONLY SAVE TO STAFF TABLE (NAME & ROLE) - NO ADMIN TABLE INSERT ✨
