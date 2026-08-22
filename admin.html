@@ -446,6 +446,25 @@
       <button onclick="saveAndPrintVoucher()" style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:6px; font-size:16px; font-weight:bold; cursor:pointer;">💾 Save & Print Salary Voucher</button>
     </div>
 
+    <!-- 📊 Salary Statements Export & Report -->
+    <div style="background:#f9f9f9; padding:20px; border-radius:8px; border:1px solid #ddd; margin-top:25px;">
+      <h3 style="color:#1976D2; margin-top:0;">📊 Salary Statements Export & Report</h3>
+      <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px;">Start Date:</label>
+          <input id="salaryReportStart" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px;">End Date:</label>
+          <input id="salaryReportEnd" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
+          <button onclick="exportSalaryCSV()" style="flex:1; padding:10px; background:#2E7D32; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">📥 Download Excel (.CSV)</button>
+          <button onclick="printSalaryPDF()" style="flex:1; padding:10px; background:#C62828; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🖨️ Print / PDF Report</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- 💬 Live Support Chat Center -->
@@ -515,6 +534,7 @@
   var menuItemsCache = [];
   var staffListCache = [];
   var expenseListCache = [];
+  var salaryVoucherHistoryCache = [];
   var currentSelectedChatSession = null;
   var lastAdminChatCount = {};
   var activeProofOrderNo = null;
@@ -1106,6 +1126,15 @@
     loadExpenseList();
   }
 
+  async function loadSalaryVouchersHistory() {
+    try {
+      let { data, error } = await supabaseClient.from('salary_vouchers').select('*').order('id', { ascending: false });
+      if (!error && data) {
+        salaryVoucherHistoryCache = data;
+      }
+    } catch(e) {}
+  }
+
   function updateFinancialSummary() {
     let totalRev = 0;
     activeOrdersCache.forEach(o => { totalRev += parseFloat(o.total) || 0; });
@@ -1198,6 +1227,92 @@
 
     printWindow.document.write('</tbody></table>');
     printWindow.document.write('<h3 style="text-align:right; margin-top:20px; color:#D32F2F;">Total Expense: Rs. ' + totalExpSum.toFixed(2) + '</h3>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+  }
+
+  function exportSalaryCSV() {
+    let startDate = document.getElementById("salaryReportStart").value;
+    let endDate = document.getElementById("salaryReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = salaryVoucherHistoryCache.filter(v => {
+      if(!v.date) return false;
+      let vDate = new Date(v.date);
+      if(isNaN(vDate.getTime())) return false;
+      return (vDate >= start && vDate <= end);
+    });
+
+    if(filtered.length === 0) {
+      alert("चयनित मितिभित्र कुनै तलबको रेकर्ड भेटिएन!");
+      return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,Date,Employee Name,Designation,Payment Mode,Net Salary (Rs.)\n";
+    filtered.forEach(v => {
+      let rowData = [
+        `"${v.date || ''}"`,
+        `"${v.staff_name || ''}"`,
+        `"${v.designation || ''}"`,
+        `"${v.payment_mode || ''}"`,
+        `"${v.net_salary || '0'}"`
+      ];
+      csvContent += rowData.join(",") + "\n";
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "salary_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function printSalaryPDF() {
+    let startDate = document.getElementById("salaryReportStart").value;
+    let endDate = document.getElementById("salaryReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = salaryVoucherHistoryCache.filter(v => {
+      if(!v.date) return false;
+      let vDate = new Date(v.date);
+      if(isNaN(vDate.getTime())) return false;
+      return (vDate >= start && vDate <= end);
+    });
+
+    let printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>Salary Report</title>');
+    printWindow.document.write('<style>body{font-family:Arial,sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;margin-top:20px;} th,td{border:1px solid #ddd;padding:8px;text-align:center;font-size:12px;} th{background:#4CAF50;color:white;}</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<center><h2>PUJA EXPORT AND IMPORT PVT. LTD.</h2><h3>Salary Report (' + startDate + ' to ' + endDate + ')</h3></center>');
+    printWindow.document.write('<table><thead><tr><th>Date</th><th>Employee Name</th><th>Designation</th><th>Payment Mode</th><th>Net Salary (Rs.)</th></tr></thead><tbody>');
+    
+    let totalSalarySum = 0;
+    filtered.forEach(v => {
+      let net = parseFloat(v.net_salary) || 0;
+      totalSalarySum += net;
+      printWindow.document.write(`<tr><td>${v.date || ''}</td><td><b>${v.staff_name || ''}</b></td><td>${v.designation || ''}</td><td>${v.payment_mode || ''}</td><td>Rs. ${net.toFixed(2)}</td></tr>`);
+    });
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<h3 style="text-align:right; margin-top:20px; color:#2E7D32;">Total Salary Paid: Rs. ' + totalSalarySum.toFixed(2) + '</h3>');
     printWindow.document.write('</body></html>');
     printWindow.document.close();
     printWindow.focus();
@@ -1348,7 +1463,7 @@
     document.getElementById("voucherNetDisplay").innerText = "NET Salary: Rs. " + net.toFixed(2);
   }
 
-  function saveAndPrintVoucher() {
+  async function saveAndPrintVoucher() {
     let staffId = document.getElementById("voucherStaffSelect").value;
     if(!staffId) {
       alert("कृपया कर्मचारी (Employee Name) छान्नुहोस्!");
@@ -1382,6 +1497,18 @@
     });
 
     let net = totalEarnings - totalDeductions;
+    let formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+    try {
+      await supabaseClient.from('salary_vouchers').insert([{
+        date: formattedDate,
+        staff_name: st.name,
+        designation: designation,
+        payment_mode: pMode,
+        net_salary: net
+      }]);
+      loadSalaryVouchersHistory();
+    } catch(e) {}
 
     let printWindow = window.open('', '', 'height=650,width=450');
     printWindow.document.write('<html><head><title>Salary Voucher</title>');
@@ -1885,6 +2012,7 @@
     loadOrders();
     loadStaffList();
     loadExpenseList();
+    loadSalaryVouchersHistory();
     loadAdminChatsList();
     setInterval(() => { 
       loadOrders(); 
