@@ -301,10 +301,11 @@
     </div>
 
     <h4 style="margin-bottom:10px; color:#444;">Current Staff Members</h4>
-    <div style="overflow-x:auto; border:1px solid #e0e0e0; border-radius:8px; margin-bottom:30px;">
+    <!-- ४ वटा मात्र देखिने र बाँकी हेर्न स्क्रोलबार राखिएको कन्टेनर -->
+    <div style="overflow-x:auto; max-height: 250px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; margin-bottom:30px;">
       <table>
         <thead>
-          <tr style="background:#1976D2; color:#fff;">
+          <tr style="position:sticky; top:0; z-index:10; background:#1976D2; color:#fff;">
             <th>ID</th>
             <th>Staff Name</th>
             <th>Email / Username</th>
