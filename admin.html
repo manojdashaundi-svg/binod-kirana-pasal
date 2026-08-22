@@ -347,6 +347,92 @@
       </div>
     </div>
 
+    <!-- 💰 Staff Salary Sheet & Voucher System -->
+    <div style="background:#f9f9f9; padding:20px; border-radius:8px; border:1px solid #ddd; margin-bottom:20px;">
+      <h3 style="color:#1976D2; margin-top:0;">💰 Staff Salary Sheet & Voucher System</h3>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr style="background:#1976D2; color:#fff;">
+              <th>Staff Name</th>
+              <th>Role</th>
+              <th>Basic Salary (Rs.)</th>
+              <th>Bonus (Rs.)</th>
+              <th>Deduction (Rs.)</th>
+              <th>Net Salary (Rs.)</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="salaryTableList">
+            <tr><td colspan="7" style="padding:15px; color:#666;">Loading Staff Salaries...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 🧾 Create Salary Voucher Form -->
+    <div style="background:#fff; padding:20px; border-radius:8px; border:2px solid #e91e63; margin-top:20px;">
+      <h3 style="color:#e91e63; margin-top:0;">🧾 Create Salary Voucher</h3>
+      
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+        <div style="flex:2; min-width:220px;">
+          <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Employee Name:</label>
+          <select id="voucherStaffSelect" onchange="handleVoucherStaffSelect()" style="width:100%; padding:10px;">
+            <option value="">-- कामदार रोज्नुहोस् --</option>
+          </select>
+        </div>
+        <div style="flex:2; min-width:220px;">
+          <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Designation:</label>
+          <input id="voucherStaffDesignation" type="text" placeholder="Designation" style="width:100%; padding:10px;" readonly>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+        <div style="flex:1; min-width:100px;">
+          <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Day:</label>
+          <input id="voucherDay" type="number" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:100px;">
+          <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Month:</label>
+          <input id="voucherMonth" type="number" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:120px;">
+          <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Year:</label>
+          <input id="voucherYear" type="number" style="width:100%; padding:10px;">
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Earnings & Allowances:</label>
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:6px;">
+          <input type="text" value="MONTHLY BASIC SALARY PAYED" style="flex:2; padding:8px;" readonly>
+          <input id="voucherBasicInput" type="number" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Deductions:</label>
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:6px;">
+          <input id="voucherDedDesc" type="text" placeholder="Deduction Description" style="flex:2; padding:8px;" value="Advance / Deduction">
+          <input id="voucherDedInput" type="number" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+        </div>
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Payment Mode:</label>
+        <select id="voucherPaymentMode" style="width:100%; padding:10px;">
+          <option value="CASH PAYMENT">💵 CASH PAYMENT</option>
+          <option value="BANK TRANSFER">🏦 BANK TRANSFER</option>
+        </select>
+      </div>
+
+      <div style="background:#fff0f5; border:1px dashed #e91e63; padding:15px; border-radius:6px; text-align:center; margin-bottom:15px;">
+        <h3 id="voucherNetDisplay" style="color:#e91e63; margin:0;">NET Salary: Rs. 0.00</h3>
+      </div>
+
+      <button onclick="saveAndPrintVoucher()" style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:6px; font-size:16px; font-weight:bold; cursor:pointer;">💾 Save & Print Salary Voucher</button>
+    </div>
+
     <!-- Financial Summary Cards -->
     <div style="margin:20px 0; font-size:16px; line-height:1.8; font-weight:bold;">
       <div style="color:#1976D2;">जम्मा Total Revenue: <span id="summaryTotalRevenue">Rs. 0.00</span></div>
@@ -1112,6 +1198,157 @@
     setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
   }
 
+  async function loadSalarySheet() {
+    let tbody = document.getElementById("salaryTableList");
+    let selectEl = document.getElementById("voucherStaffSelect");
+    if(!tbody) return;
+    try {
+      let { data, error } = await supabaseClient.from('staff').select('*').order('id', { ascending: true });
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="padding:15px; color:#666;">No staff found for salary.</td></tr>`;
+        if(selectEl) selectEl.innerHTML = `<option value="">-- कामदार रोज्नुहोस् --</option>`;
+        return;
+      }
+      staffListCache = data;
+      let html = "";
+      let selectHtml = `<option value="">-- कामदार रोज्नुहोस् --</option>`;
+
+      let now = new Date();
+      document.getElementById("voucherDay").value = now.getDate();
+      document.getElementById("voucherMonth").value = now.getMonth() + 1;
+      document.getElementById("voucherYear").value = now.getFullYear();
+
+      data.forEach(s => {
+        let basic = s.basic_salary !== undefined && s.basic_salary !== null ? s.basic_salary : 0;
+        let bonus = s.bonus !== undefined && s.bonus !== null ? s.bonus : 0;
+        let deduction = s.deduction !== undefined && s.deduction !== null ? s.deduction : 0;
+        let net = basic + bonus - deduction;
+
+        selectHtml += `<option value="${s.id}">${s.name} (${s.role || 'Staff'})</option>`;
+
+        html += `<tr id="salary_row_${s.id}">
+          <td><b>${s.name || ''}</b></td>
+          <td>${s.role || 'Staff'}</td>
+          <td>
+            <span id="sal_basic_txt_${s.id}">${basic}</span>
+            <input type="number" id="sal_basic_input_${s.id}" value="${basic}" style="display:none; width:80px; padding:6px;">
+          </td>
+          <td>
+            <span id="sal_bonus_txt_${s.id}">${bonus}</span>
+            <input type="number" id="sal_bonus_input_${s.id}" value="${bonus}" style="display:none; width:80px; padding:6px;">
+          </td>
+          <td>
+            <span id="sal_ded_txt_${s.id}">${deduction}</span>
+            <input type="number" id="sal_ded_input_${s.id}" value="${deduction}" style="display:none; width:80px; padding:6px;">
+          </td>
+          <td style="color:#1976D2; font-weight:bold;">Rs. <span id="sal_net_${s.id}">${net}</span></td>
+          <td style="white-space: nowrap;">
+            <button id="sal_edit_btn_${s.id}" class="editBtn" onclick="enableSalaryEdit(${s.id})">✏️ Edit</button>
+            <button id="sal_save_btn_${s.id}" class="saveBtn" style="display:none;" onclick="saveSalaryEdit(${s.id})">💾 Save</button>
+          </td>
+        </tr>`;
+      });
+      tbody.innerHTML = html;
+      if(selectEl) selectEl.innerHTML = selectHtml;
+    } catch(e) {}
+  }
+
+  function handleVoucherStaffSelect() {
+    let staffId = document.getElementById("voucherStaffSelect").value;
+    if(!staffId) {
+      document.getElementById("voucherStaffDesignation").value = "";
+      document.getElementById("voucherBasicInput").value = 0;
+      calculateVoucherNet();
+      return;
+    }
+    let st = staffListCache.find(s => String(s.id) === String(staffId));
+    if(st) {
+      document.getElementById("voucherStaffDesignation").value = st.role || "Staff";
+      document.getElementById("voucherBasicInput").value = (st.basic_salary !== undefined && st.basic_salary !== null) ? st.basic_salary : 0;
+      calculateVoucherNet();
+    }
+  }
+
+  function calculateVoucherNet() {
+    let basic = parseFloat(document.getElementById("voucherBasicInput").value) || 0;
+    let ded = parseFloat(document.getElementById("voucherDedInput").value) || 0;
+    let net = basic - ded;
+    document.getElementById("voucherNetDisplay").innerText = "NET Salary: Rs. " + net.toFixed(2);
+  }
+
+  function saveAndPrintVoucher() {
+    let staffId = document.getElementById("voucherStaffSelect").value;
+    if(!staffId) {
+      alert("कृपया कर्मचारी (Employee Name) छान्नुहोस्!");
+      return;
+    }
+    let st = staffListCache.find(s => String(s.id) === String(staffId));
+    if(!st) return;
+
+    let designation = document.getElementById("voucherStaffDesignation").value;
+    let day = document.getElementById("voucherDay").value;
+    let month = document.getElementById("voucherMonth").value;
+    let year = document.getElementById("voucherYear").value;
+    let basic = parseFloat(document.getElementById("voucherBasicInput").value) || 0;
+    let dedDesc = document.getElementById("voucherDedDesc").value || "Deduction";
+    let ded = parseFloat(document.getElementById("voucherDedInput").value) || 0;
+    let pMode = document.getElementById("voucherPaymentMode").value;
+    let net = basic - ded;
+
+    let printWindow = window.open('', '', 'height=650,width=450');
+    printWindow.document.write('<html><head><title>Salary Voucher</title>');
+    printWindow.document.write('<style>body{font-family:Courier New,monospace;padding:20px;font-size:13px;line-height:1.4;} .center{text-align:center;} hr{border:1px dashed #000;}</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<div class="center"><h3>PUJA EXPORT AND IMPORT PVT. LTD.</h3><p><b>SALARY VOUCHER / SLIP</b></p></div>');
+    printWindow.document.write('<hr>');
+    printWindow.document.write('<p><b>Employee Name:</b> ' + st.name + '</p>');
+    printWindow.document.write('<p><b>Designation:</b> ' + designation + '</p>');
+    printWindow.document.write('<p><b>Date:</b> ' + day + '/' + month + '/' + year + '</p>');
+    printWindow.document.write('<p><b>Payment Mode:</b> ' + pMode + '</p>');
+    printWindow.document.write('<hr>');
+    printWindow.document.write('<p>MONTHLY BASIC SALARY: Rs. ' + basic.toFixed(2) + '</p>');
+    printWindow.document.write('<p>' + dedDesc + ': Rs. ' + ded.toFixed(2) + '</p>');
+    printWindow.document.write('<hr>');
+    printWindow.document.write('<h3>NET Salary: Rs. ' + net.toFixed(2) + '</h3>');
+    printWindow.document.write('<hr><br><br>');
+    printWindow.document.write('<table width="100%"><tr><td align="center">___________________<br>Prepared By</td><td align="center">___________________<br>Receiver Signature</td></tr></table>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+  }
+
+  function enableSalaryEdit(id) {
+    document.getElementById(`sal_basic_txt_${id}`).style.display = 'none';
+    document.getElementById(`sal_bonus_txt_${id}`).style.display = 'none';
+    document.getElementById(`sal_ded_txt_${id}`).style.display = 'none';
+    document.getElementById(`sal_edit_btn_${id}`).style.display = 'none';
+
+    document.getElementById(`sal_basic_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`sal_bonus_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`sal_ded_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`sal_save_btn_${id}`).style.display = 'inline-block';
+  }
+
+  async function saveSalaryEdit(id) {
+    let basic = parseFloat(document.getElementById(`sal_basic_input_${id}`).value) || 0;
+    let bonus = parseFloat(document.getElementById(`sal_bonus_input_${id}`).value) || 0;
+    let deduction = parseFloat(document.getElementById(`sal_ded_input_${id}`).value) || 0;
+
+    let { error } = await supabaseClient.from('staff').update({
+      basic_salary: basic,
+      bonus: bonus,
+      deduction: deduction
+    }).eq('id', id);
+
+    if(error) {
+      alert("Error updating salary: " + error.message);
+    } else {
+      alert("✅ तलब सफलतापूर्वक अपडेट भयो!");
+      loadSalarySheet();
+    }
+  }
+
   async function loadMenuList() {
     let { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
     if (data) menuItemsCache = data;
@@ -1395,6 +1632,7 @@
         </tr>`;
       });
       tbody.innerHTML = html;
+      loadSalarySheet();
     } catch(e) {
       tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">Error loading staff.</td></tr>`;
     }
