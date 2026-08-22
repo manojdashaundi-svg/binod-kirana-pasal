@@ -1146,10 +1146,14 @@
       return (oDate >= start && oDate <= end);
     });
 
-    let printWindow = window.open('', '', 'height=700,width=900');
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    if (!printWindow) {
+      alert("Popup blocked! Please allow popups for this site.");
+      return;
+    }
+
     printWindow.document.write('<html><head><title>Sales Report</title>');
     printWindow.document.write('<style>');
-    // माथिको खाली ठाउँ कम गर्न margin घटाएर 5mm बनाइएको छ
     printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
     printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;margin:0;}');
     printWindow.document.write('.header{text-align:center;border-bottom:2px solid #1976D2;padding-bottom:5px;margin-bottom:10px;}');
@@ -1157,9 +1161,7 @@
     printWindow.document.write('h2{margin:2px 0;color:#1976D2;font-size:16px;font-weight:700;}');
     printWindow.document.write('h3{margin:2px 0;color:#333;font-size:13px;font-weight:600;}');
     printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
-    // टेबलका लाइन र अक्षरहरू गाढा (bold/solid) बनाइएको छ
     printWindow.document.write('th,td{border:2px solid #333;padding:7px 8px;text-align:center;font-size:12px;color:#000;font-weight:bold;}');
-    // मार्क गरिएको टेबल हेडरको ब्याकग्राउन्ड रङ निलो (#1976D2) राखिएको छ
     printWindow.document.write('th{background:#1976D2;color:white;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
     printWindow.document.write('tr:nth-child(even){background-color:#f4f8fb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
     printWindow.document.write('.total-box{text-align:right;margin-top:10px;font-size:14px;font-weight:bold;color:#1976D2;}');
@@ -1182,8 +1184,12 @@
     printWindow.document.write('<div class="total-box">Total Revenue: Rs. ' + totalSum.toFixed(2) + '</div>');
     printWindow.document.write('</body></html>');
     printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+    
+    // ब्राउजरलाई विन्डो लोड हुन पर्याप्त समय दिइएको छ ताकि 'Saving...' मा नअल्झियोस्
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 600);
   }
 
   async function loadExpenseList() {
@@ -1313,7 +1319,9 @@
       return (eDate >= start && eDate <= end);
     });
 
-    let printWindow = window.open('', '', 'height=700,width=900');
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
     printWindow.document.write('<html><head><title>Expense Report</title>');
     printWindow.document.write('<style>');
     printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
@@ -1346,8 +1354,11 @@
     printWindow.document.write('<div class="total-box">Total Expense: Rs. ' + totalExpSum.toFixed(2) + '</div>');
     printWindow.document.write('</body></html>');
     printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+    
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 600);
   }
 
   function exportSalaryCSV() {
@@ -1414,7 +1425,9 @@
       return (vDate >= start && vDate <= end);
     });
 
-    let printWindow = window.open('', '', 'height=700,width=900');
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
     printWindow.document.write('<html><head><title>Salary Report</title>');
     printWindow.document.write('<style>');
     printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
@@ -1448,8 +1461,11 @@
     printWindow.document.write('<div class="total-box">Total Salary Paid: Rs. ' + totalSalarySum.toFixed(2) + '</div>');
     printWindow.document.write('</body></html>');
     printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+    
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 600);
   }
 
   // Extra Service Invoice Generator Functions
@@ -1515,7 +1531,9 @@
 
     let balance = total - paid;
 
-    let printWindow = window.open('', '', 'height=700,width=600');
+    let printWindow = window.open('', '_blank', 'height=700,width=600');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
     printWindow.document.write('<html><head><title>Extra Service Invoice</title>');
     printWindow.document.write('<style>');
     printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
@@ -1545,8 +1563,11 @@
     printWindow.document.write('<center><p style="color:#555; font-size:12px; font-weight:bold;">Thank you for your business!</p></center>');
     printWindow.document.write('</body></html>');
     printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+    
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 600);
   }
 
   function downloadExtraInvoicePDF() {
@@ -1618,7 +1639,9 @@
       return (oDate >= start && oDate <= end);
     });
 
-    let printWindow = window.open('', '', 'height=700,width=900');
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
     printWindow.document.write('<html><head><title>Total Income Report</title>');
     printWindow.document.write('<style>');
     printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
@@ -1652,8 +1675,11 @@
     printWindow.document.write('<div class="total-box">Total Income: Rs. ' + totalIncomeSum.toFixed(2) + '</div>');
     printWindow.document.write('</body></html>');
     printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+    
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 600);
   }
 
   async function loadSalarySheet() {
@@ -1850,7 +1876,9 @@
       loadSalaryVouchersHistory();
     } catch(e) {}
 
-    let printWindow = window.open('', '', 'height=700,width=500');
+    let printWindow = window.open('', '_blank', 'height=700,width=500');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
     printWindow.document.write('<html><head><title>Salary Voucher</title>');
     printWindow.document.write('<style>');
     printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
@@ -1879,8 +1907,11 @@
     printWindow.document.write('<table width="100%"><tr><td align="center" style="border:none; font-weight:bold; color:#000;">___________________<br>Prepared By</td><td align="center" style="border:none; font-weight:bold; color:#000;">___________________<br>Receiver Signature</td></tr></table>');
     printWindow.document.write('</body></html>');
     printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+    
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 600);
   }
 
   async function loadMenuList() {
@@ -2326,7 +2357,7 @@
   async function sendAdminChat() {
     if(!currentSelectedChatSession) { alert("Please select a chat first!"); return; }
     let inputEl = document.getElementById("adminChatInput");
-    let msg = inputEl.value.trim();
+    let msg = input_el.value.trim();
     if(!msg) return;
     inputEl.value = "";
     try {
