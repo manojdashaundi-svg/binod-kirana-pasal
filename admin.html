@@ -301,7 +301,6 @@
     </div>
 
     <h4 style="margin-bottom:10px; color:#444;">Current Staff Members</h4>
-    <!-- ४ वटा मात्र देखिने र बाँकी हेर्न स्क्रोलबार राखिएको कन्टेनर -->
     <div style="overflow-x:auto; max-height: 250px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; margin-bottom:30px;">
       <table>
         <thead>
@@ -368,6 +367,7 @@
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
           <input id="newStaffFullName" type="text" placeholder="Full Name (e.g. Shova Kumari)" style="flex:2; min-width:200px; padding:10px;">
           <input id="newStaffDesignationInput" type="text" placeholder="Designation (e.g. order_taker, delivery)" style="flex:2; min-width:220px; padding:10px;">
+          <!-- यहाँ onclick="addNewStaffDesignation()" थपिएको छ -->
           <button onclick="addNewStaffDesignation()" style="padding:10px 22px; background:#e91e63; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(233,30,99,0.3);">+ Add Staff</button>
         </div>
       </div>
@@ -405,7 +405,6 @@
         </div>
       </div>
 
-      <!-- Earnings & Allowances Container with Add/Remove -->
       <div style="margin-bottom:12px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
           <label style="font-weight:bold; font-size:13px; color:#555;">Earnings & Allowances:</label>
@@ -420,7 +419,6 @@
         </div>
       </div>
 
-      <!-- Deductions Container with Add/Remove -->
       <div style="margin-bottom:12px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
           <label style="font-weight:bold; font-size:13px; color:#555;">Deductions:</label>
