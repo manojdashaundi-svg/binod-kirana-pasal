@@ -1693,36 +1693,7 @@
     } catch(e) {}
   }
 
-  // ✨ AUTOMATICALLY SYNC ADMIN TABLE (NAME & ROLE) TO STAFF TABLE ✨
-  async function syncAdminToStaffTable() {
-    try {
-      // 1. Fetch all records from admin table
-      let { data: adminData, error: adminErr } = await supabaseClient.from('admin').select('name, role');
-      if (adminErr || !adminData) return;
-
-      // 2. Fetch existing records from staff table to avoid duplicates
-      let { data: staffData, error: staffErr } = await supabaseClient.from('staff').select('name');
-      let existingNames = new Set();
-      if (!staffErr && staffData) {
-        staffData.forEach(st => existingNames.add(String(st.name).trim().toLowerCase()));
-      }
-
-      // 3. Insert missing admin staff into staff table (only name & role)
-      for (let adm of adminData) {
-        let admName = adm.name ? String(adm.name).trim() : "";
-        let admRole = adm.role ? String(adm.role).trim() : "Staff";
-        if (admName && !existingNames.has(admName.toLowerCase())) {
-          await supabaseClient.from('staff').insert([{
-            name: admName,
-            role: admRole
-          }]);
-        }
-      }
-    } catch(e) {
-      console.error("Sync error:", e);
-    }
-  }
-
+  // ✨ ONLY SAVE TO STAFF TABLE (NAME & ROLE) - NO ADMIN TABLE INSERT ✨
   async function addNewStaffDesignation() {
     let fullName = document.getElementById("salaryStaffFullName").value.trim();
     let designation = document.getElementById("salaryStaffDesignationInput").value.trim();
@@ -1732,15 +1703,7 @@
       return;
     }
 
-    // 1. Save to admin table
-    await supabaseClient.from('admin').insert([{
-      name: fullName,
-      email: fullName.toLowerCase().replace(/\s+/g, '') + "@pooja.com",
-      password: "123",
-      role: designation
-    }]);
-
-    // 2. Automatically save only name and role to staff table
+    // Save only to staff table (name & role)
     let { error } = await supabaseClient.from('staff').insert([{
       name: fullName,
       role: designation
@@ -1751,10 +1714,9 @@
       return;
     }
 
-    alert("✅ नयाँ कर्मचारी र पद एडमिन तथा स्टाफ दुवै टेबलमा सफलतापूर्वक थपियो!");
+    alert("✅ नयाँ कर्मचारी सफलतापूर्वक स्टाफ टेबलमा सेभ भयो!");
     document.getElementById("salaryStaffFullName").value = "";
     document.getElementById("salaryStaffDesignationInput").value = "";
-    loadStaffList();
     loadSalarySheet();
   }
 
@@ -2172,9 +2134,6 @@
   };
 
   async function loadStaffList() {
-    // Automatically Sync before loading
-    await syncAdminToStaffTable();
-
     let tbody = document.getElementById("staffTableList");
     if(!tbody) return;
     try {
@@ -2253,12 +2212,6 @@
       role: role
     }).eq('id', id);
 
-    // Also update staff table name and role
-    await supabaseClient.from('staff').update({
-      name: name,
-      role: role
-    }).eq('id', id);
-
     if(error) {
       alert("Error updating staff: " + error.message);
     } else {
@@ -2279,17 +2232,10 @@
       return;
     }
 
-    // 1. Save to admin table
     let { error } = await supabaseClient.from('admin').insert([{
       name: name,
       email: email,
       password: password,
-      role: role
-    }]);
-
-    // 2. Automatically save only name and role to staff table
-    await supabaseClient.from('staff').insert([{
-      name: name,
       role: role
     }]);
 
@@ -2298,24 +2244,20 @@
       return;
     }
 
-    alert("✅ नयाँ स्टाफ एडमिन र स्टाफ दुवै टेबलमा सफलतापूर्वक थपियो!");
+    alert("✅ नयाँ स्टाफ एडमिन टेबलमा सफलतापूर्वक थपियो!");
     document.getElementById("staffNameInput").value = "";
     document.getElementById("staffEmailInput").value = "";
     document.getElementById("staffPassInput").value = "";
     loadStaffList();
-    loadSalarySheet();
   }
 
   async function deleteStaff(id) {
     if(confirm("के तपाइँ यो स्टाफलाई हटाउन चाहनुहुन्छ?")) {
       let { error } = await supabaseClient.from('admin').delete().eq('id', id);
-      await supabaseClient.from('staff').delete().eq('id', id);
-      
       if(error) {
         alert("Error deleting staff: " + error.message);
       } else {
         loadStaffList();
-        loadSalarySheet();
       }
     }
   }
