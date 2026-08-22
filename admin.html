@@ -298,7 +298,7 @@
     </div>
 
     <h4 style="margin-bottom:10px;">Current Staff Members</h4>
-    <div style="overflow-x:auto; border:1px solid #ddd; border-radius:6px;">
+    <div style="overflow-x:auto; border:1px solid #ddd; border-radius:6px; margin-bottom:30px;">
       <table>
         <thead>
           <tr style="background:#1976D2; color:#fff;">
@@ -315,6 +315,68 @@
         </tbody>
       </table>
     </div>
+
+    <!-- 💰 Expense & Profit Tracker -->
+    <div style="background:#f9f9f9; padding:20px; border-radius:8px; border:1px solid #ddd; margin-bottom:20px;">
+      <h3 style="color:#1976D2; margin-top:0;">💰 Expense & Profit Tracker</h3>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <input id="expenseDate" type="date" style="flex:1; min-width:150px; padding:10px;">
+        <input id="expenseCategory" type="text" placeholder="Category (e.g. Rent, Salary)" style="flex:1.5; min-width:180px; padding:10px;">
+        <input id="expenseAmount" type="number" placeholder="Amount (Rs.)" style="flex:1; min-width:130px; padding:10px;">
+        <input id="expenseDescription" type="text" placeholder="Description" style="flex:2; min-width:200px; padding:10px;">
+        <button onclick="addExpenseRecord()" style="padding:10px 25px; background:#E91E63; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">+ Add Expense</button>
+      </div>
+    </div>
+
+    <!-- 📊 Expense Report Generator & Export -->
+    <div style="background:#f9f9f9; padding:20px; border-radius:8px; border:1px solid #ddd; margin-bottom:20px;">
+      <h3 style="color:#1976D2; margin-top:0;">📊 Expense Report Generator & Export</h3>
+      <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px;">Start Date:</label>
+          <input id="expReportStart" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px;">End Date:</label>
+          <input id="expReportEnd" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
+          <button onclick="exportExpenseCSV()" style="flex:1; padding:10px; background:#2E7D32; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">📥 Export Excel (.CSV)</button>
+          <button onclick="printExpensePDF()" style="flex:1; padding:10px; background:#C62828; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🖨️ Print / Download PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Financial Summary Cards -->
+    <div style="margin:20px 0; font-size:16px; line-height:1.8; font-weight:bold;">
+      <div style="color:#1976D2;">जम्मा Total Revenue: <span id="summaryTotalRevenue">Rs. 0.00</span></div>
+      <div style="color:#D32F2F;">जम्मा Total Expense: <span id="summaryTotalExpense">Rs. 0.00</span></div>
+      <div style="color:#388E3C;">जम्मा Net Profit: <span id="summaryNetProfit">Rs. 0.00</span></div>
+    </div>
+
+    <!-- 💰 Staff Salary Sheet & Voucher System -->
+    <div style="background:#f9f9f9; padding:20px; border-radius:8px; border:1px solid #ddd; margin-top:30px;">
+      <h3 style="color:#1976D2; margin-top:0;">💰 Staff Salary Sheet & Voucher System</h3>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr style="background:#1976D2; color:#fff;">
+              <th>Staff Name</th>
+              <th>Role</th>
+              <th>Basic Salary (Rs.)</th>
+              <th>Bonus (Rs.)</th>
+              <th>Deduction (Rs.)</th>
+              <th>Net Salary (Rs.)</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="salaryTableList">
+            <tr><td colspan="7" style="padding:15px; color:#666;">Loading Staff Salaries...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
   <!-- 💬 Live Support Chat Center -->
@@ -383,6 +445,7 @@
   var activeOrdersCache = [];
   var menuItemsCache = [];
   var staffListCache = [];
+  var expenseListCache = [];
   var currentSelectedChatSession = null;
   var lastAdminChatCount = {};
   var activeProofOrderNo = null;
@@ -532,6 +595,7 @@
         renderActiveOrdersTable(activeOrdersCache);
         drawMonthlySalesChart(activeOrdersCache);
         drawHourlySalesChart(activeOrdersCache);
+        updateFinancialSummary();
       }
     } catch(err) {}
   };
@@ -932,6 +996,243 @@
     setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
   }
 
+  async function loadExpenseList() {
+    try {
+      let { data, error } = await supabaseClient.from('expenses').select('*').order('id', { ascending: false });
+      if (!error && data) {
+        expenseListCache = data;
+        updateFinancialSummary();
+      }
+    } catch(e) {}
+  }
+
+  async function addExpenseRecord() {
+    let date = document.getElementById("expenseDate").value;
+    let category = document.getElementById("expenseCategory").value.trim();
+    let amount = parseFloat(document.getElementById("expenseAmount").value);
+    let description = document.getElementById("expenseDescription").value.trim();
+
+    if(!date || !category || isNaN(amount)) {
+      alert("कृपया मिति, क्याटेगरी र रकम सही भर्नुहोस्!");
+      return;
+    }
+
+    let { error } = await supabaseClient.from('expenses').insert([{
+      date: date,
+      category: category,
+      amount: amount,
+      description: description
+    }]);
+
+    if(error) {
+      alert("Error adding expense: " + error.message);
+      return;
+    }
+
+    alert("✅ खर्च सफलतापूर्वक थपियो!");
+    document.getElementById("expenseDate").value = "";
+    document.getElementById("expenseCategory").value = "";
+    document.getElementById("expenseAmount").value = "";
+    document.getElementById("expenseDescription").value = "";
+    loadExpenseList();
+  }
+
+  function updateFinancialSummary() {
+    let totalRev = 0;
+    activeOrdersCache.forEach(o => { totalRev += parseFloat(o.total) || 0; });
+
+    let totalExp = 0;
+    expenseListCache.forEach(e => { totalExp += parseFloat(e.amount) || 0; });
+
+    let netProfit = totalRev - totalExp;
+
+    document.getElementById("summaryTotalRevenue").innerText = "Rs. " + totalRev.toFixed(2);
+    document.getElementById("summaryTotalExpense").innerText = "Rs. " + totalExp.toFixed(2);
+    document.getElementById("summaryNetProfit").innerText = "Rs. " + netProfit.toFixed(2);
+  }
+
+  function exportExpenseCSV() {
+    let startDate = document.getElementById("expReportStart").value;
+    let endDate = document.getElementById("expReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = expenseListCache.filter(e => {
+      if(!e.date) return false;
+      let eDate = new Date(e.date);
+      if(isNaN(eDate.getTime())) return false;
+      return (eDate >= start && eDate <= end);
+    });
+
+    if(filtered.length === 0) {
+      alert("चयनित मितिभित्र कुनै खर्चको रेकर्ड भेटिएन!");
+      return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,Date,Category,Amount (Rs.),Description\n";
+    filtered.forEach(e => {
+      let rowData = [
+        `"${e.date || ''}"`,
+        `"${e.category || ''}"`,
+        `"${e.amount || '0'}"`,
+        `"${e.description || ''}"`
+      ];
+      csvContent += rowData.join(",") + "\n";
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "expense_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function printExpensePDF() {
+    let startDate = document.getElementById("expReportStart").value;
+    let endDate = document.getElementById("expReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = expenseListCache.filter(e => {
+      if(!e.date) return false;
+      let eDate = new Date(e.date);
+      if(isNaN(eDate.getTime())) return false;
+      return (eDate >= start && eDate <= end);
+    });
+
+    let printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>Expense Report</title>');
+    printWindow.document.write('<style>body{font-family:Arial,sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;margin-top:20px;} th,td{border:1px solid #ddd;padding:8px;text-align:center;font-size:12px;} th{background:#E91E63;color:white;}</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<center><h2>PUJA EXPORT AND IMPORT PVT. LTD.</h2><h3>Expense Report (' + startDate + ' to ' + endDate + ')</h3></center>');
+    printWindow.document.write('<table><thead><tr><th>Date</th><th>Category</th><th>Amount (Rs.)</th><th>Description</th></tr></thead><tbody>');
+    
+    let totalExpSum = 0;
+    filtered.forEach(e => {
+      totalExpSum += parseFloat(e.amount) || 0;
+      printWindow.document.write(`<tr><td>${e.date || ''}</td><td>${e.category || ''}</td><td>Rs. ${e.amount || '0'}</td><td>${e.description || ''}</td></tr>`);
+    });
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<h3 style="text-align:right; margin-top:20px; color:#D32F2F;">Total Expense: Rs. ' + totalExpSum.toFixed(2) + '</h3>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+  }
+
+  async function loadSalarySheet() {
+    let tbody = document.getElementById("salaryTableList");
+    if(!tbody) return;
+    try {
+      let { data, error } = await supabaseClient.from('staff').select('*').order('id', { ascending: true });
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="padding:15px; color:#666;">No staff found for salary.</td></tr>`;
+        return;
+      }
+      let html = "";
+      data.forEach(s => {
+        let basic = s.basic_salary !== undefined && s.basic_salary !== null ? s.basic_salary : 0;
+        let bonus = s.bonus !== undefined && s.bonus !== null ? s.bonus : 0;
+        let deduction = s.deduction !== undefined && s.deduction !== null ? s.deduction : 0;
+        let net = basic + bonus - deduction;
+
+        html += `<tr id="salary_row_${s.id}">
+          <td><b>${s.name || ''}</b></td>
+          <td>${s.role || 'Staff'}</td>
+          <td>
+            <span id="sal_basic_txt_${s.id}">${basic}</span>
+            <input type="number" id="sal_basic_input_${s.id}" value="${basic}" style="display:none; width:80px; padding:6px;">
+          </td>
+          <td>
+            <span id="sal_bonus_txt_${s.id}">${bonus}</span>
+            <input type="number" id="sal_bonus_input_${s.id}" value="${bonus}" style="display:none; width:80px; padding:6px;">
+          </td>
+          <td>
+            <span id="sal_ded_txt_${s.id}">${deduction}</span>
+            <input type="number" id="sal_ded_input_${s.id}" value="${deduction}" style="display:none; width:80px; padding:6px;">
+          </td>
+          <td style="color:#1976D2; font-weight:bold;">Rs. <span id="sal_net_${s.id}">${net}</span></td>
+          <td style="white-space: nowrap;">
+            <button id="sal_edit_btn_${s.id}" class="editBtn" onclick="enableSalaryEdit(${s.id})">✏️ Edit</button>
+            <button id="sal_save_btn_${s.id}" class="saveBtn" style="display:none;" onclick="saveSalaryEdit(${s.id})">💾 Save</button>
+            <button class="actionBtn billBtn" onclick="printSalaryVoucher('${s.name}', '${s.role}', ${basic}, ${bonus}, ${deduction}, ${net})" style="display:inline-block; width:auto; padding:6px 12px; margin-left:5px;">🖨️ Voucher</button>
+          </td>
+        </tr>`;
+      });
+      tbody.innerHTML = html;
+    } catch(e) {}
+  }
+
+  function enableSalaryEdit(id) {
+    document.getElementById(`sal_basic_txt_${id}`).style.display = 'none';
+    document.getElementById(`sal_bonus_txt_${id}`).style.display = 'none';
+    document.getElementById(`sal_ded_txt_${id}`).style.display = 'none';
+    document.getElementById(`sal_edit_btn_${id}`).style.display = 'none';
+
+    document.getElementById(`sal_basic_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`sal_bonus_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`sal_ded_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`sal_save_btn_${id}`).style.display = 'inline-block';
+  }
+
+  async function saveSalaryEdit(id) {
+    let basic = parseFloat(document.getElementById(`sal_basic_input_${id}`).value) || 0;
+    let bonus = parseFloat(document.getElementById(`sal_bonus_input_${id}`).value) || 0;
+    let deduction = parseFloat(document.getElementById(`sal_ded_input_${id}`).value) || 0;
+
+    let { error } = await supabaseClient.from('staff').update({
+      basic_salary: basic,
+      bonus: bonus,
+      deduction: deduction
+    }).eq('id', id);
+
+    if(error) {
+      alert("Error updating salary: " + error.message);
+    } else {
+      alert("✅ तलब सफलतापूर्वक अपडेट भयो!");
+      loadSalarySheet();
+    }
+  }
+
+  function printSalaryVoucher(name, role, basic, bonus, deduction, net) {
+    let printWindow = window.open('', '', 'height=600,width=400');
+    printWindow.document.write('<html><head><title>Salary Voucher</title>');
+    printWindow.document.write('<style>body{font-family:Courier New,monospace;padding:20px;font-size:13px;line-height:1.4;} .center{text-align:center;} hr{border:1px dashed #000;}</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<div class="center"><h3>PUJA EXPORT AND IMPORT</h3><p><b>SALARY VOUCHER / SLIP</b></p></div>');
+    printWindow.document.write('<hr>');
+    printWindow.document.write('<p><b>Staff Name:</b> ' + name + '</p>');
+    printWindow.document.write('<p><b>Role:</b> ' + role + '</p>');
+    printWindow.document.write('<p><b>Date:</b> ' + new Date().toLocaleDateString() + '</p>');
+    printWindow.document.write('<hr>');
+    printWindow.document.write('<p>Basic Salary: Rs. ' + basic.toFixed(2) + '</p>');
+    printWindow.document.write('<p>Bonus: Rs. ' + bonus.toFixed(2) + '</p>');
+    printWindow.document.write('<p>Deduction: Rs. ' + deduction.toFixed(2) + '</p>');
+    printWindow.document.write('<hr>');
+    printWindow.document.write('<h3>Net Salary: Rs. ' + net.toFixed(2) + '</h3>');
+    printWindow.document.write('<hr><br><br>');
+    printWindow.document.write('<table width="100%"><tr><td align="center">___________________<br>Prepared By</td><td align="center">___________________<br>Receiver Signature</td></tr></table>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+  }
+
   async function loadMenuList() {
     let { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
     if (data) menuItemsCache = data;
@@ -1215,6 +1516,7 @@
         </tr>`;
       });
       tbody.innerHTML = html;
+      loadSalarySheet();
     } catch(e) {
       tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">Error loading staff.</td></tr>`;
     }
@@ -1406,6 +1708,7 @@
     loadMenuList();
     loadOrders();
     loadStaffList();
+    loadExpenseList();
     loadAdminChatsList();
     setInterval(() => { 
       loadOrders(); 
