@@ -517,6 +517,25 @@
       </div>
     </div>
 
+    <!-- 📊 Total Income Report Generator & Export -->
+    <div style="background:#f9f9f9; padding:20px; border-radius:8px; border:1px solid #ddd; margin-top:25px;">
+      <h3 style="color:#1976D2; margin-top:0;">📊 Total Income Report Generator & Export</h3>
+      <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px;">Start Date:</label>
+          <input id="incomeReportStart" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px;">End Date:</label>
+          <input id="incomeReportEnd" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
+          <button onclick="exportTotalIncomeCSV()" style="flex:1; padding:10px; background:#2E7D32; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">📥 Export Excel (.CSV)</button>
+          <button onclick="printTotalIncomePDF()" style="flex:1; padding:10px; background:#C62828; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🖨️ Print / Download PDF</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- 💬 Live Support Chat Center -->
@@ -1461,6 +1480,93 @@
     printExtraInvoice();
   }
 
+  // Total Income Report Functions
+  function exportTotalIncomeCSV() {
+    let startDate = document.getElementById("incomeReportStart").value;
+    let endDate = document.getElementById("incomeReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = activeOrdersCache.filter(o => {
+      if(!o.time) return false;
+      let oDate = new Date(o.time);
+      if(isNaN(oDate.getTime())) return false;
+      return (oDate >= start && oDate <= end);
+    });
+
+    if(filtered.length === 0) {
+      alert("चयनित मितिभित्र कुनै आम्दानीको रेकर्ड भेटिएन!");
+      return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,Date & Time,Order No,Customer Name,Phone,Total Income (Rs.)\n";
+    filtered.forEach(o => {
+      let rowData = [
+        `"${o.time || ''}"`,
+        `"${o.order_no || ''}"`,
+        `"${o.customer_name || ''}"`,
+        `"${o.phone || ''}"`,
+        `"${o.total || '0'}"`
+      ];
+      csvContent += rowData.join(",") + "\n";
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "total_income_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function printTotalIncomePDF() {
+    let startDate = document.getElementById("incomeReportStart").value;
+    let endDate = document.getElementById("incomeReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = activeOrdersCache.filter(o => {
+      if(!o.time) return false;
+      let oDate = new Date(o.time);
+      if(isNaN(oDate.getTime())) return false;
+      return (oDate >= start && oDate <= end);
+    });
+
+    let printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>Total Income Report</title>');
+    printWindow.document.write('<style>body{font-family:Arial,sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;margin-top:20px;} th,td{border:1px solid #ddd;padding:8px;text-align:center;font-size:12px;} th{background:#1976D2;color:white;}</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<center><h2>PUJA EXPORT AND IMPORT PVT. LTD.</h2><h3>Total Income Report (' + startDate + ' to ' + endDate + ')</h3></center>');
+    printWindow.document.write('<table><thead><tr><th>Date & Time</th><th>Order No.</th><th>Customer Name</th><th>Phone</th><th>Income (Rs.)</th></tr></thead><tbody>');
+    
+    let totalIncomeSum = 0;
+    filtered.forEach(o => {
+      let amt = parseFloat(o.total) || 0;
+      totalIncomeSum += amt;
+      printWindow.document.write(`<tr><td>${o.time || ''}</td><td><b>${o.order_no || ''}</b></td><td>${o.customer_name || ''}</td><td>${o.phone || ''}</td><td>Rs. ${amt.toFixed(2)}</td></tr>`);
+    });
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<h3 style="text-align:right; margin-top:20px; color:#1976D2;">Total Income: Rs. ' + totalIncomeSum.toFixed(2) + '</h3>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+  }
+
   async function loadSalarySheet() {
     let selectEl = document.getElementById("voucherStaffSelect");
     if(!selectEl) return;
@@ -1478,6 +1584,8 @@
       document.getElementById("voucherMonth").value = now.getMonth() + 1;
       document.getElementById("voucherYear").value = now.getFullYear();
       document.getElementById("extraInvDate").value = now.toISOString().split('T')[0];
+      document.getElementById("incomeReportStart").value = now.toISOString().split('T')[0];
+      document.getElementById("incomeReportEnd").value = now.toISOString().split('T')[0];
 
       data.forEach(s => {
         selectHtml += `<option value="${s.id}">${s.name} (${s.role || 'Staff'})</option>`;
