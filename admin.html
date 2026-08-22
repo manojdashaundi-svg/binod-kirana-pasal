@@ -301,7 +301,8 @@
     </div>
 
     <h4 style="margin-bottom:10px; color:#444;">Current Staff Members (Admin Table)</h4>
-    <div style="overflow-x:auto; max-height: 250px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; margin-bottom:30px;">
+    <!-- ⬇️ Set max-height and overflow-y to show exactly ~4 items with vertical scroll ⬇️ -->
+    <div style="overflow-x:auto; max-height: 240px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; margin-bottom:30px;">
       <table>
         <thead>
           <tr style="position:sticky; top:0; z-index:10; background:#1976D2; color:#fff;">
@@ -371,9 +372,9 @@
         </div>
       </div>
 
-      <!-- ✨ Staff Table with Edit & Delete System ✨ -->
+      <!-- Staff Table with Edit & Delete System -->
       <h4 style="color:#444; margin-bottom:10px;">Staff List (Manage Staff & Designation)</h4>
-      <div style="overflow-x:auto; max-height: 250px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; background:#fff;">
+      <div style="overflow-x:auto; max-height: 240px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; background:#fff;">
         <table>
           <thead>
             <tr style="position:sticky; top:0; z-index:10; background:#e91e63; color:#fff;">
@@ -1778,7 +1779,6 @@
     }
   }
 
-  // ✨ ONLY SAVE TO STAFF TABLE (NAME & ROLE) - NO ADMIN TABLE INSERT ✨
   async function addNewStaffDesignation() {
     let fullName = document.getElementById("salaryStaffFullName").value.trim();
     let designation = document.getElementById("salaryStaffDesignationInput").value.trim();
@@ -1788,7 +1788,6 @@
       return;
     }
 
-    // Save only to staff table (name & role)
     let { error } = await supabaseClient.from('staff').insert([{
       name: fullName,
       role: designation
