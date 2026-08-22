@@ -22,7 +22,7 @@
     th{ background:#1976D2; color:#fff; padding:12px; font-size:14px; text-align:center; }
     td{ padding:10px; border:1px solid #ddd; text-align:center; font-size:14px; vertical-align:middle; }
     select, input{ padding:8px; border-radius:6px; border:1px solid #ccc; margin:3px; box-sizing: border-box; }
-    
+
     .actionBtn { color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; display:block; margin:4px auto; width:135px; font-size:13px; text-align:center; }
     .rcvBtn { background:#4CAF50; }
     .billBtn { background:#9C27B0; }
@@ -46,7 +46,7 @@
     .login-card input { width:100%; padding:12px; margin:10px 0; border:1px solid #ddd; border-radius:8px; font-size:16px; }
     .login-card button { width:100%; padding:12px; background:#1976D2; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; }
     .proof-thumb { width: 55px; height: 55px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid #1976D2; display: inline-block; background: #eee; }
-    
+
     .image-viewer-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; justify-content:center; align-items:center; z-index:999999; }
     .image-viewer-box { background:#fff; padding:20px; border-radius:12px; max-width:90%; max-height:90%; text-align:center; position:relative; }
     .image-viewer-box img { max-width:100%; max-height:70vh; object-fit:contain; border-radius:8px; display:block; margin-bottom:15px; }
@@ -79,7 +79,7 @@
 <div id="adminContent" style="display:none;">
   <button id="systemBellAlertBtn" class="bell-btn" onclick="testBellSound()" title="Test Sound">🔔</button>
   <button id="globalLogoutBtn" class="logout" onclick="logout()">Logout</button>
-  
+
   <h2>
     📦 PUJA EXPORT & IMPORT - Admin Panel (<span id="userRoleBadge" style="color:#1976D2;">...</span>)
     <span id="emailAutomationStatusBadge" class="automation-badge" style="display: inline-block;">🟢 Active</span>
@@ -156,7 +156,7 @@
       <input id="newDistrictRate" type="number" placeholder="रेट (Rs.)" style="flex:1; padding:10px;">
       <button class="addBtn" onclick="addDeliveryZone()" style="padding:10px 20px; background:#1976D2; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">+ जिल्ला थप्नुहोस्</button>
     </div>
-    
+
     <div style="overflow-x: auto; max-height: 280px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px;">
       <table>
         <thead>
@@ -190,7 +190,7 @@
       </div>
       <button id="addProductBtn" class="addBtn" onclick="createNewProduct()" style="margin-top:10px; padding:10px 20px; background:#1976D2; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">+ Add Product</button>
     </div>
-    
+
     <h4>Current Products</h4>
     <div style="overflow-x: auto; width:100%; max-height:360px; overflow-y:auto; border:1px solid #ddd; border-radius:6px;">
       <table>
@@ -253,6 +253,45 @@
         </thead>
         <tbody id="stockAlertsTableBody">
           <tr><td colspan="6" style="padding:15px; color:#666;">No low stock items.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 👥 Staff & Access Management Section -->
+  <div class="staff-section">
+    <h3 style="color:#1976D2; margin-bottom:15px;">👥 Staff & Access Management</h3>
+    <div style="background:#f9f9f9; padding:20px; border-radius:8px; border:1px solid #ddd; margin-bottom:20px;">
+      <h4 style="margin-top:0;">+ Add New Staff</h4>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <input id="staffNameInput" type="text" placeholder="Staff Name (नाम)" style="flex:2; min-width:180px;">
+        <input id="staffEmailInput" type="email" placeholder="Email / Username" style="flex:2; min-width:180px;">
+        <input id="staffPassInput" type="password" placeholder="Password" style="flex:1; min-width:140px;">
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; align-items:center;">
+        <select id="staffRoleSelect" style="flex:1; min-width:160px; padding:10px;">
+          <option value="Admin">Admin</option>
+          <option value="Manager">Manager</option>
+          <option value="Staff">Staff</option>
+        </select>
+        <button onclick="addNewStaff()" style="padding:10px 25px; background:#1976D2; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">+ Add Staff</button>
+      </div>
+    </div>
+
+    <h4 style="margin-bottom:10px;">Current Staff Members</h4>
+    <div style="overflow-x:auto; border:1px solid #ddd; border-radius:6px;">
+      <table>
+        <thead>
+          <tr style="background:#1976D2; color:#fff;">
+            <th>ID</th>
+            <th>Staff Name</th>
+            <th>Email / Username</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="staffTableList">
+          <tr><td colspan="5" style="padding:15px; color:#666;">Loading Staff Members...</td></tr>
         </tbody>
       </table>
     </div>
@@ -323,6 +362,7 @@
 
   var activeOrdersCache = [];
   var menuItemsCache = [];
+  var staffListCache = [];
   var currentSelectedChatSession = null;
   var lastAdminChatCount = {};
   var activeProofOrderNo = null;
@@ -354,7 +394,7 @@
     var u = document.getElementById("username").value.trim();
     var p = document.getElementById("password").value.trim();
     if(u === "" || p === "") { alert("Enter credentials."); return; }
-    
+
     if ((u.toLowerCase() === "admin@pooja.com" || u.toLowerCase() === "admin") && (p === "123456" || p === "123")) {
       sessionStorage.setItem("ADMIN_LOGIN", "true");
       sessionStorage.setItem("USER_ROLE", "admin");
@@ -362,6 +402,18 @@
       showAdminPanel();
       return;
     }
+
+    try {
+      let { data, error } = await supabaseClient.from('staff').select('*').eq('email', u).single();
+      if (!error && data && data.password === p) {
+        sessionStorage.setItem("ADMIN_LOGIN", "true");
+        sessionStorage.setItem("USER_ROLE", data.role || "Staff");
+        sessionStorage.setItem("LOGGED_IN_USER", data.name || u);
+        showAdminPanel();
+        return;
+      }
+    } catch(e) {}
+
     alert("❌ Invalid Username or Password!");
   };
 
@@ -400,7 +452,7 @@
     document.getElementById(`dz_name_txt_${id}`).style.display = 'none';
     document.getElementById(`dz_rate_txt_${id}`).style.display = 'none';
     document.getElementById(`dz_edit_btn_${id}`).style.display = 'none';
-    
+
     document.getElementById(`dz_name_input_${id}`).style.display = 'inline-block';
     document.getElementById(`dz_rate_input_${id}`).style.display = 'inline-block';
     document.getElementById(`dz_save_btn_${id}`).style.display = 'inline-block';
@@ -473,7 +525,7 @@
     } else {
       ordersToRender.forEach(function(o){
         let status = o.status ? String(o.status).trim() : "Pending";
-        
+
         let slipSrc = o.payment_slip || o.slip || o.payment || o.qr_image || o.proof || "";
         let slipHtml = "No Slip";
         if (slipSrc && slipSrc !== "None" && slipSrc !== "Slip Uploaded" && slipSrc.length > 5) {
@@ -490,7 +542,7 @@
         if (!o.delivery_time && !o.delivery_date) {
           deliveryTimeDisplay = "-";
         }
-        
+
         let statusSelect = `<select id="status_${o.order_no}">
           <option value="Pending" ${status==="Pending"?"selected":""}>Pending</option>
           <option value="Preparing" ${status==="Preparing"?"selected":""}>Preparing</option>
@@ -700,7 +752,7 @@
     if (typeof google === 'undefined' || !google.visualization) return;
     let monthlyTotals = {};
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    
+
     orders.forEach(o => {
       let amount = parseFloat(o.total) || 0;
       if (o.time) {
@@ -859,7 +911,7 @@
     if(!id) { alert("कृपया Item छान्नुहोस्!"); return; }
     let stockVal = parseInt(document.getElementById("invCurrentStockInput").value);
     let limitVal = parseInt(document.getElementById("invAlertLimitInput").value);
-    
+
     if(isNaN(stockVal)) stockVal = 0;
     if(isNaN(limitVal)) limitVal = 50;
 
@@ -889,7 +941,7 @@
   function loadStockAlerts() {
     let tbody = document.getElementById("stockAlertsTableBody");
     if(!tbody) return;
-    
+
     let lowStockItems = menuItemsCache.filter(r => {
       let stk = (r.stock !== undefined && r.stock !== null) ? parseInt(r.stock) : 0;
       let lim = (r.alert_limit !== undefined && r.alert_limit !== null) ? parseInt(r.alert_limit) : 50;
@@ -934,7 +986,7 @@
     document.getElementById(`prod_desc_txt_${id}`).style.display = 'none';
     document.getElementById(`prod_cat_txt_${id}`).style.display = 'none';
     document.getElementById(`prod_edit_btn_${id}`).style.display = 'none';
-    
+
     document.getElementById(`prod_name_input_${id}`).style.display = 'inline-block';
     document.getElementById(`prod_price_input_${id}`).style.display = 'inline-block';
     document.getElementById(`prod_unit_input_${id}`).style.display = 'inline-block';
@@ -980,7 +1032,7 @@
     var category = document.getElementById("prodCat").value.trim() || "Wholesale";
 
     if(!name || !price) { alert("कृपया उत्पादनको नाम र मूल्य (Price) भर्नुहोस्!"); return; }
-    
+
     let { error } = await supabaseClient.from('menu_items').insert([{ 
       name: name, 
       price: price, 
@@ -1015,11 +1067,80 @@
     }
   };
 
+  async function loadStaffList() {
+    let tbody = document.getElementById("staffTableList");
+    if(!tbody) return;
+    try {
+      let { data, error } = await supabaseClient.from('staff').select('*').order('id', { ascending: true });
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="padding:15px; color:#666;">No staff members found.</td></tr>`;
+        return;
+      }
+      staffListCache = data;
+      let html = "";
+      data.forEach((s, idx) => {
+        html += `<tr>
+          <td><b>${idx + 1}</b></td>
+          <td><b>${s.name || ''}</b></td>
+          <td>${s.email || ''}</td>
+          <td><b>${s.role || 'Staff'}</b></td>
+          <td>
+            <button class="removeBtn" onclick="deleteStaff(${s.id})">❌ Delete</button>
+          </td>
+        </tr>`;
+      });
+      tbody.innerHTML = html;
+    } catch(e) {
+      tbody.innerHTML = `<tr><td colspan="5" style="padding:15px; color:#666;">Error loading staff.</td></tr>`;
+    }
+  }
+
+  async function addNewStaff() {
+    let name = document.getElementById("staffNameInput").value.trim();
+    let email = document.getElementById("staffEmailInput").value.trim();
+    let password = document.getElementById("staffPassInput").value.trim();
+    let role = document.getElementById("staffRoleSelect").value;
+
+    if(!name || !email || !password) {
+      alert("कृपया नाम, इमेल र पासवर्ड सबै भर्नुहोस्!");
+      return;
+    }
+
+    let { error } = await supabaseClient.from('staff').insert([{
+      name: name,
+      email: email,
+      password: password,
+      role: role
+    }]);
+
+    if(error) {
+      alert("Error adding staff: " + error.message);
+      return;
+    }
+
+    alert("✅ नयाँ स्टाफ सफलतापूर्वक थपियो!");
+    document.getElementById("staffNameInput").value = "";
+    document.getElementById("staffEmailInput").value = "";
+    document.getElementById("staffPassInput").value = "";
+    loadStaffList();
+  }
+
+  async function deleteStaff(id) {
+    if(confirm("के तपाइँ यो स्टाफलाई हटाउन चाहनुहुन्छ?")) {
+      let { error } = await supabaseClient.from('staff').delete().eq('id', id);
+      if(error) {
+        alert("Error deleting staff: " + error.message);
+      } else {
+        loadStaffList();
+      }
+    }
+  }
+
   async function loadAdminChatsList() {
     try {
       let { data, error } = await supabaseClient.from('chats').select('*').order('id', { ascending: true });
       if(error || !data) return;
-      
+
       let sessionsMap = {};
       data.forEach(m => {
         if(!sessionsMap[m.session_id]) {
@@ -1031,12 +1152,12 @@
       let container = document.getElementById("chatListContainer");
       if(!container) return;
       let html = "";
-      
+
       Object.keys(sessionsMap).forEach(sessionId => {
         let msgs = sessionsMap[sessionId];
         let lastMsg = msgs[msgs.length - 1];
         let isSelected = (currentSelectedChatSession === sessionId) ? "background:#e3f2fd;" : "";
-        
+
         if (lastAdminChatCount[sessionId] !== undefined && msgs.length > lastAdminChatCount[sessionId]) {
           if (lastMsg.sender === "Customer") {
             playTringTringBell();
@@ -1119,6 +1240,7 @@
     loadDeliveryZones();
     loadMenuList();
     loadOrders();
+    loadStaffList();
     loadAdminChatsList();
     setInterval(() => { 
       loadOrders(); 
