@@ -1867,61 +1867,64 @@
     document.getElementById("voucherNetDisplay").innerText = "NET Salary: RM " + net.toFixed(2);
   }
 
-  // ✨ INTEGRATED DUAL VOUCHER A4 PRINT FUNCTION ✨
+  // ✨ रंगिन र लोगो सहितको Dual A4 Salary Voucher Print Function ✨
   window.printSalaryVoucherSlip = function(vNo, name, desig, day, month, year, earnList, dedList, payMode, netTotal) {
     let earnRowsHtml = "";
     earnList.forEach((e, idx) => {
-        earnRowsHtml += `<tr><td style="border:1px solid #000; padding:4px; text-align:left; width:75%;">${idx+1}. ${e.desc}</td><td style="border:1px solid #000; padding:4px; text-align:right; width:25%;">${e.amt.toFixed(2)}</td></tr>`;
+        earnRowsHtml += `<tr><td style="border:1px solid #bce8f1; padding:5px; text-align:left; width:75%; font-weight:600;">${idx+1}. ${e.desc}</td><td style="border:1px solid #bce8f1; padding:5px; text-align:right; width:25%; font-weight:600;">${e.amt.toFixed(2)}</td></tr>`;
     });
 
     let dedRowsHtml = "";
     dedList.forEach((d, idx) => {
-        dedRowsHtml += `<tr><td style="border:1px solid #000; padding:4px; text-align:left; width:75%;">${idx+1}. ${d.desc}</td><td style="border:1px solid #000; padding:4px; text-align:right; width:25%;">${d.amt.toFixed(2)}</td></tr>`;
+        dedRowsHtml += `<tr><td style="border:1px solid #f2dede; padding:5px; text-align:left; width:75%; font-weight:600;">${idx+1}. ${d.desc}</td><td style="border:1px solid #f2dede; padding:5px; text-align:right; width:25%; font-weight:600;">${d.amt.toFixed(2)}</td></tr>`;
     });
 
     let singleVoucherHtml = `
-        <div style="width: 100%; text-align: center; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.3; color:#000; background:#fff; padding: 12px; border: 1px dashed #000; box-sizing: border-box;">
-            <h3 style="margin:0; font-size:14px; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h3>
-            <p style="margin:2px 0; font-size:9.5px;">KATHMANDU, NEPAL</p>
-            <div style="border-top:1px solid #000; margin:6px 0;"></div>
-            <h4 style="margin:3px 0; font-size:13px; text-decoration:underline;">SALARY VOUCHER</h4>
-            <div style="text-align:left; margin-top:6px; font-size:11px;">
-                <div><b>Employee Name :</b> ${name}</div>
+        <div style="width: 100%; text-align: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11px; line-height: 1.3; color:#222; background:#fff; padding: 12px; border: 2px solid #1976D2; border-radius: 8px; box-sizing: border-box; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+            <img src="https://i.postimg.cc/Hn5Fwwb5/logo.png" style="max-width:55px; height:auto; margin-bottom:2px;">
+            <h3 style="margin:0; font-size:15px; font-weight:bold; color:#1976D2;">PUJA EXPORT AND IMPORT PVT. LTD.</h3>
+            <p style="margin:2px 0; font-size:9.5px; color:#555; font-weight:600;">KATHMANDU, NEPAL</p>
+            <div style="border-top:2px solid #1976D2; margin:5px 0;"></div>
+            <h4 style="margin:3px 0; font-size:13px; color:#E91E63; text-decoration:underline; font-weight:bold;">SALARY VOUCHER</h4>
+            
+            <div style="text-align:left; margin-top:6px; font-size:11px; background:#f9fbfd; padding:6px 10px; border-radius:6px; border:1px solid #e0e0e0;">
+                <div><b>Employee Name :</b> <span style="color:#1976D2;">${name}</span></div>
                 <div><b>Designation :</b> ${desig}</div>
                 <div><b>Date:</b> ${day}/${month}/${year}</div>
             </div>
-            <div style="background:#000; color:#fff; font-weight:bold; padding:4px; margin:6px 0; font-size:11.5px; text-align:left;">VOUCHER NO. ${vNo}</div>
+
+            <div style="background:linear-gradient(135deg, #1976D2, #1565C0); color:#fff; font-weight:bold; padding:4px 8px; margin:6px 0; font-size:11.5px; text-align:left; border-radius:4px;">VOUCHER NO. ${vNo}</div>
             
-            <table style="width:100%; border-collapse:collapse; font-size:10.5px; margin-top:4px; border:1px solid #000;">
-                <tr style="background:#eee; border-bottom:1px solid #000;">
-                    <th style="border:1px solid #000; padding:4px; text-align:left; width:75%;">Earnings</th>
-                    <th style="border:1px solid #000; padding:4px; text-align:right; width:25%;">RM</th>
+            <table style="width:100%; border-collapse:collapse; font-size:10.5px; margin-top:4px;">
+                <tr style="background:#e3f2fd; color:#0d47a1; border-bottom:1.5px solid #1976D2;">
+                    <th style="border:1px solid #bbdefb; padding:4px 6px; text-align:left; width:75%;">Earnings & Allowances</th>
+                    <th style="border:1px solid #bbdefb; padding:4px 6px; text-align:right; width:25%;">RM</th>
                 </tr>
                 ${earnRowsHtml}
             </table>
 
             ${dedList.length > 0 ? `
-            <table style="width:100%; border-collapse:collapse; font-size:10.5px; margin-top:6px; border:1px solid #000;">
-                <tr style="background:#eee; border-bottom:1px solid #000;">
-                    <th style="border:1px solid #000; padding:4px; text-align:left; width:75%;">Deductions</th>
-                    <th style="border:1px solid #000; padding:4px; text-align:right; width:25%;">RM</th>
+            <table style="width:100%; border-collapse:collapse; font-size:10.5px; margin-top:5px;">
+                <tr style="background:#ffebee; color:#c62828; border-bottom:1.5px solid #e91e63;">
+                    <th style="border:1px solid #ffcdd2; padding:4px 6px; text-align:left; width:75%;">Deductions</th>
+                    <th style="border:1px solid #ffcdd2; padding:4px 6px; text-align:right; width:25%;">RM</th>
                 </tr>
                 ${dedRowsHtml}
             </table>` : ''}
 
-            <div style="border:1px solid #000; padding:5px; margin-top:6px; text-align:right; font-size:12.5px; font-weight:bold; background:#f9f9f9;">
+            <div style="border:1.5px solid #4CAF50; padding:5px 8px; margin-top:6px; text-align:right; font-size:12.5px; font-weight:bold; background:#e8f5e9; color:#2e7d32; border-radius:6px;">
                 NET Salary: RM ${Number(netTotal).toFixed(2)}
             </div>
 
-            <div style="text-align:left; margin-top:8px; font-size:10.5px;">
-                <div>☑ ${payMode}</div>
+            <div style="text-align:left; margin-top:6px; font-size:11px; font-weight:bold; color:#333;">
+                <div>☑ Payment Mode: <span style="color:#1976D2;">${payMode}</span></div>
             </div>
 
-            <div style="margin-top:25px; display:flex; justify-content:space-between; font-size:10.5px;">
-                <div><b>Hotel Copy / Staff Copy</b></div>
+            <div style="margin-top:16px; display:flex; justify-content:space-between; font-size:10.5px; align-items:flex-end;">
+                <div><b style="color:#555;">Hotel Copy / Staff Copy</b></div>
                 <div style="text-align:right;">
                     --------------------------<br>
-                    <b>Employee Signature</b>
+                    <b style="color:#333;">Employee Signature</b>
                 </div>
             </div>
         </div>
@@ -1933,15 +1936,15 @@
             <title>Salary Voucher Print</title>
             <style>
                 @page { size: A4 portrait; margin: 0; }
-                body { margin: 0; padding: 0; background: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; }
-                .voucher-page { width: 190mm; height: 280mm; margin: auto; display: flex; flex-direction: column; justify-content: space-between; align-items: center; box-sizing: border-box; padding: 10mm 0; }
+                body { margin: 0; padding: 0; background: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                .voucher-page { width: 190mm; height: 280mm; margin: auto; display: flex; flex-direction: column; justify-content: space-between; align-items: center; box-sizing: border-box; padding: 8mm 0; }
                 .voucher-item { width: 100%; }
             </style>
         </head>
         <body>
             <div class="voucher-page">
                 <div class="voucher-item">${singleVoucherHtml}</div>
-                <div style="width: 100%; border-top: 1px dashed #666; margin: 5px 0;"></div>
+                <div style="width: 100%; border-top: 2px dashed #999; margin: 4px 0;"></div>
                 <div class="voucher-item">${singleVoucherHtml}</div>
             </div>
         </body>
