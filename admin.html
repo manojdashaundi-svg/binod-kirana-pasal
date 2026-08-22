@@ -107,19 +107,16 @@
     </div>
   </div>
 
-  <!-- 📊 Monthly Sales Insights & Growth -->
   <div class="chart-container">
     <h3 style="color:#1976D2; margin: 0 0 15px 0; font-size: 16px;">📊 Monthly Sales Insights & Growth (Rs.)</h3>
     <div id="monthlySalesChart" style="width: 100%; height: 230px;"></div>
   </div>
 
-  <!-- 📈 Today's Hourly Sales Trend -->
   <div class="chart-container">
     <h3 style="color:#1976D2; margin: 0 0 15px 0; font-size: 16px;">📈 Today's Hourly Sales Trend (Rs.)</h3>
     <div id="hourlySalesChart" style="width: 100%; height: 230px;"></div>
   </div>
 
-  <!-- 📊 Sales Report Generator & Export -->
   <div class="report-section">
     <h3 style="color:#1976D2; margin-bottom:15px;">📊 Sales Report Generator & Export</h3>
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
@@ -138,7 +135,6 @@
     </div>
   </div>
 
-  <!-- 🛒 Active Orders Section -->
   <div id="mainOrdersTableSection" style="margin-top:40px;">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
       <h3 style="margin: 0; color:#333;">🛒 Active Orders</h3>
@@ -166,11 +162,9 @@
     </div>
   </div>
 
-  <!-- Hidden Proof Upload Inputs for Camera & Gallery -->
   <input type="file" id="proofCameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleProofFileSelected(event)">
   <input type="file" id="proofGalleryInput" accept="image/*" style="display:none;" onchange="handleProofFileSelected(event)">
 
-  <!-- 🚚 Delivery Zone & District Rate Management -->
   <div class="invoice-section" style="background:#fff; padding:25px; border-radius:12px; margin-top:30px; border:1px solid #e0e0e0;">
     <h3 style="color:#1976D2; margin-bottom:15px;">🚚 Delivery Zone & District Rate Management (77 Districts)</h3>
     <div style="background:#f9fbfd; padding:18px; border-radius:10px; margin-bottom:15px; border:1px solid #e0e0e0; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
@@ -195,7 +189,6 @@
     </div>
   </div>
 
-  <!-- 📦 Product Management Section -->
   <div id="menuManagementBox" class="menu-section">
     <h3 style="color:#1976D2; margin-bottom:15px;">📦 Product Management</h3>
     <div style="background:#f9fbfd; padding:18px; border-radius:10px; margin-bottom:20px; border:1px solid #e0e0e0;">
@@ -234,7 +227,6 @@
     </div>
   </div>
 
-  <!-- 📊 Inventory Management Section -->
   <div class="inventory-section">
     <h3 style="color:#1976D2; margin-bottom:15px;">📦 Inventory Management</h3>
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0;">
@@ -280,7 +272,6 @@
     </div>
   </div>
 
-  <!-- 👥 Staff & Access Management Section -->
   <div class="staff-section">
     <h3 style="color:#1976D2; margin-bottom:15px;">👥 Staff & Access Management</h3>
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:20px;">
@@ -301,7 +292,6 @@
     </div>
 
     <h4 style="margin-bottom:10px; color:#444;">Current Staff Members (Admin Table)</h4>
-    <!-- ⬇️ Set max-height and overflow-y to show exactly ~4 items with vertical scroll ⬇️ -->
     <div style="overflow-x:auto; max-height: 240px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; margin-bottom:30px;">
       <table>
         <thead>
@@ -320,7 +310,6 @@
       </table>
     </div>
 
-    <!-- 💰 Expense & Profit Tracker -->
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:20px;">
       <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">💰 Expense & Profit Tracker</h3>
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
@@ -332,7 +321,6 @@
       </div>
     </div>
 
-    <!-- 📊 Expense Report Generator & Export -->
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:20px;">
       <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">📊 Expense Report Generator & Export</h3>
       <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
@@ -351,18 +339,15 @@
       </div>
     </div>
 
-    <!-- Financial Summary Cards -->
     <div style="margin:20px 0; font-size:15px; line-height:1.8; font-weight:bold; background:#fff; padding:20px; border-radius:10px; border:1px solid #e0e0e0; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
       <div style="color:#1976D2; border-bottom:1px solid #f0f0f0; padding-bottom:6px;">जम्मा Total Revenue: <span id="summaryTotalRevenue" style="float:right;">Rs. 0.00</span></div>
       <div style="color:#D32F2F; border-bottom:1px solid #f0f0f0; padding:6px 0;">जम्मा Total Expense: <span id="summaryTotalExpense" style="float:right;">Rs. 0.00</span></div>
       <div style="color:#388E3C; padding-top:6px; font-size:17px;">जम्मा Net Profit: <span id="summaryNetProfit" style="float:right;">Rs. 0.00</span></div>
     </div>
 
-    <!-- 💰 Staff Salary Sheet & Voucher System -->
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:20px;">
       <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">💰 Staff Salary Sheet & Voucher System</h3>
       
-      <!-- + Add New Staff & Designation Form -->
       <div style="background:#fff; padding:15px; border-radius:8px; border:1px solid #e0e0e0; margin-bottom:15px;">
         <h4 style="margin-top:0; color:#333;">+ Add New Staff & Designation</h4>
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
@@ -372,7 +357,6 @@
         </div>
       </div>
 
-      <!-- Staff Table with Edit & Delete System -->
       <h4 style="color:#444; margin-bottom:10px;">Staff List (Manage Staff & Designation)</h4>
       <div style="overflow-x:auto; max-height: 240px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; background:#fff;">
         <table>
@@ -391,7 +375,6 @@
       </div>
     </div>
 
-    <!-- 🧾 Create Salary Voucher Form -->
     <div style="background:#fff; padding:20px; border-radius:10px; border:2px solid #e91e63; margin-top:20px; box-shadow:0 4px 12px rgba(233,30,99,0.05);">
       <h3 style="color:#e91e63; margin-top:0; margin-bottom:15px;">🧾 Create Salary Voucher</h3>
       
@@ -460,13 +443,12 @@
       </div>
 
       <div style="background:#fff0f5; border:1px dashed #e91e63; padding:15px; border-radius:8px; text-align:center; margin-bottom:15px;">
-        <h3 id="voucherNetDisplay" style="color:#e91e63; margin:0; font-size:18px;">NET Salary: Rs. 0.00</h3>
+        <h3 id="voucherNetDisplay" style="color:#e91e63; margin:0; font-size:18px;">NET Salary: RM 0.00</h3>
       </div>
 
       <button onclick="saveAndPrintVoucher()" style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 3px 8px rgba(76,175,80,0.3);">💾 Save & Print Salary Voucher</button>
     </div>
 
-    <!-- 📊 Salary Statements Export & Report -->
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-top:25px;">
       <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">📊 Salary Statements Export & Report</h3>
       <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
@@ -485,7 +467,6 @@
       </div>
     </div>
 
-    <!-- 🧾 Extra Service Invoice Generator -->
     <div style="background:#fff; padding:20px; border-radius:10px; border:2px solid #C62828; margin-top:25px; box-shadow:0 4px 12px rgba(198,40,40,0.05);">
       <h3 style="color:#C62828; margin-top:0; margin-bottom:15px;">🧾 Extra Service Invoice Generator</h3>
 
@@ -537,7 +518,6 @@
       </div>
     </div>
 
-    <!-- 📊 Total Income Report Generator & Export -->
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-top:25px;">
       <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">📊 Total Income Report Generator & Export</h3>
       <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
@@ -558,7 +538,6 @@
 
   </div>
 
-  <!-- 💬 Live Support Chat Center -->
   <div class="chat-section">
     <h3 style="color: #1976D2; margin-bottom: 15px; font-size: 18px;">💬 Live Support Chat Center</h3>
     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
@@ -585,7 +564,6 @@
 
 </div>
 
-<!-- Print Modal for Bill -->
 <div id="printModalBox" class="print-modal">
   <div class="print-box">
     <div id="printableInvoiceArea" class="print-area"></div>
@@ -596,7 +574,6 @@
   </div>
 </div>
 
-<!-- Upload Source Selection Modal (Camera vs Gallery) -->
 <div id="uploadSourceModal" class="print-modal" style="display:none;">
   <div class="print-box" style="width:300px; text-align:center;">
     <h3 style="color:#1976D2; margin-top:0;">📷 Upload Delivery Proof</h3>
@@ -607,7 +584,6 @@
   </div>
 </div>
 
-<!-- Image Viewer Modal (Payment Slip & Proof click to enlarge) -->
 <div id="imageViewerModal" class="image-viewer-modal" onclick="closeImageViewer()">
   <div class="image-viewer-box" onclick="event.stopPropagation()">
     <img id="viewerTargetImage" src="" alt="Image Preview">
@@ -1475,7 +1451,6 @@
     printWindow.document.close();
   }
 
-  // Extra Service Invoice Generator Functions
   function addExtraInvoiceRow() {
     let container = document.getElementById("extraInvItemsContainer");
     let div = document.createElement("div");
@@ -1579,7 +1554,6 @@
     printExtraInvoice();
   }
 
-  // Total Income Report Functions
   function exportTotalIncomeCSV() {
     let startDate = document.getElementById("incomeReportStart").value;
     let endDate = document.getElementById("incomeReportEnd").value;
@@ -1890,8 +1864,97 @@
     });
 
     let net = totalEarnings - totalDeductions;
-    document.getElementById("voucherNetDisplay").innerText = "NET Salary: Rs. " + net.toFixed(2);
+    document.getElementById("voucherNetDisplay").innerText = "NET Salary: RM " + net.toFixed(2);
   }
+
+  // ✨ INTEGRATED DUAL VOUCHER A4 PRINT FUNCTION ✨
+  window.printSalaryVoucherSlip = function(vNo, name, desig, day, month, year, earnList, dedList, payMode, netTotal) {
+    let earnRowsHtml = "";
+    earnList.forEach((e, idx) => {
+        earnRowsHtml += `<tr><td style="border:1px solid #000; padding:4px; text-align:left; width:75%;">${idx+1}. ${e.desc}</td><td style="border:1px solid #000; padding:4px; text-align:right; width:25%;">${e.amt.toFixed(2)}</td></tr>`;
+    });
+
+    let dedRowsHtml = "";
+    dedList.forEach((d, idx) => {
+        dedRowsHtml += `<tr><td style="border:1px solid #000; padding:4px; text-align:left; width:75%;">${idx+1}. ${d.desc}</td><td style="border:1px solid #000; padding:4px; text-align:right; width:25%;">${d.amt.toFixed(2)}</td></tr>`;
+    });
+
+    let singleVoucherHtml = `
+        <div style="width: 100%; text-align: center; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.3; color:#000; background:#fff; padding: 12px; border: 1px dashed #000; box-sizing: border-box;">
+            <h3 style="margin:0; font-size:14px; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h3>
+            <p style="margin:2px 0; font-size:9.5px;">KATHMANDU, NEPAL</p>
+            <div style="border-top:1px solid #000; margin:6px 0;"></div>
+            <h4 style="margin:3px 0; font-size:13px; text-decoration:underline;">SALARY VOUCHER</h4>
+            <div style="text-align:left; margin-top:6px; font-size:11px;">
+                <div><b>Employee Name :</b> ${name}</div>
+                <div><b>Designation :</b> ${desig}</div>
+                <div><b>Date:</b> ${day}/${month}/${year}</div>
+            </div>
+            <div style="background:#000; color:#fff; font-weight:bold; padding:4px; margin:6px 0; font-size:11.5px; text-align:left;">VOUCHER NO. ${vNo}</div>
+            
+            <table style="width:100%; border-collapse:collapse; font-size:10.5px; margin-top:4px; border:1px solid #000;">
+                <tr style="background:#eee; border-bottom:1px solid #000;">
+                    <th style="border:1px solid #000; padding:4px; text-align:left; width:75%;">Earnings</th>
+                    <th style="border:1px solid #000; padding:4px; text-align:right; width:25%;">RM</th>
+                </tr>
+                ${earnRowsHtml}
+            </table>
+
+            ${dedList.length > 0 ? `
+            <table style="width:100%; border-collapse:collapse; font-size:10.5px; margin-top:6px; border:1px solid #000;">
+                <tr style="background:#eee; border-bottom:1px solid #000;">
+                    <th style="border:1px solid #000; padding:4px; text-align:left; width:75%;">Deductions</th>
+                    <th style="border:1px solid #000; padding:4px; text-align:right; width:25%;">RM</th>
+                </tr>
+                ${dedRowsHtml}
+            </table>` : ''}
+
+            <div style="border:1px solid #000; padding:5px; margin-top:6px; text-align:right; font-size:12.5px; font-weight:bold; background:#f9f9f9;">
+                NET Salary: RM ${Number(netTotal).toFixed(2)}
+            </div>
+
+            <div style="text-align:left; margin-top:8px; font-size:10.5px;">
+                <div>☑ ${payMode}</div>
+            </div>
+
+            <div style="margin-top:25px; display:flex; justify-content:space-between; font-size:10.5px;">
+                <div><b>Hotel Copy / Staff Copy</b></div>
+                <div style="text-align:right;">
+                    --------------------------<br>
+                    <b>Employee Signature</b>
+                </div>
+            </div>
+        </div>
+    `;
+
+    let a4DualHtml = `
+        <html>
+        <head>
+            <title>Salary Voucher Print</title>
+            <style>
+                @page { size: A4 portrait; margin: 0; }
+                body { margin: 0; padding: 0; background: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; }
+                .voucher-page { width: 190mm; height: 280mm; margin: auto; display: flex; flex-direction: column; justify-content: space-between; align-items: center; box-sizing: border-box; padding: 10mm 0; }
+                .voucher-item { width: 100%; }
+            </style>
+        </head>
+        <body>
+            <div class="voucher-page">
+                <div class="voucher-item">${singleVoucherHtml}</div>
+                <div style="width: 100%; border-top: 1px dashed #666; margin: 5px 0;"></div>
+                <div class="voucher-item">${singleVoucherHtml}</div>
+            </div>
+        </body>
+        </html>
+    `;
+
+    var printWindow = window.open('', '_blank', 'height=800,width=700');
+    if (!printWindow) { alert("⚠️ कृपया आफ्नो ब्राउजरको Pop-up Blocker बन्द गर्नुहोस्!"); return; }
+    printWindow.document.write(a4DualHtml);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); }, 500);
+  };
 
   async function saveAndPrintVoucher() {
     let staffId = document.getElementById("voucherStaffSelect").value;
@@ -1908,26 +1971,27 @@
     let year = document.getElementById("voucherYear").value;
     let pMode = document.getElementById("voucherPaymentMode").value;
 
-    let earningsHTML = "";
+    let earnList = [];
     let totalEarnings = 0;
     document.querySelectorAll(".earnings-row").forEach(row => {
       let desc = row.querySelector(".earn-desc").value || "Earnings";
       let amt = parseFloat(row.querySelector(".earn-amt").value) || 0;
       totalEarnings += amt;
-      earningsHTML += `<tr><td style="padding:6px; border-bottom:2px solid #333; font-weight:bold; color:#000;">${desc}</td><td style="padding:6px; border-bottom:2px solid #333; text-align:right; font-weight:bold; color:#000;">Rs. ${amt.toFixed(2)}</td></tr>`;
+      earnList.push({ desc: desc, amt: amt });
     });
 
-    let deductionsHTML = "";
+    let dedList = [];
     let totalDeductions = 0;
     document.querySelectorAll(".deductions-row").forEach(row => {
       let desc = row.querySelector(".ded-desc").value || "Deduction";
       let amt = parseFloat(row.querySelector(".ded-amt").value) || 0;
       totalDeductions += amt;
-      deductionsHTML += `<tr><td style="padding:6px; border-bottom:2px solid #333; font-weight:bold; color:#000;">${desc}</td><td style="padding:6px; border-bottom:2px solid #333; text-align:right; font-weight:bold; color:#000;">Rs. ${amt.toFixed(2)}</td></tr>`;
+      dedList.push({ desc: desc, amt: amt });
     });
 
     let net = totalEarnings - totalDeductions;
     let formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    let voucherNo = "V-" + Math.floor(1000 + Math.random() * 9000);
 
     try {
       await supabaseClient.from('salary_vouchers').insert([{
@@ -1940,40 +2004,8 @@
       loadSalaryVouchersHistory();
     } catch(e) {}
 
-    let printWindow = window.open('', '_blank', 'height=700,width=500');
-    if (!printWindow) { alert("Popup blocked!"); return; }
-
-    printWindow.document.write('<html><head><title>Salary Voucher</title>');
-    printWindow.document.write('<style>');
-    printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
-    printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;font-size:13px;line-height:1.4;margin:0;}');
-    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #e91e63;padding-bottom:5px;margin-bottom:10px;}');
-    printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
-    printWindow.document.write('h2{margin:2px 0;color:#e91e63;font-size:16px;font-weight:700;}');
-    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
-    printWindow.document.write('.print-btn-bar{position:fixed;top:10px;right:10px;background:#e91e63;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;z-index:9999;box-shadow:0 2px 5px rgba(0,0,0,0.3);display:block;}');
-    printWindow.document.write('@media print { .print-btn-bar { display: none !important; } }');
-    printWindow.document.write('</style>');
-    printWindow.document.write('</head><body>');
-    printWindow.document.write('<button class="print-btn-bar" onclick="window.print()">🖨️ Print Now / Save PDF</button>');
-    printWindow.document.write('<div class="header">');
-    printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
-    printWindow.document.write('<h2>PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
-    printWindow.document.write('<p style="margin:2px 0; font-weight:bold; color:#333;">SALARY VOUCHER / SLIP</p>');
-    printWindow.document.write('</div>');
-    printWindow.document.write('<p style="font-weight:bold; color:#000;"><b>Employee Name:</b> ' + st.name + '</p>');
-    printWindow.document.write('<p style="font-weight:bold; color:#000;"><b>Designation:</b> ' + designation + '</p>');
-    printWindow.document.write('<p style="font-weight:bold; color:#000;"><b>Date:</b> ' + day + '/' + month + '/' + year + '</p>');
-    printWindow.document.write('<p style="font-weight:bold; color:#000;"><b>Payment Mode:</b> ' + pMode + '</p>');
-    printWindow.document.write('<hr style="border:0; border-top:1.5px dashed #888; margin:10px 0;">');
-    printWindow.document.write('<b style="font-size:13px; color:#000;">Earnings & Allowances:</b><table>' + earningsHTML + '</table>');
-    printWindow.document.write('<br><b style="font-size:13px; color:#000;">Deductions:</b><table>' + deductionsHTML + '</table>');
-    printWindow.document.write('<hr style="border:0; border-top:2px solid #333; margin:10px 0;">');
-    printWindow.document.write('<h3 style="text-align:right; color:#e91e63; font-weight:bold;">NET Salary: Rs. ' + net.toFixed(2) + '</h3>');
-    printWindow.document.write('<br><br>');
-    printWindow.document.write('<table width="100%"><tr><td align="center" style="border:none; font-weight:bold; color:#000;">___________________<br>Prepared By</td><td align="center" style="border:none; font-weight:bold; color:#000;">___________________<br>Receiver Signature</td></tr></table>');
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
+    // Call the dual A4 print function
+    window.printSalaryVoucherSlip(voucherNo, st.name, designation, day, month, year, earnList, dedList, pMode, net);
   }
 
   async function loadMenuList() {
