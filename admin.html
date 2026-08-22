@@ -1693,6 +1693,36 @@
     } catch(e) {}
   }
 
+  // ✨ AUTOMATICALLY SYNC ADMIN TABLE (NAME & ROLE) TO STAFF TABLE ✨
+  async function syncAdminToStaffTable() {
+    try {
+      // 1. Fetch all records from admin table
+      let { data: adminData, error: adminErr } = await supabaseClient.from('admin').select('name, role');
+      if (adminErr || !adminData) return;
+
+      // 2. Fetch existing records from staff table to avoid duplicates
+      let { data: staffData, error: staffErr } = await supabaseClient.from('staff').select('name');
+      let existingNames = new Set();
+      if (!staffErr && staffData) {
+        staffData.forEach(st => existingNames.add(String(st.name).trim().toLowerCase()));
+      }
+
+      // 3. Insert missing admin staff into staff table (only name & role)
+      for (let adm of adminData) {
+        let admName = adm.name ? String(adm.name).trim() : "";
+        let admRole = adm.role ? String(adm.role).trim() : "Staff";
+        if (admName && !existingNames.has(admName.toLowerCase())) {
+          await supabaseClient.from('staff').insert([{
+            name: admName,
+            role: admRole
+          }]);
+        }
+      }
+    } catch(e) {
+      console.error("Sync error:", e);
+    }
+  }
+
   async function addNewStaffDesignation() {
     let fullName = document.getElementById("salaryStaffFullName").value.trim();
     let designation = document.getElementById("salaryStaffDesignationInput").value.trim();
@@ -1702,7 +1732,7 @@
       return;
     }
 
-    // 1. Save to admin table (with default credentials)
+    // 1. Save to admin table
     await supabaseClient.from('admin').insert([{
       name: fullName,
       email: fullName.toLowerCase().replace(/\s+/g, '') + "@pooja.com",
@@ -1710,7 +1740,7 @@
       role: designation
     }]);
 
-    // 2. Automatically save name and role to staff table
+    // 2. Automatically save only name and role to staff table
     let { error } = await supabaseClient.from('staff').insert([{
       name: fullName,
       role: designation
@@ -2142,6 +2172,9 @@
   };
 
   async function loadStaffList() {
+    // Automatically Sync before loading
+    await syncAdminToStaffTable();
+
     let tbody = document.getElementById("staffTableList");
     if(!tbody) return;
     try {
@@ -2220,7 +2253,7 @@
       role: role
     }).eq('id', id);
 
-    // Also update staff table (matching name or role if synced)
+    // Also update staff table name and role
     await supabaseClient.from('staff').update({
       name: name,
       role: role
@@ -2254,7 +2287,7 @@
       role: role
     }]);
 
-    // 2. Automatically save name and role to staff table
+    // 2. Automatically save only name and role to staff table
     await supabaseClient.from('staff').insert([{
       name: name,
       role: role
