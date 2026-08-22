@@ -2214,6 +2214,12 @@
       role: role
     }).eq('id', id);
 
+    let { error: errAdmin } = await supabaseClient.from('admin').update({
+      name: name,
+      email: email,
+      password: password
+    }).eq('id', id);
+
     if(error) {
       alert("Error updating staff: " + error.message);
     } else {
@@ -2233,19 +2239,25 @@
       return;
     }
 
-    let { error } = await supabaseClient.from('staff').insert([{
+    let { error: errStaff } = await supabaseClient.from('staff').insert([{
       name: name,
       email: email,
       password: password,
       role: role
     }]);
 
-    if(error) {
-      alert("Error adding staff: " + error.message);
+    let { error: errAdmin } = await supabaseClient.from('admin').insert([{
+      name: name,
+      email: email,
+      password: password
+    }]);
+
+    if(errStaff && errAdmin) {
+      alert("Error adding staff: " + errStaff.message);
       return;
     }
 
-    alert("✅ नयाँ स्टाफ सफलतापूर्वक थपियो!");
+    alert("✅ नयाँ स्टाफ सफलताપूर्वक स्टाफ र एडमिन दुवै टेबलमा थपियो!");
     document.getElementById("staffNameInput").value = "";
     document.getElementById("staffEmailInput").value = "";
     document.getElementById("staffPassInput").value = "";
@@ -2255,6 +2267,8 @@
   async function deleteStaff(id) {
     if(confirm("के तपाइँ यो स्टाफलाई हटाउन चाहनुहुन्छ?")) {
       let { error } = await supabaseClient.from('staff').delete().eq('id', id);
+      let { error: errAdmin } = await supabaseClient.from('admin').delete().eq('id', id);
+      
       if(error) {
         alert("Error deleting staff: " + error.message);
       } else {
