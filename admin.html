@@ -300,7 +300,7 @@
       </div>
     </div>
 
-    <h4 style="margin-bottom:10px; color:#444;">Current Staff Members</h4>
+    <h4 style="margin-bottom:10px; color:#444;">Current Staff Members (Admin Table)</h4>
     <div style="overflow-x:auto; max-height: 250px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; margin-bottom:30px;">
       <table>
         <thead>
@@ -1670,7 +1670,7 @@
     let selectEl = document.getElementById("voucherStaffSelect");
     if(!selectEl) return;
     try {
-      let { data, error } = await supabaseClient.from('admin').select('*').order('id', { ascending: true });
+      let { data, error } = await supabaseClient.from('staff').select('*').order('id', { ascending: true });
       if (error || !data || data.length === 0) {
         selectEl.innerHTML = `<option value="">-- कामदार रोज्नुहोस् --</option>`;
         return;
@@ -1687,7 +1687,7 @@
       document.getElementById("incomeReportEnd").value = now.toISOString().split('T')[0];
 
       data.forEach(s => {
-        selectHtml += `<option value="${s.id}">${s.name} (${s.role || 'Admin'})</option>`;
+        selectHtml += `<option value="${s.id}">${s.name} (${s.role || 'Staff'})</option>`;
       });
       selectEl.innerHTML = selectHtml;
     } catch(e) {}
@@ -1702,19 +1702,26 @@
       return;
     }
 
-    let { error } = await supabaseClient.from('admin').insert([{
+    // 1. Save to admin table (with default credentials)
+    await supabaseClient.from('admin').insert([{
       name: fullName,
       email: fullName.toLowerCase().replace(/\s+/g, '') + "@pooja.com",
       password: "123",
       role: designation
     }]);
 
+    // 2. Automatically save name and role to staff table
+    let { error } = await supabaseClient.from('staff').insert([{
+      name: fullName,
+      role: designation
+    }]);
+
     if(error) {
-      alert("Error adding staff: " + error.message);
+      alert("Error adding staff to staff table: " + error.message);
       return;
     }
 
-    alert("✅ नयाँ कर्मचारी र पद सफलतापूर्वक थपियो!");
+    alert("✅ नयाँ कर्मचारी र पद एडमिन तथा स्टाफ दुवै टेबलमा सफलतापूर्वक थपियो!");
     document.getElementById("salaryStaffFullName").value = "";
     document.getElementById("salaryStaffDesignationInput").value = "";
     loadStaffList();
@@ -1732,7 +1739,7 @@
     }
     let st = staffListCache.find(s => String(s.id) === String(staffId));
     if(st) {
-      document.getElementById("voucherStaffDesignation").value = st.role || "Admin";
+      document.getElementById("voucherStaffDesignation").value = st.role || "Staff";
       let earnInputs = document.querySelectorAll(".earn-amt");
       if(earnInputs.length > 0) {
         earnInputs[0].value = (st.basic_salary !== undefined && st.basic_salary !== null) ? st.basic_salary : 0;
@@ -2143,7 +2150,6 @@
         tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">No staff members found.</td></tr>`;
         return;
       }
-      staffListCache = data;
       let html = "";
       data.forEach((s, idx) => {
         html += `<tr id="staff_row_${s.id}">
@@ -2214,11 +2220,18 @@
       role: role
     }).eq('id', id);
 
+    // Also update staff table (matching name or role if synced)
+    await supabaseClient.from('staff').update({
+      name: name,
+      role: role
+    }).eq('id', id);
+
     if(error) {
       alert("Error updating staff: " + error.message);
     } else {
       alert("✅ स्टाफ सफलतापूर्वक अपडेट भयो!");
       loadStaffList();
+      loadSalarySheet();
     }
   }
 
@@ -2233,10 +2246,17 @@
       return;
     }
 
+    // 1. Save to admin table
     let { error } = await supabaseClient.from('admin').insert([{
       name: name,
       email: email,
       password: password,
+      role: role
+    }]);
+
+    // 2. Automatically save name and role to staff table
+    await supabaseClient.from('staff').insert([{
+      name: name,
       role: role
     }]);
 
@@ -2245,21 +2265,24 @@
       return;
     }
 
-    alert("✅ नयाँ स्टाफ सफलतापूर्वक एडमिन टेबलमा थपियो!");
+    alert("✅ नयाँ स्टाफ एडमिन र स्टाफ दुवै टेबलमा सफलतापूर्वक थपियो!");
     document.getElementById("staffNameInput").value = "";
     document.getElementById("staffEmailInput").value = "";
     document.getElementById("staffPassInput").value = "";
     loadStaffList();
+    loadSalarySheet();
   }
 
   async function deleteStaff(id) {
     if(confirm("के तपाइँ यो स्टाफलाई हटाउन चाहनुहुन्छ?")) {
       let { error } = await supabaseClient.from('admin').delete().eq('id', id);
+      await supabaseClient.from('staff').delete().eq('id', id);
       
       if(error) {
         alert("Error deleting staff: " + error.message);
       } else {
         loadStaffList();
+        loadSalarySheet();
       }
     }
   }
