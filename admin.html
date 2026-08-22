@@ -465,6 +465,58 @@
       </div>
     </div>
 
+    <!-- 🧾 Extra Service Invoice Generator -->
+    <div style="background:#fff; padding:20px; border-radius:8px; border:2px solid #C62828; margin-top:25px;">
+      <h3 style="color:#C62828; margin-top:0;">🧾 Extra Service Invoice Generator</h3>
+
+      <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:15px;">
+        <div style="flex:2; min-width:250px;">
+          <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Bill To (Customer Name / Details):</label>
+          <input id="extraInvCustomer" type="text" placeholder="Enter Customer Name / Company" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Invoice Date:</label>
+          <input id="extraInvDate" type="date" style="width:100%; padding:10px;">
+        </div>
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+          <label style="font-weight:bold; font-size:13px;">Invoice Descriptions & Amounts:</label>
+          <button type="button" onclick="addExtraInvoiceRow()" style="background:#4CAF50; color:white; border:none; padding:4px 12px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:12px;">+ Add Item</button>
+        </div>
+        <div id="extraInvItemsContainer" style="display:flex; flex-direction:column; gap:8px;">
+          <div class="extra-inv-row" style="display:flex; gap:10px; align-items:center;">
+            <input type="text" class="ex-desc" placeholder="Service Description" style="flex:2; padding:8px;">
+            <input type="number" class="ex-amt" value="0" oninput="calculateExtraInvoiceTotals()" style="flex:1; padding:8px;">
+            <button type="button" onclick="removeExtraInvoiceRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px;">Paid (RM / Rs.):</label>
+        <input id="extraInvPaid" type="number" value="0" oninput="calculateExtraInvoiceTotals()" style="width:100%; padding:10px;">
+      </div>
+
+      <div style="background:#f9f9f9; border:1px solid #ddd; padding:15px; border-radius:8px; margin-bottom:15px;">
+        <h4 style="margin:0 0 10px 0; color:#333;">Summary Preview:</h4>
+        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:15px; color:#C62828; margin-bottom:5px;">
+          <span>TOTAL:</span>
+          <span id="extraInvTotalDisplay">RM 0.00</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:15px; color:#2E7D32;">
+          <span>BALANCE DUE:</span>
+          <span id="extraInvBalanceDisplay">RM 0.00</span>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:15px; flex-wrap:wrap;">
+        <button onclick="downloadExtraInvoicePDF()" style="flex:1; padding:12px; background:#C62828; color:white; border:none; border-radius:6px; font-size:15px; font-weight:bold; cursor:pointer;">💾 Save as PDF (Download)</button>
+        <button onclick="printExtraInvoice()" style="flex:1; padding:12px; background:#4CAF50; color:white; border:none; border-radius:6px; font-size:15px; font-weight:bold; cursor:pointer;">🖨️ Print Invoice</button>
+      </div>
+    </div>
+
   </div>
 
   <!-- 💬 Live Support Chat Center -->
@@ -1319,6 +1371,96 @@
     setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
   }
 
+  // Extra Service Invoice Generator Functions
+  function addExtraInvoiceRow() {
+    let container = document.getElementById("extraInvItemsContainer");
+    let div = document.createElement("div");
+    div.className = "extra-inv-row";
+    div.style.cssText = "display:flex; gap:10px; align-items:center;";
+    div.innerHTML = `
+      <input type="text" class="ex-desc" placeholder="Service Description" style="flex:2; padding:8px;">
+      <input type="number" class="ex-amt" value="0" oninput="calculateExtraInvoiceTotals()" style="flex:1; padding:8px;">
+      <button type="button" onclick="removeExtraInvoiceRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">❌</button>
+    `;
+    container.appendChild(div);
+    updateExtraInvoiceRemoveButtons();
+  }
+
+  function removeExtraInvoiceRow(btn) {
+    let row = btn.parentElement;
+    let container = row.parentElement;
+    if(container.children.length > 1) {
+      container.removeChild(row);
+      updateExtraInvoiceRemoveButtons();
+      calculateExtraInvoiceTotals();
+    }
+  }
+
+  function updateExtraInvoiceRemoveButtons() {
+    let rows = document.querySelectorAll(".extra-inv-row");
+    if(rows.length === 1) {
+      rows[0].querySelector("button").disabled = true;
+    } else {
+      rows.forEach(r => r.querySelector("button").disabled = false);
+    }
+  }
+
+  function calculateExtraInvoiceTotals() {
+    let total = 0;
+    document.querySelectorAll(".ex-amt").forEach(input => {
+      total += parseFloat(input.value) || 0;
+    });
+
+    let paid = parseFloat(document.getElementById("extraInvPaid").value) || 0;
+    let balance = total - paid;
+
+    document.getElementById("extraInvTotalDisplay").innerText = "RM " + total.toFixed(2);
+    document.getElementById("extraInvBalanceDisplay").innerText = "RM " + balance.toFixed(2);
+  }
+
+  function printExtraInvoice() {
+    let customer = document.getElementById("extraInvCustomer").value || "Valued Customer";
+    let date = document.getElementById("extraInvDate").value || new Date().toISOString().split('T')[0];
+    let paid = parseFloat(document.getElementById("extraInvPaid").value) || 0;
+
+    let itemsHTML = "";
+    let total = 0;
+    document.querySelectorAll(".extra-inv-row").forEach(row => {
+      let desc = row.querySelector(".ex-desc").value || "Service";
+      let amt = parseFloat(row.querySelector(".ex-amt").value) || 0;
+      total += amt;
+      itemsHTML += `<tr><td style="padding:6px; border-bottom:1px solid #ddd;">${desc}</td><td style="padding:6px; border-bottom:1px solid #ddd; text-align:right;">RM ${amt.toFixed(2)}</td></tr>`;
+    });
+
+    let balance = total - paid;
+
+    let printWindow = window.open('', '', 'height=650,width=500');
+    printWindow.document.write('<html><head><title>Extra Service Invoice</title>');
+    printWindow.document.write('<style>body{font-family:Arial,sans-serif;padding:20px;font-size:13px;line-height:1.4;} table{width:100%;border-collapse:collapse;margin-top:15px;}</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<center><h3>PUJA EXPORT AND IMPORT PVT. LTD.</h3><p><b>EXTRA SERVICE INVOICE</b></p></center>');
+    printWindow.document.write('<hr>');
+    printWindow.document.write('<p><b>Customer:</b> ' + customer + '</p>');
+    printWindow.document.write('<p><b>Date:</b> ' + date + '</p>');
+    printWindow.document.write('<hr>');
+    printWindow.document.write('<table><thead><tr><th align="left">Description</th><th align="right">Amount</th></tr></thead><tbody>' + itemsHTML + '</tbody></table>');
+    printWindow.document.write('<hr>');
+    printWindow.document.write('<div style="text-align:right;">');
+    printWindow.document.write('<p><b>TOTAL: RM ' + total.toFixed(2) + '</b></p>');
+    printWindow.document.write('<p><b>Paid: RM ' + paid.toFixed(2) + '</b></p>');
+    printWindow.document.write('<p style="color:#C62828;"><b>BALANCE DUE: RM ' + balance.toFixed(2) + '</b></p>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('<hr><center><p>Thank you for your business!</p></center>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+  }
+
+  function downloadExtraInvoicePDF() {
+    printExtraInvoice();
+  }
+
   async function loadSalarySheet() {
     let selectEl = document.getElementById("voucherStaffSelect");
     if(!selectEl) return;
@@ -1335,6 +1477,7 @@
       document.getElementById("voucherDay").value = now.getDate();
       document.getElementById("voucherMonth").value = now.getMonth() + 1;
       document.getElementById("voucherYear").value = now.getFullYear();
+      document.getElementById("extraInvDate").value = now.toISOString().split('T')[0];
 
       data.forEach(s => {
         selectHtml += `<option value="${s.id}">${s.name} (${s.role || 'Staff'})</option>`;
