@@ -365,9 +365,9 @@
       <div style="background:#fff; padding:15px; border-radius:8px; border:1px solid #e0e0e0; margin-bottom:15px;">
         <h4 style="margin-top:0; color:#333;">+ Add New Staff & Designation</h4>
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-          <input id="newStaffFullName" type="text" placeholder="Full Name (e.g. Shova Kumari)" style="flex:2; min-width:200px; padding:10px;">
-          <input id="newStaffDesignationInput" type="text" placeholder="Designation (e.g. order_taker, delivery)" style="flex:2; min-width:220px; padding:10px;">
-          <!-- यहाँ onclick="addNewStaffDesignation()" थपिएको छ -->
+          <!-- सही ID हरू राखिएको छ -->
+          <input id="salaryStaffFullName" type="text" placeholder="Full Name (e.g. harikala)" style="flex:2; min-width:200px; padding:10px;">
+          <input id="salaryStaffDesignationInput" type="text" placeholder="Designation (e.g. Driver)" style="flex:2; min-width:220px; padding:10px;">
           <button onclick="addNewStaffDesignation()" style="padding:10px 22px; background:#e91e63; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(233,30,99,0.3);">+ Add Staff</button>
         </div>
       </div>
@@ -1695,8 +1695,8 @@
   }
 
   async function addNewStaffDesignation() {
-    let fullName = document.getElementById("newStaffFullName").value.trim();
-    let designation = document.getElementById("newStaffDesignationInput").value.trim();
+    let fullName = document.getElementById("salaryStaffFullName").value.trim();
+    let designation = document.getElementById("salaryStaffDesignationInput").value.trim();
 
     if(!fullName || !designation) {
       alert("कृपया पूरा नाम र पद (Designation) दुवै भर्नुहोस्!");
@@ -1719,8 +1719,8 @@
     }
 
     alert("✅ नयाँ कर्मचारी र पद सफलतापूर्वक थपियो!");
-    document.getElementById("newStaffFullName").value = "";
-    document.getElementById("newStaffDesignationInput").value = "";
+    document.getElementById("salaryStaffFullName").value = "";
+    document.getElementById("salaryStaffDesignationInput").value = "";
     loadStaffList();
     loadSalarySheet();
   }
