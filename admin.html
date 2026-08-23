@@ -650,7 +650,7 @@
     }
   });
 
-  // नयाँ अर्डर आउँदा वा टेस्ट गर्दा बज्ने अत्यधिक चर्को 'टिन-टिन, टिन-टिन, टिन-टिन' (ग्यापसहितको) साउन्ड
+  // नयाँ अर्डर आउँदा बज्ने प्रस्ट र चर्को 'टिन-टिन, टिन-टिन, टिन-टिन' घण्टी साउन्ड
   function playTringTringBell() {
     try {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -659,27 +659,27 @@
 
       let now = window.audioCtx.currentTime;
       
-      // तीनपटक दोहोर्याएर 'टिन-टिन, टिन-टिन, टिन-टिन' बजाउने (प्रत्येक बीचमा सफा ग्यापसहित)
+      // तीनपटक दोहोर्याएर 'टिन-टिन, टिन-टिन, टिन-टिन' ( Sine र Triangle वेभ प्रयोग गरिएको जसले चियु-चियु हटाएर वास्तविक टिन-टिन आवाज दिन्छ )
       for (let i = 0; i < 3; i++) {
-        let startTime = now + (i * 0.28); // 0.28 सेकेन्डको ग्याप/अन्तर
+        let startTime = now + (i * 0.32); // प्रत्येक बीचमा स्पष्ट ग्याप
 
         let osc1 = window.audioCtx.createOscillator();
         let osc2 = window.audioCtx.createOscillator();
         let gainNode = window.audioCtx.createGain();
 
-        osc1.type = 'square';
+        osc1.type = 'sine';
         osc2.type = 'triangle';
 
-        // उच्च फ्रिक्वेन्सी (टिन साउन्ड)
-        osc1.frequency.setValueAtTime(2800, startTime);
-        osc1.frequency.exponentialRampToValueAtTime(1400, startTime + 0.15);
+        // घण्टी जस्तै सुमधुर र चर्को फ्रिक्वेन्सी
+        osc1.frequency.setValueAtTime(1800, startTime);
+        osc1.frequency.exponentialRampToValueAtTime(900, startTime + 0.18);
 
-        osc2.frequency.setValueAtTime(1400, startTime);
-        osc2.frequency.exponentialRampToValueAtTime(700, startTime + 0.15);
+        osc2.frequency.setValueAtTime(2400, startTime);
+        osc2.frequency.exponentialRampToValueAtTime(1200, startTime + 0.18);
 
-        // अधिकतम भोल्युम बुस्टर (Super Loud)
-        gainNode.gain.setValueAtTime(3.0, startTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.15);
+        // अधिकतम भोल्युम बूस्टर
+        gainNode.gain.setValueAtTime(3.5, startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.18);
 
         osc1.connect(gainNode);
         osc2.connect(gainNode);
@@ -687,8 +687,8 @@
 
         osc1.start(startTime);
         osc2.start(startTime);
-        osc1.stop(startTime + 0.15);
-        osc2.stop(startTime + 0.15);
+        osc1.stop(startTime + 0.18);
+        osc2.stop(startTime + 0.18);
       }
     } catch(e) {}
   };
@@ -818,7 +818,7 @@
       if (data) {
         let sortedOrders = data.sort((a, b) => (b.id || 0) - (a.id || 0));
         
-        // नयाँ अर्डर थपिएको पत्ता लागेमा चर्को 'टिन-टिन' साउन्ड बजाउने
+        // नयाँ अर्डर थपिएको पत्ता लागेमा 'टिन-टिन' साउन्ड बजाउने
         if (lastOrderCount > 0 && sortedOrders.length > lastOrderCount) {
           playTringTringBell();
         }
