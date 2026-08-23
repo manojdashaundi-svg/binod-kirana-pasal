@@ -847,11 +847,23 @@
   function renderActiveOrdersTable(ordersToRender) {
     let tableBody = document.getElementById("ordersTable");
     if(!tableBody) return;
+
+    let loggedInRole = (sessionStorage.getItem("USER_ROLE") || "admin").toLowerCase();
+    let isMarketingOrDelivery = (loggedInRole === "marketing" || loggedInRole === "delivery");
+
+    let finalOrdersToRender = ordersToRender;
+    if (isMarketingOrDelivery) {
+      finalOrdersToRender = ordersToRender.filter(o => {
+        let st = o.status ? String(o.status).trim() : "Pending";
+        return st !== "Delivered";
+      });
+    }
+
     let html = "";
-    if(ordersToRender.length === 0) {
+    if(finalOrdersToRender.length === 0) {
       html = `<tr><td colspan="9" style="padding:20px;">No Active Orders Found.</td></tr>`;
     } else {
-      ordersToRender.forEach(function(o){
+      finalOrdersToRender.forEach(function(o){
         let status = o.status ? String(o.status).trim() : "Pending";
 
         let slipSrc = o.payment_slip || o.slip || o.payment || o.qr_image || o.proof || "";
@@ -871,25 +883,41 @@
           deliveryTimeDisplay = "-";
         }
 
-        let statusSelect = `<select id="status_${o.order_no}">
-          <option value="Pending" ${status==="Pending"?"selected":""}>Pending</option>
-          <option value="Preparing" ${status==="Preparing"?"selected":""}>Preparing</option>
-          <option value="Ready" ${status==="Ready"?"selected":""}>Ready</option>
-          <option value="Out for Delivery" ${status==="Out for Delivery"?"selected":""}>Out for Delivery</option>
-          <option value="Delivered" ${status==="Delivered"?"selected":""}>Delivered</option>
-          <option value="Cancelled" ${status==="Cancelled"?"selected":""} style="color:red; font-weight:bold;">Cancelled</option>
-        </select> 
-        <button class="updateBtn" onclick="manualUpdate('${o.order_no}')">Go</button>`;
+        let statusSelect = "";
+        if (isMarketingOrDelivery) {
+          statusSelect = `<select id="status_${o.order_no}" disabled style="background:#eee; color:#555;">
+            <option value="${status}" selected>${status}</option>
+          </select>
+          <button class="updateBtn" disabled style="opacity:0.5; cursor:not-allowed;">Go</button>`;
+        } else {
+          statusSelect = `<select id="status_${o.order_no}">
+            <option value="Pending" ${status==="Pending"?"selected":""}>Pending</option>
+            <option value="Preparing" ${status==="Preparing"?"selected":""}>Preparing</option>
+            <option value="Ready" ${status==="Ready"?"selected":""}>Ready</option>
+            <option value="Out for Delivery" ${status==="Out for Delivery"?"selected":""}>Out for Delivery</option>
+            <option value="Delivered" ${status==="Delivered"?"selected":""}>Delivered</option>
+            <option value="Cancelled" ${status==="Cancelled"?"selected":""} style="color:red; font-weight:bold;">Cancelled</option>
+          </select> 
+          <button class="updateBtn" onclick="manualUpdate('${o.order_no}')">Go</button>`;
+        }
 
         let actionButtons = "";
         if(status === "Pending") {
-          actionButtons = `<button class="actionBtn rcvBtn" onclick="markReceived('${o.order_no}')">🎫 Received</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+          if (isMarketingOrDelivery) {
+            actionButtons = `<button class="actionBtn rcvBtn" disabled style="opacity:0.5; cursor:not-allowed;">🎫 Received</button><button class="actionBtn cancelBtn" disabled style="margin-top:5px; opacity:0.5; cursor:not-allowed;">❌ Cancel Order</button>`;
+          } else {
+            actionButtons = `<button class="actionBtn rcvBtn" onclick="markReceived('${o.order_no}')">🎫 Received</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+          }
         } else if(status === "Preparing") {
-          actionButtons = `<button class="actionBtn billBtn" onclick="openBill('${o.order_no}')">🍳 Ready & Bill</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+          if (isMarketingOrDelivery) {
+            actionButtons = `<button class="actionBtn billBtn" disabled style="opacity:0.5; cursor:not-allowed;">🍳 Ready & Bill</button><button class="actionBtn cancelBtn" disabled style="margin-top:5px; opacity:0.5; cursor:not-allowed;">❌ Cancel Order</button>`;
+          } else {
+            actionButtons = `<button class="actionBtn billBtn" onclick="openBill('${o.order_no}')">🍳 Ready & Bill</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+          }
         } else if(status === "Ready") {
-          actionButtons = `<button class="actionBtn dispatchBtn" onclick="updateOrderStatus('${o.order_no}', 'Out for Delivery')">🚚 Dispatch</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+          actionButtons = `<button class="actionBtn dispatchBtn" onclick="updateOrderStatus('${o.order_no}', 'Out for Delivery')">🚚 Dispatch</button>${isMarketingOrDelivery ? '<button class="actionBtn cancelBtn" disabled style="margin-top:5px; opacity:0.5; cursor:not-allowed;">❌ Cancel Order</button>' : '<button class="actionBtn cancelBtn" onclick="promptCancelOrder(\'' + o.order_no + '\')" style="margin-top:5px;">❌ Cancel Order</button>'}`;
         } else if(status === "Out for Delivery") {
-          actionButtons = `<button class="actionBtn proofBtn" onclick="promptUploadProof('${o.order_no}')">📸 Upload Proof</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+          actionButtons = `<button class="actionBtn proofBtn" onclick="promptUploadProof('${o.order_no}')">📸 Upload Proof</button>${isMarketingOrDelivery ? '<button class="actionBtn cancelBtn" disabled style="margin-top:5px; opacity:0.5; cursor:not-allowed;">❌ Cancel Order</button>' : '<button class="actionBtn cancelBtn" onclick="promptCancelOrder(\'' + o.order_no + '\')" style="margin-top:5px;">❌ Cancel Order</button>'}`;
         } else if(status === "Delivered") {
           actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button>`;
         } else if(status === "Cancelled") {
@@ -2551,7 +2579,6 @@
     let isAdminUser = (roleLower === "admin");
     let isRestrictedStaff = (roleLower === "staff" || roleLower === "marketing" || roleLower === "delivery");
 
-    // स्टाफ, मार्केटिङ वा डेलिभरी लेभलमा लगइन गर्दा सैलरी शीट र स्टाफ लिस्ट लुकाउने (hide)
     if (isRestrictedStaff) {
       if (staffAccessSec) staffAccessSec.style.display = "none";
       if (salarySectionContainer) salarySectionContainer.style.display = "none";
@@ -2630,7 +2657,6 @@
       });
       tbody.innerHTML = html;
       
-      // यदि एडमिन वा म्यानेजर हो भने मात्र सैलरी शीट लोड गर्ने
       if (!isRestrictedStaff) {
         loadSalarySheet();
       }
