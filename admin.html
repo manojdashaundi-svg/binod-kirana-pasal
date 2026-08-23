@@ -1504,6 +1504,9 @@
     let date = document.getElementById("extraInvDate").value || new Date().toISOString().split('T')[0];
     let paid = parseFloat(document.getElementById("extraInvPaid").value) || 0;
 
+    // यहाँ नयाँ Invoice Number जेनेरेट गरिएको छ
+    let invNo = "INV-" + Math.floor(1000 + Math.random() * 9000);
+
     let itemsHTML = "";
     let total = 0;
     document.querySelectorAll(".extra-inv-row").forEach(row => {
@@ -1539,8 +1542,11 @@
     printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#555; font-weight:600;">Surkhet Nepal</p>');
     printWindow.document.write('<p style="margin:3px 0; font-weight:bold; color:#333;">INVOICE</p>');
     printWindow.document.write('</div>');
-    printWindow.document.write('<p style="font-weight:bold; color:#000;"><b>Customer:</b> ' + customer + '</p>');
-    printWindow.document.write('<p style="font-weight:bold; color:#000;"><b>Date:</b> ' + date + '</p>');
+    
+    // यहाँ Invoice No देखाउने लाइन थपिएको छ
+    printWindow.document.write('<div style="display:flex; justify-content:space-between; font-weight:bold; color:#000; margin-bottom:5px;"><span>Invoice No: ' + invNo + '</span><span>Date: ' + date + '</span></div>');
+    printWindow.document.write('<p style="font-weight:bold; color:#000; margin:5px 0;"><b>Customer:</b> ' + customer + '</p>');
+    
     printWindow.document.write('<table><thead><tr><th>Description</th><th style="text-align:right;">Amount</th></tr></thead><tbody>' + itemsHTML + '</tbody></table>');
     printWindow.document.write('<div class="summary">');
     printWindow.document.write('<p style="margin:3px 0; color:#000;">TOTAL: RM ' + total.toFixed(2) + '</p>');
