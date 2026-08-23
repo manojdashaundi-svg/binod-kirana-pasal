@@ -850,24 +850,11 @@
   function renderActiveOrdersTable(ordersToRender) {
     let tableBody = document.getElementById("ordersTable");
     if(!tableBody) return;
-
-    let loggedInRole = String(sessionStorage.getItem("USER_ROLE") || "Admin").toLowerCase();
-    let isMarketingUser = (loggedInRole === "marketing");
-
-    // यदि मार्केटिङ युजर हो भने 'Delivered' भइसकेका अर्डरहरू आफैँ लुकाउने (hide)
-    let processedOrders = ordersToRender;
-    if (isMarketingUser) {
-      processedOrders = ordersToRender.filter(o => {
-        let st = o.status ? String(o.status).trim() : "Pending";
-        return st !== "Delivered";
-      });
-    }
-
     let html = "";
-    if(processedOrders.length === 0) {
+    if(ordersToRender.length === 0) {
       html = `<tr><td colspan="9" style="padding:20px;">No Active Orders Found.</td></tr>`;
     } else {
-      processedOrders.forEach(function(o){
+      ordersToRender.forEach(function(o){
         let status = o.status ? String(o.status).trim() : "Pending";
 
         let slipSrc = o.payment_slip || o.slip || o.payment || o.qr_image || o.proof || "";
@@ -887,42 +874,34 @@
           deliveryTimeDisplay = "-";
         }
 
-        // मार्केटिङ युजरलाई कुनैपनि अर्डर चलाउन नमिल्ने (Read-Only) बनाउने
-        let statusSelect = "";
+        let statusSelect = `<select id="status_${o.order_no}">
+          <option value="Pending" ${status==="Pending"?"selected":""}>Pending</option>
+          <option value="Preparing" ${status==="Preparing"?"selected":""}>Preparing</option>
+          <option value="Ready" ${status==="Ready"?"selected":""}>Ready</option>
+          <option value="Out for Delivery" ${status==="Out for Delivery"?"selected":""}>Out for Delivery</option>
+          <option value="Delivered" ${status==="Delivered"?"selected":""}>Delivered</option>
+          <option value="Cancelled" ${status==="Cancelled"?"selected":""} style="color:red; font-weight:bold;">Cancelled</option>
+        </select> 
+        <button class="updateBtn" onclick="manualUpdate('${o.order_no}')">Go</button>`;
+
         let actionButtons = "";
-
-        if (isMarketingUser) {
-          statusSelect = `<b>${status}</b>`;
-          actionButtons = `<span style="color:#666; font-size:12px; font-weight:bold;">View Only</span>`;
+        if(status === "Pending") {
+          actionButtons = `<button class="actionBtn rcvBtn" onclick="markReceived('${o.order_no}')">🎫 Received</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+        } else if(status === "Preparing") {
+          actionButtons = `<button class="actionBtn billBtn" onclick="openBill('${o.order_no}')">🍳 Ready & Bill</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+        } else if(status === "Ready") {
+          actionButtons = `<button class="actionBtn dispatchBtn" onclick="updateOrderStatus('${o.order_no}', 'Out for Delivery')">🚚 Dispatch</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+        } else if(status === "Out for Delivery") {
+          actionButtons = `<button class="actionBtn proofBtn" onclick="promptUploadProof('${o.order_no}')">📸 Upload Proof</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+        } else if(status === "Delivered") {
+          actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button>`;
+        } else if(status === "Cancelled") {
+          let reasonText = o.cancel_reason || "No reason provided";
+          let adminBy = o.cancelled_by || "Admin";
+          actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default; background:#f44336;">❌ Cancelled</button>
+                             <button class="viewReasonBtn" onclick="viewCancelReason('${encodeURIComponent(reasonText)}', '${encodeURIComponent(adminBy)}')">👁️ View Reason</button>`;
         } else {
-          statusSelect = `<select id="status_${o.order_no}">
-            <option value="Pending" ${status==="Pending"?"selected":""}>Pending</option>
-            <option value="Preparing" ${status==="Preparing"?"selected":""}>Preparing</option>
-            <option value="Ready" ${status==="Ready"?"selected":""}>Ready</option>
-            <option value="Out for Delivery" ${status==="Out for Delivery"?"selected":""}>Out for Delivery</option>
-            <option value="Delivered" ${status==="Delivered"?"selected":""}>Delivered</option>
-            <option value="Cancelled" ${status==="Cancelled"?"selected":""} style="color:red; font-weight:bold;">Cancelled</option>
-          </select> 
-          <button class="updateBtn" onclick="manualUpdate('${o.order_no}')">Go</button>`;
-
-          if(status === "Pending") {
-            actionButtons = `<button class="actionBtn rcvBtn" onclick="markReceived('${o.order_no}')">🎫 Received</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
-          } else if(status === "Preparing") {
-            actionButtons = `<button class="actionBtn billBtn" onclick="openBill('${o.order_no}')">🍳 Ready & Bill</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
-          } else if(status === "Ready") {
-            actionButtons = `<button class="actionBtn dispatchBtn" onclick="updateOrderStatus('${o.order_no}', 'Out for Delivery')">🚚 Dispatch</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
-          } else if(status === "Out for Delivery") {
-            actionButtons = `<button class="actionBtn proofBtn" onclick="promptUploadProof('${o.order_no}')">📸 Upload Proof</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
-          } else if(status === "Delivered") {
-            actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button>`;
-          } else if(status === "Cancelled") {
-            let reasonText = o.cancel_reason || "No reason provided";
-            let adminBy = o.cancelled_by || "Admin";
-            actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default; background:#f44336;">❌ Cancelled</button>
-                               <button class="viewReasonBtn" onclick="viewCancelReason('${encodeURIComponent(reasonText)}', '${encodeURIComponent(adminBy)}')">👁️ View Reason</button>`;
-          } else {
-            actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default;">❌ Cancelled</button>`;
-          }
+          actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default;">❌ Cancelled</button>`;
         }
 
         html += `<tr>
@@ -970,12 +949,6 @@
   };
 
   async function updateOrderStatus(orderNo, newStatus, extraData = {}) {
-    let loggedInRole = String(sessionStorage.getItem("USER_ROLE") || "Admin").toLowerCase();
-    if(loggedInRole === "marketing") {
-      alert("⚠️ माफ गर्नुहोला, मार्केटिङ युजरले अर्डर अपडेट गर्न मिल्दैन!");
-      return;
-    }
-
     let updatePayload = { status: newStatus, ...extraData };
     let { error } = await supabaseClient.from('orders').update(updatePayload).eq('order_no', orderNo);
     if(error) {
@@ -985,12 +958,6 @@
   };
 
   async function manualUpdate(orderNo) {
-    let loggedInRole = String(sessionStorage.getItem("USER_ROLE") || "Admin").toLowerCase();
-    if(loggedInRole === "marketing") {
-      alert("⚠️ माफ गर्नुहोला, मार्केटिङ युजरले अर्डर अपडेट गर्न मिल्दैन!");
-      return;
-    }
-
     var s = document.getElementById("status_" + orderNo).value;
     if (s === "Cancelled") {
       let reason = prompt("कृपया अर्डर क्यान्सिल गर्नुको कारण (Reason) लेख्नुहोस्:");
@@ -1003,15 +970,10 @@
   };
 
   function markReceived(orderNo) {
-    let loggedInRole = String(sessionStorage.getItem("USER_ROLE") || "Admin").toLowerCase();
-    if(loggedInRole === "marketing") { alert("⚠️ Action not allowed."); return; }
     updateOrderStatus(orderNo, 'Preparing');
   }
 
   function openBill(orderNo) {
-    let loggedInRole = String(sessionStorage.getItem("USER_ROLE") || "Admin").toLowerCase();
-    if(loggedInRole === "marketing") { alert("⚠️ Action not allowed."); return; }
-
     let order = activeOrdersCache.find(o => o.order_no === orderNo);
     if(!order) return;
 
@@ -1056,9 +1018,6 @@
   }
 
   function promptUploadProof(orderNo) {
-    let loggedInRole = String(sessionStorage.getItem("USER_ROLE") || "Admin").toLowerCase();
-    if(loggedInRole === "marketing") { alert("⚠️ Action not allowed."); return; }
-
     activeProofOrderNo = orderNo;
     document.getElementById("uploadSourceModal").style.display = "flex";
   }
@@ -1123,15 +1082,10 @@
       }
     });
 
-    let tOrd = document.getElementById("dashTotalOrders");
-    let tRev = document.getElementById("dashTotalRevenue");
-    let tTod = document.getElementById("dashTodaySales");
-    let tMon = document.getElementById("dashMonthSales");
-
-    if(tOrd) tOrd.innerText = totalOrders;
-    if(tRev) tRev.innerText = "Rs. " + totalRevenue.toFixed(2);
-    if(tTod) tTod.innerText = "Rs. " + todaySales.toFixed(2);
-    if(tMon) tMon.innerText = "Rs. " + monthSales.toFixed(2);
+    document.getElementById("dashTotalOrders").innerText = totalOrders;
+    document.getElementById("dashTotalRevenue").innerText = "Rs. " + totalRevenue.toFixed(2);
+    document.getElementById("dashTodaySales").innerText = "Rs. " + todaySales.toFixed(2);
+    document.getElementById("dashMonthSales").innerText = "Rs. " + monthSales.toFixed(2);
   };
 
   function drawMonthlySalesChart(orders) {
@@ -1167,11 +1121,8 @@
       vAxis: { title: 'Sales (Rs.)' },
       backgroundColor: 'transparent'
     };
-    let chartEl = document.getElementById('monthlySalesChart');
-    if(chartEl) {
-      let chart = new google.visualization.ColumnChart(chartEl);
-      chart.draw(data, options);
-    }
+    let chart = new google.visualization.ColumnChart(document.getElementById('monthlySalesChart'));
+    chart.draw(data, options);
   }
 
   function drawHourlySalesChart(orders) {
@@ -1211,11 +1162,8 @@
       vAxis: { title: 'Sales (Rs.)' },
       backgroundColor: 'transparent'
     };
-    let chartEl = document.getElementById('hourlySalesChart');
-    if(chartEl) {
-      let chart = new google.visualization.LineChart(chartEl);
-      chart.draw(data, options);
-    }
+    let chart = new google.visualization.LineChart(document.getElementById('hourlySalesChart'));
+    chart.draw(data, options);
   }
 
   function exportReportCSV() {
@@ -1290,7 +1238,7 @@
     printWindow.document.write('<style>');
     printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
     printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;margin:0;}');
-    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #1976D2;padding-bottom:5mm;margin-bottom:10px;}');
+    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #1976D2;padding-bottom:5px;margin-bottom:10px;}');
     printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
     printWindow.document.write('h2{margin:2px 0;color:#1976D2;font-size:16px;font-weight:700;}');
     printWindow.document.write('h3{margin:2px 0;color:#333;font-size:13px;font-weight:600;}');
@@ -2629,10 +2577,11 @@
     let isAdminUser = (roleLower === "admin");
     let isRestrictedStaff = (roleLower === "staff" || roleLower === "marketing" || roleLower === "delivery");
 
+    // यदि मार्केटिङ (Marketing), डेलिभरी (Delivery) वा स्टाफ (Staff) लेभल हो भने Active Orders र Chat बाहेक अन्य सबै खण्डहरू लुकाउने (hide)
     if (isRestrictedStaff) {
       if (analyticsBox) analyticsBox.style.display = "none";
       if (extraSec) extraSec.style.display = "none";
-      if (chatSec) chatSec.style.display = "block";
+      if (chatSec) chatSec.style.display = "block"; // Live Support Chat Center देखिने
     } else {
       if (analyticsBox) analyticsBox.style.display = "block";
       if (extraSec) extraSec.style.display = "block";
