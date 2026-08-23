@@ -854,7 +854,7 @@
     let loggedInRole = String(sessionStorage.getItem("USER_ROLE") || "Admin").toLowerCase();
     let isMarketingUser = (loggedInRole === "marketing");
 
-    // मार्केटिङ युजर हो भने 'Delivered' भइसकेका अर्डरहरू लुकाउने
+    // यदि मार्केटिङ युजर हो भने 'Delivered' भइसकेका अर्डरहरू आफैँ लुकाउने (hide)
     let processedOrders = ordersToRender;
     if (isMarketingUser) {
       processedOrders = ordersToRender.filter(o => {
@@ -887,23 +887,13 @@
           deliveryTimeDisplay = "-";
         }
 
+        // मार्केटिङ युजरलाई कुनैपनि अर्डर चलाउन नमिल्ने (Read-Only) बनाउने
         let statusSelect = "";
         let actionButtons = "";
 
         if (isMarketingUser) {
-          // मार्केटिङ युजरको लागि स्टेटस ड्रपडाउन देखाउने तर चेンジ गर्न नदिने वा हेर्न मात्र मिल्ने
           statusSelect = `<b>${status}</b>`;
-
-          // मार्केटिङ युजरले Dispatch र Upload Proof गर्न पाउने तर अरू गर्न नपाउने
-          if(status === "Ready") {
-            actionButtons = `<button class="actionBtn dispatchBtn" onclick="updateOrderStatus('${o.order_no}', 'Out for Delivery')">🚚 Dispatch</button>`;
-          } else if(status === "Out for Delivery") {
-            actionButtons = `<button class="actionBtn proofBtn" onclick="promptUploadProof('${o.order_no}')">📸 Upload Proof</button>`;
-          } else if(status === "Delivered") {
-            actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button>`;
-          } else {
-            actionButtons = `<span style="color:#666; font-size:12px; font-weight:bold;">View Only</span>`;
-          }
+          actionButtons = `<span style="color:#666; font-size:12px; font-weight:bold;">View Only</span>`;
         } else {
           statusSelect = `<select id="status_${o.order_no}">
             <option value="Pending" ${status==="Pending"?"selected":""}>Pending</option>
@@ -980,6 +970,12 @@
   };
 
   async function updateOrderStatus(orderNo, newStatus, extraData = {}) {
+    let loggedInRole = String(sessionStorage.getItem("USER_ROLE") || "Admin").toLowerCase();
+    if(loggedInRole === "marketing") {
+      alert("⚠️ माफ गर्नुहोला, मार्केटिङ युजरले अर्डर अपडेट गर्न मिल्दैन!");
+      return;
+    }
+
     let updatePayload = { status: newStatus, ...extraData };
     let { error } = await supabaseClient.from('orders').update(updatePayload).eq('order_no', orderNo);
     if(error) {
@@ -991,7 +987,7 @@
   async function manualUpdate(orderNo) {
     let loggedInRole = String(sessionStorage.getItem("USER_ROLE") || "Admin").toLowerCase();
     if(loggedInRole === "marketing") {
-      alert("⚠️ माफ गर्नुहोला, मार्केटिङ युजरले यसरी स्टेटस म्यानुअल अपडेट गर्न मिल्दैन!");
+      alert("⚠️ माफ गर्नुहोला, मार्केटिङ युजरले अर्डर अपडेट गर्न मिल्दैन!");
       return;
     }
 
@@ -1060,6 +1056,9 @@
   }
 
   function promptUploadProof(orderNo) {
+    let loggedInRole = String(sessionStorage.getItem("USER_ROLE") || "Admin").toLowerCase();
+    if(loggedInRole === "marketing") { alert("⚠️ Action not allowed."); return; }
+
     activeProofOrderNo = orderNo;
     document.getElementById("uploadSourceModal").style.display = "flex";
   }
