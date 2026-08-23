@@ -1878,7 +1878,6 @@
     document.getElementById("voucherMonth").value = now.getMonth() + 1;
     document.getElementById("voucherYear").value = now.getFullYear();
 
-    // Reset earnings container to default single row
     let earnContainer = document.getElementById("earningsContainer");
     earnContainer.innerHTML = `
       <div class="earnings-row" style="display:flex; gap:10px; align-items:center;">
@@ -1888,7 +1887,6 @@
       </div>
     `;
 
-    // Reset deductions container to default single row
     let dedContainer = document.getElementById("deductionsContainer");
     dedContainer.innerHTML = `
       <div class="deductions-row" style="display:flex; gap:10px; align-items:center;">
@@ -1996,6 +1994,10 @@
     printWindow.document.write(a4DualHtml);
     printWindow.document.close();
     printWindow.focus();
+    
+    // ✨ प्रिन्ट विन्डो खुल्नेबित्तिकै फर्म खाली गर्ने
+    resetSalaryVoucherForm();
+
     setTimeout(() => { printWindow.print(); }, 500);
   };
 
@@ -2091,9 +2093,6 @@
     } catch(e) {}
 
     window.printSalaryVoucherSlip(nextVoucherNumber, st.name, designation, day, month, year, earnList, dedList, pMode, net);
-    
-    // ✨ सेभ र प्रिन्ट भइसकेपछि बक्सहरू स्वतः रिसेट हुने
-    resetSalaryVoucherForm();
   }
 
   async function loadMenuList() {
