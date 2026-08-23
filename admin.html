@@ -1868,7 +1868,6 @@
     document.getElementById("voucherNetDisplay").innerText = "NET Salary: RM " + net.toFixed(2);
   }
 
-  // ✨ भौचर बक्सहरू स्वतः रिसेट गर्ने फंक्सन
   function resetSalaryVoucherForm() {
     document.getElementById("voucherStaffSelect").value = "";
     document.getElementById("voucherStaffDesignation").value = "";
@@ -1995,7 +1994,6 @@
     printWindow.document.close();
     printWindow.focus();
     
-    // ✨ प्रिन्ट विन्डो खुल्नेबित्तिकै फर्म खाली गर्ने
     resetSalaryVoucherForm();
 
     setTimeout(() => { printWindow.print(); }, 500);
@@ -2073,6 +2071,7 @@
 
     let formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     
+    // ✨ भौचर नम्बर सही तरिकाले बढाउनको लागि await को प्रयोग
     let nextVoucherNumber = "V-1001";
     try {
       let { data: allVouchers, error } = await supabaseClient.from('salary_vouchers').select('id');
@@ -2082,13 +2081,18 @@
     } catch(e) {}
 
     try {
-      await supabaseClient.from('salary_vouchers').insert([{
+      let { error: insertError } = await supabaseClient.from('salary_vouchers').insert([{
         date: formattedDate,
         staff_name: st.name,
         designation: designation,
         payment_mode: pMode,
         net_salary: net
       }]);
+      
+      if (insertError) {
+        alert("Error saving voucher: " + insertError.message);
+        return;
+      }
       loadSalaryVouchersHistory();
     } catch(e) {}
 
