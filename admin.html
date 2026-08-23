@@ -1504,7 +1504,6 @@
     let date = document.getElementById("extraInvDate").value || new Date().toISOString().split('T')[0];
     let paid = parseFloat(document.getElementById("extraInvPaid").value) || 0;
 
-    // क्रमिक रूपमा इन्भ्वाइस नम्बर (Sequential Invoice No) जेनेरेट गर्ने कोड
     let lastInvNum = parseInt(localStorage.getItem("PUJA_LAST_INV_NO") || "1000");
     let nextInvNum = lastInvNum + 1;
     localStorage.setItem("PUJA_LAST_INV_NO", nextInvNum);
@@ -1543,6 +1542,7 @@
     printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
     printWindow.document.write('<h2>PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
     printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#555; font-weight:600;">Surkhet Nepal</p>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">PAN NO: 147195188 | CONTACT NO: 9769338427, 9763930776</p>');
     printWindow.document.write('<p style="margin:3px 0; font-weight:bold; color:#333;">INVOICE</p>');
     printWindow.document.write('</div>');
     
