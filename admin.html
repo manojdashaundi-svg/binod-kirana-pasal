@@ -283,9 +283,7 @@
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; align-items:center;">
         <select id="staffRoleSelect" style="flex:1; min-width:160px; padding:10px;">
-          <option value="Admin">Admin</option>
-          <option value="Manager">Manager</option>
-          <option value="Staff">Staff</option>
+          <!-- 動態 लोड हुनेछ -->
         </select>
         <button onclick="addNewStaff()" style="padding:10px 25px; background:#1976D2; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(25,118,210,0.3);">+ Add Staff</button>
       </div>
@@ -698,7 +696,6 @@
     var p = document.getElementById("password").value.trim();
     if(u === "" || p === "") { alert("Enter credentials."); return; }
 
-    // बाइपास चेक: तपाईंको इमेल हाल्नेबित्तिकै तुरुन्त लगइन खुल्नेछ
     if (u === "manojdashaundi@gmail.com" || u === "admin@pooja.com" || u === "admin") {
       sessionStorage.setItem("ADMIN_LOGIN", "true");
       sessionStorage.setItem("USER_ROLE", "admin");
@@ -2515,17 +2512,75 @@
     }
   };
 
+  function setupRoleDropdowns(currentLoggedInRole) {
+    let roleSelect = document.getElementById("staffRoleSelect");
+    if (!roleSelect) return;
+
+    let isManager = (String(currentLoggedInRole).toLowerCase() === "manager");
+    
+    if (isManager) {
+      roleSelect.innerHTML = `
+        <option value="Staff">Staff</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Delivery">Delivery</option>
+      `;
+    } else {
+      roleSelect.innerHTML = `
+        <option value="Admin">Admin</option>
+        <option value="Manager">Manager</option>
+        <option value="Staff">Staff</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Delivery">Delivery</option>
+      `;
+    }
+  }
+
   async function loadStaffList() {
     let tbody = document.getElementById("staffTableList");
     if(!tbody) return;
+    
+    let loggedInRole = sessionStorage.getItem("USER_ROLE") || "Admin";
+    let isManager = (String(loggedInRole).toLowerCase() === "manager");
+
+    setupRoleDropdowns(loggedInRole);
+    document.getElementById("userRoleBadge").innerText = loggedInRole.toUpperCase();
+
     try {
       let { data, error } = await supabaseClient.from('admin').select('*').order('id', { ascending: true });
       if (error || !data || data.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">No staff members found.</td></tr>`;
         return;
       }
+
+      let filteredData = data;
+      if (isManager) {
+        filteredData = data.filter(s => {
+          let r = String(s.role || '').toLowerCase();
+          return r === 'staff' || r === 'marketing' || r === 'delivery';
+        });
+      }
+
+      if (filteredData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">No staff members found.</td></tr>`;
+        return;
+      }
+
       let html = "";
-      data.forEach((s, idx) => {
+      filteredData.forEach((s, idx) => {
+        let currentRole = s.role || 'Staff';
+        
+        let roleDropdownOptions = isManager ? `
+          <option value="Staff" ${currentRole==='Staff'?'selected':''}>Staff</option>
+          <option value="Marketing" ${currentRole==='Marketing'?'selected':''}>Marketing</option>
+          <option value="Delivery" ${currentRole==='Delivery'?'selected':''}>Delivery</option>
+        ` : `
+          <option value="Admin" ${currentRole==='Admin'?'selected':''}>Admin</option>
+          <option value="Manager" ${currentRole==='Manager'?'selected':''}>Manager</option>
+          <option value="Staff" ${currentRole==='Staff'?'selected':''}>Staff</option>
+          <option value="Marketing" ${currentRole==='Marketing'?'selected':''}>Marketing</option>
+          <option value="Delivery" ${currentRole==='Delivery'?'selected':''}>Delivery</option>
+        `;
+
         html += `<tr id="staff_row_${s.id}">
           <td><b>${idx + 1}</b></td>
           <td>
@@ -2541,11 +2596,9 @@
             <input type="text" id="staff_pass_input_${s.id}" value="${s.password || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
           </td>
           <td>
-            <span id="staff_role_txt_${s.id}"><b>${s.role || 'Admin'}</b></span>
+            <span id="staff_role_txt_${s.id}"><b>${currentRole}</b></span>
             <select id="staff_role_input_${s.id}" style="display:none; padding:6px; border:1px solid #ccc; border-radius:4px;">
-              <option value="Admin" ${s.role==='Admin'?'selected':''}>Admin</option>
-              <option value="Manager" ${s.role==='Manager'?'selected':''}>Manager</option>
-              <option value="Staff" ${s.role==='Staff'?'selected':''}>Staff</option>
+              ${roleDropdownOptions}
             </select>
           </td>
           <td style="white-space: nowrap;">
