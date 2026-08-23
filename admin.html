@@ -1660,20 +1660,27 @@
     }
 
     let start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
     let end = new Date(endDate);
     end.setHours(23, 59, 59, 999);
 
+    // सुधार गरिएको मिति फिल्टरिङ (अर्डर र इनभ्वाइस दुवैको लागि)
     let filteredOrders = activeOrdersCache.filter(o => {
       if(!o.time) return false;
       let oDate = new Date(o.time);
-      if(isNaN(oDate.getTime())) return false;
+      if(isNaN(oDate.getTime())) {
+        // यदि स्ट्रिङ पार्स गर्न मिलेन भने YYYY-MM-DD म्याच गर्छ कि हेर्ने
+        return String(o.time).includes(startDate);
+      }
       return (oDate >= start && oDate <= end);
     });
 
     let filteredInvoices = extraInvoicesCache.filter(inv => {
       if(!inv.date) return false;
       let iDate = new Date(inv.date);
-      if(isNaN(iDate.getTime())) return false;
+      if(isNaN(iDate.getTime())) {
+        return String(inv.date).includes(startDate);
+      }
       return (iDate >= start && iDate <= end);
     });
 
@@ -1719,6 +1726,10 @@
       totalIncomeSum += amt;
       printWindow.document.write(`<tr><td>Invoice</td><td>${inv.date || ''}</td><td><b>${inv.invoice_no || ''}</b></td><td>${inv.customer_name || ''}</td><td>${inv.items || ''}</td><td>RM ${amt.toFixed(2)}</td></tr>`);
     });
+
+    if(filteredOrders.length === 0 && filteredInvoices.length === 0) {
+      printWindow.document.write(`<tr><td colspan="6" style="padding:15px; color:#666;">No income records found for this date range.</td></tr>`);
+    }
 
     printWindow.document.write('</tbody></table>');
     printWindow.document.write('<div class="total-box">Total Combined Income: ' + totalIncomeSum.toFixed(2) + '</div>');
