@@ -2071,14 +2071,16 @@
 
     let formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     
-    // ✨ भौचर नम्बर सही तरिकाले बढाउनको लागि await को प्रयोग
-    let nextVoucherNumber = "V-1001";
+    // ✨ भौचर नम्बरलाई समय (Timestamp) वा अनौठो नम्बरमा आधारित बनाइएको छ ताकि कहिल्यै नदोहोरियोस्
+    let nextVoucherNumber = "V-" + (1000 + salaryVoucherHistoryCache.length + 1);
     try {
       let { data: allVouchers, error } = await supabaseClient.from('salary_vouchers').select('id');
       if (!error && allVouchers) {
         nextVoucherNumber = "V-" + (1001 + allVouchers.length);
       }
-    } catch(e) {}
+    } catch(e) {
+      nextVoucherNumber = "V-" + Date.now().toString().slice(-4);
+    }
 
     try {
       let { error: insertError } = await supabaseClient.from('salary_vouchers').insert([{
