@@ -1649,6 +1649,10 @@
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    // Export गरेपछि मिति बक्सहरू स्वतः खाली हुने
+    document.getElementById("incomeReportStart").value = "";
+    document.getElementById("incomeReportEnd").value = "";
   }
 
   function printTotalIncomePDF() {
@@ -1733,6 +1737,10 @@
     printWindow.document.write('<div class="total-box">Total Combined Income: ' + totalIncomeSum.toFixed(2) + '</div>');
     printWindow.document.write('</body></html>');
     printWindow.document.close();
+
+    // Print वा Download गरेपछि मिति बक्सहरू स्वतः खाली हुने
+    document.getElementById("incomeReportStart").value = "";
+    document.getElementById("incomeReportEnd").value = "";
   }
 
   async function loadSalarySheet() {
@@ -1757,7 +1765,6 @@
       document.getElementById("voucherYear").value = now.getFullYear();
       document.getElementById("extraInvDate").value = now.toISOString().split('T')[0];
       
-      // Total Income Report Start Date र End Date लाई आजको मिति स्वतः (Default) सेट गरिएको
       let todayStr = now.toISOString().split('T')[0];
       let incStart = document.getElementById("incomeReportStart");
       let incEnd = document.getElementById("incomeReportEnd");
