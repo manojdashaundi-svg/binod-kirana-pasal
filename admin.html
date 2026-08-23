@@ -1868,7 +1868,40 @@
     document.getElementById("voucherNetDisplay").innerText = "NET Salary: RM " + net.toFixed(2);
   }
 
-  // ✨ फिक्स गरिएको प्रिन्ट फंक्सन (Company Copy / Staff Copy सहित)
+  // ✨ भौचर बक्सहरू स्वतः रिसेट गर्ने फंक्सन
+  function resetSalaryVoucherForm() {
+    document.getElementById("voucherStaffSelect").value = "";
+    document.getElementById("voucherStaffDesignation").value = "";
+    
+    let now = new Date();
+    document.getElementById("voucherDay").value = now.getDate();
+    document.getElementById("voucherMonth").value = now.getMonth() + 1;
+    document.getElementById("voucherYear").value = now.getFullYear();
+
+    // Reset earnings container to default single row
+    let earnContainer = document.getElementById("earningsContainer");
+    earnContainer.innerHTML = `
+      <div class="earnings-row" style="display:flex; gap:10px; align-items:center;">
+        <input type="text" class="earn-desc" value="MONTHLY BASIC SALARY PAYED" style="flex:2; padding:8px; background:#f9f9f9;" readonly>
+        <input type="number" class="earn-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+        <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+      </div>
+    `;
+
+    // Reset deductions container to default single row
+    let dedContainer = document.getElementById("deductionsContainer");
+    dedContainer.innerHTML = `
+      <div class="deductions-row" style="display:flex; gap:10px; align-items:center;">
+        <input type="text" class="ded-desc" placeholder="Deduction Description" value="Advance / Deduction" style="flex:2; padding:8px;">
+        <input type="number" class="ded-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+        <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+      </div>
+    `;
+
+    document.getElementById("voucherPaymentMode").selectedIndex = 0;
+    document.getElementById("voucherNetDisplay").innerText = "NET Salary: RM 0.00";
+  }
+
   window.printSalaryVoucherSlip = function(vNo, name, desig, day, month, year, earnList, dedList, payMode, netTotal) {
     
     function getVoucherCard(copyLabel) {
@@ -1969,40 +2002,75 @@
   async function saveAndPrintVoucher() {
     let staffId = document.getElementById("voucherStaffSelect").value;
     if(!staffId) {
-      alert("कृपया कर्मचारी (Employee Name) छान्नुहोस्!");
+      alert("⚠️ चेतावनी: कृपया कामदार (Employee Name) छान्नुहोस्!");
       return;
     }
+
+    let day = document.getElementById("voucherDay").value.trim();
+    let month = document.getElementById("voucherMonth").value.trim();
+    let year = document.getElementById("voucherYear").value.trim();
+
+    if(!day || !month || !year) {
+      alert("⚠️ चेतावनी: कृपया मिति (Day, Month, Year) खाली नछोड्नुहोस्!");
+      return;
+    }
+
     let st = staffListCache.find(s => String(s.id) === String(staffId));
-    if(!st) return;
+    if(!st) {
+      alert("⚠️ चेतावनी: चयन गरिएको कर्मचारीको विवरण भेटिएन!");
+      return;
+    }
 
     let designation = document.getElementById("voucherStaffDesignation").value;
-    let day = document.getElementById("voucherDay").value;
-    let month = document.getElementById("voucherMonth").value;
-    let year = document.getElementById("voucherYear").value;
     let pMode = document.getElementById("voucherPaymentMode").value;
 
     let earnList = [];
     let totalEarnings = 0;
+    let hasInvalidEarn = false;
+
     document.querySelectorAll(".earnings-row").forEach(row => {
-      let desc = row.querySelector(".earn-desc").value || "Earnings";
-      let amt = parseFloat(row.querySelector(".earn-amt").value) || 0;
+      let descInput = row.querySelector(".earn-desc");
+      let amtInput = row.querySelector(".earn-amt");
+      let desc = descInput ? descInput.value.trim() : "";
+      let amt = parseFloat(amtInput ? amtInput.value : 0) || 0;
+
+      if(!desc) {
+        hasInvalidEarn = true;
+      }
       totalEarnings += amt;
       earnList.push({ desc: desc, amt: amt });
     });
 
+    if(hasInvalidEarn) {
+      alert("⚠️ चेतावनी: सबै Earnings/Allowances विवरणहरू खाली छोड्न पाइँदैन!");
+      return;
+    }
+
     let dedList = [];
     let totalDeductions = 0;
+
     document.querySelectorAll(".deductions-row").forEach(row => {
-      let desc = row.querySelector(".ded-desc").value || "Deduction";
-      let amt = parseFloat(row.querySelector(".ded-amt").value) || 0;
-      totalDeductions += amt;
-      dedList.push({ desc: desc, amt: amt });
+      let descInput = row.querySelector(".ded-desc");
+      let amtInput = row.querySelector(".ded-amt");
+      let desc = descInput ? descInput.value.trim() : "";
+      let amt = parseFloat(amtInput ? amtInput.value : 0) || 0;
+
+      if(desc && amt > 0) {
+        dedList.push({ desc: desc, amt: amt });
+        totalDeductions += amt;
+      } else if(desc && amt === 0) {
+        dedList.push({ desc: desc, amt: 0 });
+      }
     });
 
     let net = totalEarnings - totalDeductions;
+    if(net < 0) {
+      alert("⚠️ चेतावनी: खुद तलब (NET Salary) शून्य वा माइनस हुन सक्दैन!");
+      return;
+    }
+
     let formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     
-    // ✨ फिक्स गरिएको सिरियल भौचर नम्बर (Database को कुल संख्या + 1 बाट गणना हुने)
     let nextVoucherNumber = "V-1001";
     try {
       let { data: allVouchers, error } = await supabaseClient.from('salary_vouchers').select('id');
@@ -2023,6 +2091,9 @@
     } catch(e) {}
 
     window.printSalaryVoucherSlip(nextVoucherNumber, st.name, designation, day, month, year, earnList, dedList, pMode, net);
+    
+    // ✨ सेभ र प्रिन्ट भइसकेपछि बक्सहरू स्वतः रिसेट हुने
+    resetSalaryVoucherForm();
   }
 
   async function loadMenuList() {
