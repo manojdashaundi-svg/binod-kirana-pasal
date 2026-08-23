@@ -1370,9 +1370,10 @@
       return;
     }
 
-    let csvContent = "data:text/csv;charset=utf-8,Date,Employee Name,Designation,Payment Mode,Net Salary (Rs.)\n";
+    let csvContent = "data:text/csv;charset=utf-8,Voucher No,Date,Employee Name,Designation,Payment Mode,Net Salary (Rs.)\n";
     filtered.forEach(v => {
       let rowData = [
+        `"${v.voucher_no || 'V-1000'}"`,
         `"${v.date || ''}"`,
         `"${v.staff_name || ''}"`,
         `"${v.designation || ''}"`,
@@ -1436,13 +1437,14 @@
     printWindow.document.write('<h2>PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
     printWindow.document.write('<h3>Salary Report (' + startDate + ' to ' + endDate + ')</h3>');
     printWindow.document.write('</div>');
-    printWindow.document.write('<table><thead><tr><th>Date</th><th>Employee Name</th><th>Designation</th><th>Payment Mode</th><th>Net Salary (Rs.)</th></tr></thead><tbody>');
+    printWindow.document.write('<table><thead><tr><th>Voucher No.</th><th>Date</th><th>Employee Name</th><th>Designation</th><th>Payment Mode</th><th>Net Salary (Rs.)</th></tr></thead><tbody>');
     
     let totalSalarySum = 0;
     filtered.forEach(v => {
       let net = parseFloat(v.net_salary) || 0;
       totalSalarySum += net;
-      printWindow.document.write(`<tr><td>${v.date || ''}</td><td><b>${v.staff_name || ''}</b></td><td>${v.designation || ''}</td><td>${v.payment_mode || ''}</td><td>Rs. ${net.toFixed(2)}</td></tr>`);
+      let vNoDisplay = v.voucher_no || 'V-1000';
+      printWindow.document.write(`<tr><td><b>${vNoDisplay}</b></td><td>${v.date || ''}</td><td><b>${v.staff_name || ''}</b></td><td>${v.designation || ''}</td><td>${v.payment_mode || ''}</td><td>Rs. ${net.toFixed(2)}</td></tr>`);
     });
 
     printWindow.document.write('</tbody></table>');
@@ -2071,19 +2073,19 @@
 
     let formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     
-    // ✨ भौचर नम्बरलाई समय (Timestamp) वा अनौठो नम्बरमा आधारित बनाइएको छ ताकि कहिल्यै नदोहोरियोस्
     let nextVoucherNumber = "V-" + (1000 + salaryVoucherHistoryCache.length + 1);
     try {
-      let { data: allVouchers, error } = await supabaseClient.from('salary_vouchers').select('id');
-      if (!error && allVouchers) {
-        nextVoucherNumber = "V-" + (1001 + allVouchers.length);
+      let { count, error: countErr } = await supabaseClient.from('salary_vouchers').select('*', { count: 'exact', head: true });
+      if (!countErr && count !== null) {
+        nextVoucherNumber = "V-" + (1001 + count);
       }
     } catch(e) {
-      nextVoucherNumber = "V-" + Date.now().toString().slice(-4);
+      nextVoucherNumber = "V-" + Math.floor(1000 + Math.random() * 9000);
     }
 
     try {
       let { error: insertError } = await supabaseClient.from('salary_vouchers').insert([{
+        voucher_no: nextVoucherNumber,
         date: formattedDate,
         staff_name: st.name,
         designation: designation,
