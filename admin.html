@@ -468,7 +468,7 @@
     </div>
 
     <div style="background:#fff; padding:20px; border-radius:10px; border:2px solid #C62828; margin-top:25px; box-shadow:0 4px 12px rgba(198,40,40,0.05);">
-      <h3 style="color:#C62828; margin-top:0; margin-bottom:15px;">🧾 Extra Service Invoice Generator</h3>
+      <h3 style="color:#C62828; margin-top:0; margin-bottom:15px;">🧾 Invoice Generator</h3>
 
       <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:15px;">
         <div style="flex:2; min-width:250px;">
@@ -1516,7 +1516,7 @@
     let printWindow = window.open('', '_blank', 'height=700,width=600');
     if (!printWindow) { alert("Popup blocked!"); return; }
 
-    printWindow.document.write('<html><head><title>Extra Service Invoice</title>');
+    printWindow.document.write('<html><head><title>Invoice</title>');
     printWindow.document.write('<style>');
     printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
     printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;font-size:13px;line-height:1.4;margin:0;}');
@@ -1534,7 +1534,8 @@
     printWindow.document.write('<div class="header">');
     printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
     printWindow.document.write('<h2>PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
-    printWindow.document.write('<p style="margin:2px 0; font-weight:bold; color:#333;">EXTRA SERVICE INVOICE</p>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#555; font-weight:600;">Surkhet Nepal</p>');
+    printWindow.document.write('<p style="margin:3px 0; font-weight:bold; color:#333;">INVOICE</p>');
     printWindow.document.write('</div>');
     printWindow.document.write('<p style="font-weight:bold; color:#000;"><b>Customer:</b> ' + customer + '</p>');
     printWindow.document.write('<p style="font-weight:bold; color:#000;"><b>Date:</b> ' + date + '</p>');
@@ -1736,7 +1737,7 @@
     if(error) {
       alert("Error updating staff: " + error.message);
     } else {
-      alert("✅ स्टाफ विवरण सफलतापूर्वक अपडेट भयो!");
+      alert("✅ स्टाफ सफलतापूर्वक अपडेट भयो!");
       loadSalarySheet();
     }
   }
@@ -1867,19 +1868,22 @@
     document.getElementById("voucherNetDisplay").innerText = "NET Salary: RM " + net.toFixed(2);
   }
 
-  // ✨ अपडेट गरिएको: Surkhet Nepal ठेगाना र रंगिन Dual A4 Salary Voucher Print Function ✨
+  // ✨ अपडेट गरिएको: Company Copy / Staff Copy र सिरियल VOUCHER NO. (V-1001, V-1002...) ✨
   window.printSalaryVoucherSlip = function(vNo, name, desig, day, month, year, earnList, dedList, payMode, netTotal) {
-    let earnRowsHtml = "";
-    earnList.forEach((e, idx) => {
-        earnRowsHtml += `<tr><td style="border:1px solid #bce8f1; padding:5px; text-align:left; width:75%; font-weight:600;">${idx+1}. ${e.desc}</td><td style="border:1px solid #bce8f1; padding:5px; text-align:right; width:25%; font-weight:600;">${e.amt.toFixed(2)}</td></tr>`;
-    });
+    
+    // Function to generate a single voucher block with custom copy label
+    function getVoucherCard(copyLabel) {
+      let earnRowsHtml = "";
+      earnList.forEach((e, idx) => {
+          earnRowsHtml += `<tr><td style="border:1px solid #bce8f1; padding:5px; text-align:left; width:75%; font-weight:600;">${idx+1}. ${e.desc}</td><td style="border:1px solid #bce8f1; padding:5px; text-align:right; width:25%; font-weight:600;">${e.amt.toFixed(2)}</td></tr>`;
+      });
 
-    let dedRowsHtml = "";
-    dedList.forEach((d, idx) => {
-        dedRowsHtml += `<tr><td style="border:1px solid #f2dede; padding:5px; text-align:left; width:75%; font-weight:600;">${idx+1}. ${d.desc}</td><td style="border:1px solid #f2dede; padding:5px; text-align:right; width:25%; font-weight:600;">${d.amt.toFixed(2)}</td></tr>`;
-    });
+      let dedRowsHtml = "";
+      dedList.forEach((d, idx) => {
+          dedRowsHtml += `<tr><td style="border:1px solid #f2dede; padding:5px; text-align:left; width:75%; font-weight:600;">${idx+1}. ${d.desc}</td><td style="border:1px solid #f2dede; padding:5px; text-align:right; width:25%; font-weight:600;">${d.amt.toFixed(2)}</td></tr>`;
+      });
 
-    let singleVoucherHtml = `
+      return `
         <div style="width: 100%; text-align: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11px; line-height: 1.3; color:#222; background:#fff; padding: 12px; border: 2px solid #1976D2; border-radius: 8px; box-sizing: border-box; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
             <img src="https://i.postimg.cc/Hn5Fwwb5/logo.png" style="max-width:55px; height:auto; margin-bottom:2px;">
             <h3 style="margin:0; font-size:15px; font-weight:bold; color:#1976D2;">PUJA EXPORT AND IMPORT PVT. LTD.</h3>
@@ -1921,14 +1925,18 @@
             </div>
 
             <div style="margin-top:16px; display:flex; justify-content:space-between; font-size:10.5px; align-items:flex-end;">
-                <div><b style="color:#555;">Hotel Copy / Staff Copy</b></div>
+                <div><b style="color:#555;">${copyLabel}</b></div>
                 <div style="text-align:right;">
                     --------------------------<br>
                     <b style="color:#333;">Employee Signature</b>
                 </div>
             </div>
         </div>
-    `;
+      `;
+    }
+
+    let singleVoucherHtml1 = getVoucherCard("Company Copy");
+    let singleVoucherHtml2 = getVoucherCard("Staff Copy");
 
     let a4DualHtml = `
         <html>
@@ -1943,9 +1951,9 @@
         </head>
         <body>
             <div class="voucher-page">
-                <div class="voucher-item">${singleVoucherHtml}</div>
+                <div class="voucher-item">${singleVoucherHtml1}</div>
                 <div style="width: 100%; border-top: 2px dashed #999; margin: 4px 0;"></div>
-                <div class="voucher-item">${singleVoucherHtml}</div>
+                <div class="voucher-item">${singleVoucherHtml2}</div>
             </div>
         </body>
         </html>
@@ -1994,7 +2002,15 @@
 
     let net = totalEarnings - totalDeductions;
     let formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    let voucherNo = "V-" + Math.floor(1000 + Math.random() * 9000);
+    
+    // सिरियल भौचर नम्बर गणना (V-1001, V-1002...)
+    let nextVoucherNumber = "V-1001";
+    try {
+      let { count, error } = await supabaseClient.from('salary_vouchers').select('*', { count: 'exact', head: true });
+      if (!error && count !== null) {
+        nextVoucherNumber = "V-" + (1001 + count);
+      }
+    } catch(e) {}
 
     try {
       await supabaseClient.from('salary_vouchers').insert([{
@@ -2007,8 +2023,8 @@
       loadSalaryVouchersHistory();
     } catch(e) {}
 
-    // Call the dual A4 print function
-    window.printSalaryVoucherSlip(voucherNo, st.name, designation, day, month, year, earnList, dedList, pMode, net);
+    // Call the dual A4 print function with serial voucher number
+    window.printSalaryVoucherSlip(nextVoucherNumber, st.name, designation, day, month, year, earnList, dedList, pMode, net);
   }
 
   async function loadMenuList() {
