@@ -2823,7 +2823,6 @@
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("adminContent").style.display = "block";
     
-    // सुनिश्चित गर्ने कि ब्याजमा सही रोल देखियोस् (उदा. MANAGER वा STAFF)
     let loggedInRole = sessionStorage.getItem("USER_ROLE") || "Admin";
     let badgeEl = document.getElementById("userRoleBadge");
     if (badgeEl) {
