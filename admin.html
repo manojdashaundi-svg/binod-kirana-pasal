@@ -272,7 +272,7 @@
     </div>
   </div>
 
-  <div class="staff-section">
+  <div id="staffAccessManagementSection" class="staff-section" style="display:none;">
     <h3 style="color:#1976D2; margin-bottom:15px;">👥 Staff & Access Management</h3>
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:20px;">
       <h4 style="margin-top:0; color:#444;">+ Add New Staff</h4>
@@ -307,7 +307,9 @@
         </tbody>
       </table>
     </div>
+  </div>
 
+  <div class="staff-section">
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:20px;">
       <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">💰 Expense & Profit Tracker</h3>
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
@@ -2537,10 +2539,22 @@
 
   async function loadStaffList() {
     let tbody = document.getElementById("staffTableList");
-    if(!tbody) return;
+    let staffAccessSec = document.getElementById("staffAccessManagementSection");
     
     let loggedInRole = sessionStorage.getItem("USER_ROLE") || "Admin";
     let isManager = (String(loggedInRole).toLowerCase() === "manager");
+    let isAdminUser = (String(loggedInRole).toLowerCase() === "admin");
+
+    // यदि एडमिन होइन (अर्थात Staff, Manager, वा अरू कोही हो) भने Staff & Access Management सेक्सन पूरै लुकाउने
+    if (!isAdminUser) {
+      if (staffAccessSec) staffAccessSec.style.display = "none";
+      loadSalarySheet();
+      return;
+    } else {
+      if (staffAccessSec) staffAccessSec.style.display = "block";
+    }
+
+    if(!tbody) return;
 
     setupRoleDropdowns(loggedInRole);
     document.getElementById("userRoleBadge").innerText = loggedInRole.toUpperCase();
