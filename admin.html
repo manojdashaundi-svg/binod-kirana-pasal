@@ -608,6 +608,39 @@
   var lastAdminChatCount = {};
   var activeProofOrderNo = null;
 
+  // चर्को र छोटो क्लिक साउन्ड बजाउने फंक्सन
+  function playClickSound() {
+    try {
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!window.audioCtx) window.audioCtx = new AudioContext();
+      if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
+      
+      let osc = window.audioCtx.createOscillator();
+      let gain = window.audioCtx.createGain();
+      
+      osc.type = 'square'; 
+      osc.frequency.setValueAtTime(800, window.audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(200, window.audioCtx.currentTime + 0.08);
+      
+      gain.gain.setValueAtTime(0.5, window.audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.08);
+      
+      osc.connect(gain);
+      gain.connect(window.audioCtx.destination);
+      
+      osc.start();
+      osc.stop(window.audioCtx.currentTime + 0.08);
+    } catch(e) {}
+  }
+
+  // ग्लोबल क्लिक इभेन्ट लिसनर (एडमिन प्यानल खुल्ला हुँदा जताततै क्लिक साउन्ड आउने)
+  document.addEventListener("click", function(event) {
+    let adminContent = document.getElementById("adminContent");
+    if (adminContent && adminContent.style.display !== "none") {
+      playClickSound();
+    }
+  });
+
   function playTringTringBell() {
     try {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -1230,7 +1263,6 @@
     }]);
 
     if(error) {
-      // यदि database मा bill_no column छैन भने fallback
       let { error: err2 } = await supabaseClient.from('expenses').insert([{
         date: date,
         category: category,
