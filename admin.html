@@ -1504,8 +1504,11 @@
     let date = document.getElementById("extraInvDate").value || new Date().toISOString().split('T')[0];
     let paid = parseFloat(document.getElementById("extraInvPaid").value) || 0;
 
-    // यहाँ नयाँ Invoice Number जेनेरेट गरिएको छ
-    let invNo = "INV-" + Math.floor(1000 + Math.random() * 9000);
+    // क्रमिक रूपमा इन्भ्वाइस नम्बर (Sequential Invoice No) जेनेरेट गर्ने कोड
+    let lastInvNum = parseInt(localStorage.getItem("PUJA_LAST_INV_NO") || "1000");
+    let nextInvNum = lastInvNum + 1;
+    localStorage.setItem("PUJA_LAST_INV_NO", nextInvNum);
+    let invNo = "INV-" + nextInvNum;
 
     let itemsHTML = "";
     let total = 0;
@@ -1543,7 +1546,6 @@
     printWindow.document.write('<p style="margin:3px 0; font-weight:bold; color:#333;">INVOICE</p>');
     printWindow.document.write('</div>');
     
-    // यहाँ Invoice No देखाउने लाइन थपिएको छ
     printWindow.document.write('<div style="display:flex; justify-content:space-between; font-weight:bold; color:#000; margin-bottom:5px;"><span>Invoice No: ' + invNo + '</span><span>Date: ' + date + '</span></div>');
     printWindow.document.write('<p style="font-weight:bold; color:#000; margin:5px 0;"><b>Customer:</b> ' + customer + '</p>');
     
