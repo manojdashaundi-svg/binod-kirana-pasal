@@ -545,7 +545,17 @@
   <div id="outstandingDuesMainSection" class="staff-section" style="background:#fff; padding:25px; border-radius:12px; margin-top:30px; border:1px solid #e0e0e0;">
     <h3 style="color:#C62828; margin-bottom:15px;">📊 Outstanding Dues & Customer Balances (तिर्न बाँकी बक्यौता विवरण)</h3>
     <div style="background:#f9fbfd; padding:18px; border-radius:10px; margin-bottom:15px; border:1px solid #e0e0e0; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-      <input type="text" id="duesSearchInput" onkeyup="filterOutstandingDues()" placeholder="🔍 Search Customer Name / Invoice No..." style="flex:2; padding:10px; border-radius:8px; border:1px solid #ccc;">
+      <input type="text" id="duesSearchInput" onkeyup="filterOutstandingDues()" placeholder="🔍 Search Customer Name / Invoice No..." style="flex:2; min-width:200px; padding:10px; border-radius:8px; border:1px solid #ccc;">
+      
+      <div style="display:flex; align-items:center; gap:5px; flex:1; min-width:140px;">
+        <label style="font-size:12px; font-weight:bold; color:#555;">Start:</label>
+        <input id="duesReportStart" type="date" style="width:100%; padding:8px;">
+      </div>
+      <div style="display:flex; align-items:center; gap:5px; flex:1; min-width:140px;">
+        <label style="font-size:12px; font-weight:bold; color:#555;">End:</label>
+        <input id="duesReportEnd" type="date" style="width:100%; padding:8px;">
+      </div>
+
       <button onclick="exportOutstandingDuesCSV()" style="padding:10px 18px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel</button>
       <button onclick="printOutstandingDuesPDF()" style="padding:10px 18px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print Report</button>
     </div>
@@ -868,10 +878,7 @@
         extraInvoicesCache = data;
       }
     } catch(e) {
-      try {
-        let localData = localStorage.getItem("PUJA_EXTRA_INVOICES_LIST");
-        if(localData) extraInvoicesCache = JSON.parse(localData);
-      } catch(ex) {}
+      extraInvoicesCache = [];
     }
     renderOutstandingDuesTable(extraInvoicesCache);
   }
@@ -927,14 +934,29 @@
   }
 
   function exportOutstandingDuesCSV() {
-    let duesList = extraInvoicesCache.filter(inv => {
+    let startDate = document.getElementById("duesReportStart").value;
+    let endDate = document.getElementById("duesReportEnd").value;
+
+    let filtered = extraInvoicesCache.filter(inv => {
       let tot = parseFloat(inv.total || 0);
       let paid = parseFloat(inv.paid || 0);
-      return (tot - paid) > 0.01;
+      let hasDue = (tot - paid) > 0.01;
+      if(!hasDue) return false;
+
+      if(startDate && endDate && inv.date) {
+        let d = new Date(inv.date);
+        let start = new Date(startDate);
+        let end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        return (d >= start && d <= end);
+      }
+      return true;
     });
 
+    let duesList = filtered;
+
     if(duesList.length === 0) {
-      alert("कुनै बाँकी बक्यौता रेकर्ड भेटिएन!");
+      alert("चयनित मिति वा फिल्टरभित्र कुनै बाँकी बक्यौता रेकर्ड भेटिएन!");
       return;
     }
 
@@ -956,11 +978,26 @@
   }
 
   function printOutstandingDuesPDF() {
-    let duesList = extraInvoicesCache.filter(inv => {
+    let startDate = document.getElementById("duesReportStart").value;
+    let endDate = document.getElementById("duesReportEnd").value;
+
+    let filtered = extraInvoicesCache.filter(inv => {
       let tot = parseFloat(inv.total || 0);
       let paid = parseFloat(inv.paid || 0);
-      return (tot - paid) > 0.01;
+      let hasDue = (tot - paid) > 0.01;
+      if(!hasDue) return false;
+
+      if(startDate && endDate && inv.date) {
+        let d = new Date(inv.date);
+        let start = new Date(startDate);
+        let end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        return (d >= start && d <= end);
+      }
+      return true;
     });
+
+    let duesList = filtered;
 
     let printWindow = window.open('', '_blank', 'height=700,width=900');
     if (!printWindow) { alert("Popup blocked!"); return; }
@@ -1810,13 +1847,13 @@
       items: itemsList
     };
     
-    extraInvoicesCache.unshift(invRecord);
     try {
-      localStorage.setItem("PUJA_EXTRA_INVOICES_LIST", JSON.stringify(extraInvoicesCache));
-      await supabaseClient.from('invoices').insert([invRecord]);
+      let { error } = await supabaseClient.from('invoices').insert([invRecord]);
+      if(error) {
+        console.log("Supabase insert error: " + error.message);
+      }
     } catch(e) {}
-    updateFinancialSummary();
-    renderOutstandingDuesTable(extraInvoicesCache);
+    loadExtraInvoicesHistory();
   }
 
   function printExtraInvoice() {
@@ -2757,7 +2794,6 @@
       if (salarySectionContainer) salarySectionContainer.style.display = "block";
     }
 
-    // Delivery स्टाफको प्यानलमा Outstanding Dues सेक्सन लुकाउने
     if (duesMainSec) {
       if (isDeliveryStaff) {
         duesMainSec.style.display = "none";
