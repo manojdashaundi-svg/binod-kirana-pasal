@@ -2865,6 +2865,34 @@
       badgeEl.innerText = loggedInRole.toUpperCase();
     }
 
+    // Role-based UI restriction: Marketing र Delivery का लागि Active Orders र Chat मात्र देखाउने
+    let roleLower = String(loggedInRole).toLowerCase();
+    if (roleLower === "marketing" || roleLower === "delivery") {
+      let salesBox = document.getElementById("salesDashboardBox");
+      if(salesBox) salesBox.style.display = "none";
+
+      let charts = document.querySelectorAll(".chart-container");
+      charts.forEach(c => c.style.display = "none");
+
+      let reports = document.querySelectorAll(".report-section");
+      reports.forEach(r => r.style.display = "none");
+
+      let invoiceSec = document.querySelector(".invoice-section");
+      if(invoiceSec) invoiceSec.style.display = "none";
+
+      let menuSec = document.getElementById("menuManagementBox");
+      if(menuSec) menuSec.style.display = "none";
+
+      let invSec = document.querySelector(".inventory-section");
+      if(invSec) invSec.style.display = "none";
+
+      let staffSec = document.getElementById("staffAccessManagementSection");
+      if(staffSec) staffSec.style.display = "none";
+
+      let salarySec = document.getElementById("salaryAndExpenseMainSection");
+      if(salarySec) salarySec.style.display = "none";
+    }
+
     loadDeliveryZones();
     loadMenuList();
     loadOrders();
