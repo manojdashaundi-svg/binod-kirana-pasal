@@ -2546,7 +2546,6 @@
     let isAdminUser = (String(loggedInRole).toLowerCase() === "admin");
     let isStaffLevel = !isAdminUser && !isManager;
 
-    // यदि साधारण स्टाफ (Staff, Marketing, Delivery) हो भने Staff & Access Management सेक्सन पूर्ण रूपमा लुकाउने
     if (isStaffLevel) {
       if (staffAccessSec) staffAccessSec.style.display = "none";
       loadSalarySheet();
@@ -2784,7 +2783,7 @@
 
   async function sendAdminChat() {
     if(!currentSelectedChatSession) { alert("Please select a chat first!"); return; }
-    let inputEl = document.getElementById("adminChatInput");
+    let inputEl = document.getElementById("adminTestInput") || document.getElementById("adminChatInput");
     let msg = inputEl.value.trim();
     if(!msg) return;
     inputEl.value = "";
@@ -2813,6 +2812,14 @@
   function showAdminPanel() {
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("adminContent").style.display = "block";
+    
+    // सुनिश्चित गर्ने कि ब्याजमा सही रोल देखियोस् (उदा. MANAGER वा STAFF)
+    let loggedInRole = sessionStorage.getItem("USER_ROLE") || "Admin";
+    let badgeEl = document.getElementById("userRoleBadge");
+    if (badgeEl) {
+      badgeEl.innerText = loggedInRole.toUpperCase();
+    }
+
     loadDeliveryZones();
     loadMenuList();
     loadOrders();
