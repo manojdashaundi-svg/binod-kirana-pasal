@@ -2681,23 +2681,33 @@
       return;
     }
 
-    let { error } = await supabaseClient.from('admin').insert([{
+    let { error: adminError } = await supabaseClient.from('admin').insert([{
       name: name,
       email: email,
       password: password,
       role: role
     }]);
 
-    if(error) {
-      alert("Error adding staff: " + error.message);
+    if(adminError) {
+      alert("Error adding staff: " + adminError.message);
       return;
     }
 
-    alert("✅ नयाँ स्टाफ एडमिन टेबलमा सफलतापूर्वक थपियो!");
+    let { error: staffError } = await supabaseClient.from('staff').insert([{
+      name: name,
+      role: role
+    }]);
+
+    if(staffError) {
+      console.log("Staff table insert warning: " + staffError.message);
+    }
+
+    alert("✅ नयाँ स्टाफ एडमिन र स्टाफ दुवै टेबलमा सफलतापूर्वक थपियो!");
     document.getElementById("staffNameInput").value = "";
     document.getElementById("staffEmailInput").value = "";
     document.getElementById("staffPassInput").value = "";
     loadStaffList();
+    loadSalarySheet();
   }
 
   async function deleteStaff(id) {
