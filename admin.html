@@ -545,7 +545,7 @@
   <div id="outstandingDuesMainSection" class="staff-section" style="background:#fff; padding:25px; border-radius:12px; margin-top:30px; border:1px solid #e0e0e0;">
     <h3 style="color:#C62828; margin-bottom:15px;">📊 Outstanding Dues & Customer Balances (तिर्न बाँकी बक्यौता विवरण)</h3>
     <div style="background:#f9fbfd; padding:18px; border-radius:10px; margin-bottom:15px; border:1px solid #e0e0e0; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-      <input type="text" id="duesSearchInput" onkeyup="filterOutstandingDues()" placeholder="🔍 Search Customer Name / Invoice No..." style="flex:2; min-width:200px; padding:10px; border-radius:8px; border:1px solid #ccc;">
+      <input type="text" id="duesSearchInput" placeholder="🔍 Search Customer Name / Invoice No..." style="flex:2; min-width:200px; padding:10px; border-radius:8px; border:1px solid #ccc; display:none;">
       
       <div style="display:flex; align-items:center; gap:5px; flex:1; min-width:140px;">
         <label style="font-size:12px; font-weight:bold; color:#555;">Start:</label>
@@ -558,27 +558,6 @@
 
       <button onclick="exportOutstandingDuesCSV()" style="padding:10px 18px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel</button>
       <button onclick="printOutstandingDuesPDF()" style="padding:10px 18px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print Report</button>
-    </div>
-
-    <div style="overflow-x: auto; max-height: 320px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
-      <table>
-        <thead>
-          <tr style="position:sticky; top:0; z-index:10; background:#C62828; color:#fff;">
-            <th>Date</th>
-            <th>Invoice No.</th>
-            <th>Customer Name</th>
-            <th>Total Amount</th>
-            <th>Paid Amount</th>
-            <th>Balance Due (बाँकी)</th>
-          </tr>
-        </thead>
-        <tbody id="outstandingDuesTableBody">
-          <tr><td colspan="6" style="padding:15px;">Loading Outstanding Dues...</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div style="text-align:right; margin-top:12px; font-size:16px; font-weight:bold; color:#C62828;">
-      जम्मा कुल बाँकी बक्यौता (Total Balance Due): <span id="totalBalanceDueDisplay">RM 0.00</span>
     </div>
   </div>
 
@@ -880,60 +859,10 @@
     } catch(e) {
       extraInvoicesCache = [];
     }
-    renderOutstandingDuesTable(extraInvoicesCache);
   }
 
-  function renderOutstandingDuesTable(invoicesList) {
-    let tbody = document.getElementById("outstandingDuesTableBody");
-    if(!tbody) return;
-
-    let duesList = invoicesList.filter(inv => {
-      let tot = parseFloat(inv.total || 0);
-      let paid = parseFloat(inv.paid || 0);
-      return (tot - paid) > 0.01;
-    });
-
-    let html = "";
-    let totalDuesSum = 0;
-
-    if(duesList.length === 0) {
-      html = `<tr><td colspan="6" style="padding:15px; color:#666;">No outstanding dues found. All invoices are fully paid.</td></tr>`;
-    } else {
-      duesList.forEach(inv => {
-        let tot = parseFloat(inv.total || 0);
-        let paid = parseFloat(inv.paid || 0);
-        let due = tot - paid;
-        totalDuesSum += due;
-
-        html += `<tr>
-          <td>${inv.date || '-'}</td>
-          <td><b>${inv.invoice_no || '-'}</b></td>
-          <td style="text-align:left;"><b>${inv.customer_name || '-'}</b></td>
-          <td>RM ${tot.toFixed(2)}</td>
-          <td>RM ${paid.toFixed(2)}</td>
-          <td style="color:#C62828; font-weight:bold;">RM ${due.toFixed(2)}</td>
-        </tr>`;
-      });
-    }
-
-    tbody.innerHTML = html;
-    document.getElementById("totalBalanceDueDisplay").innerText = "RM " + totalDuesSum.toFixed(2);
-  }
-
-  function filterOutstandingDues() {
-    let query = document.getElementById("duesSearchInput").value.trim().toLowerCase();
-    if(!query) {
-      renderOutstandingDuesTable(extraInvoicesCache);
-      return;
-    }
-    let filtered = extraInvoicesCache.filter(inv => 
-      String(inv.customer_name || '').toLowerCase().includes(query) ||
-      String(inv.invoice_no || '').toLowerCase().includes(query)
-    );
-    renderOutstandingDuesTable(filtered);
-  }
-
-  function exportOutstandingDuesCSV() {
+  async function exportOutstandingDuesCSV() {
+    await loadExtraInvoicesHistory();
     let startDate = document.getElementById("duesReportStart").value;
     let endDate = document.getElementById("duesReportEnd").value;
 
@@ -977,7 +906,8 @@
     document.body.removeChild(link);
   }
 
-  function printOutstandingDuesPDF() {
+  async function printOutstandingDuesPDF() {
+    await loadExtraInvoicesHistory();
     let startDate = document.getElementById("duesReportStart").value;
     let endDate = document.getElementById("duesReportEnd").value;
 
