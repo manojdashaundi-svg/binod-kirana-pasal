@@ -313,11 +313,12 @@
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:20px;">
       <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">💰 Expense & Profit Tracker</h3>
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <input id="expenseDate" type="date" style="flex:1; min-width:150px; padding:10px;">
-        <input id="expenseCategory" type="text" placeholder="Category (e.g. Rent, Salary)" style="flex:1.5; min-width:180px; padding:10px;">
-        <input id="expenseAmount" type="number" placeholder="Amount (Rs.)" style="flex:1; min-width:130px; padding:10px;">
-        <input id="expenseDescription" type="text" placeholder="Description" style="flex:2; min-width:200px; padding:10px;">
-        <button onclick="addExpenseRecord()" style="padding:10px 25px; background:#E91E63; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(233,30,99,0.3);">+ Add Expense</button>
+        <input id="expenseDate" type="date" style="flex:1; min-width:140px; padding:10px;">
+        <input id="expenseBillNo" type="text" placeholder="Bill / Receipt No." style="flex:1.2; min-width:150px; padding:10px;">
+        <input id="expenseCategory" type="text" placeholder="Category (e.g. Rent, Salary)" style="flex:1.5; min-width:160px; padding:10px;">
+        <input id="expenseAmount" type="number" placeholder="Amount (Rs.)" style="flex:1; min-width:120px; padding:10px;">
+        <input id="expenseDescription" type="text" placeholder="Description" style="flex:2; min-width:180px; padding:10px;">
+        <button onclick="addExpenseRecord()" style="padding:10px 22px; background:#E91E63; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(233,30,99,0.3);">+ Add Expense</button>
       </div>
     </div>
 
@@ -1210,6 +1211,7 @@
 
   async function addExpenseRecord() {
     let date = document.getElementById("expenseDate").value;
+    let billNo = document.getElementById("expenseBillNo").value.trim();
     let category = document.getElementById("expenseCategory").value.trim();
     let amount = parseFloat(document.getElementById("expenseAmount").value);
     let description = document.getElementById("expenseDescription").value.trim();
@@ -1221,18 +1223,29 @@
 
     let { error } = await supabaseClient.from('expenses').insert([{
       date: date,
+      bill_no: billNo || '-',
       category: category,
       amount: amount,
       description: description
     }]);
 
     if(error) {
-      alert("Error adding expense: " + error.message);
-      return;
+      // यदि database मा bill_no column छैन भने fallback
+      let { error: err2 } = await supabaseClient.from('expenses').insert([{
+        date: date,
+        category: category,
+        amount: amount,
+        description: description
+      }]);
+      if(err2) {
+        alert("Error adding expense: " + err2.message);
+        return;
+      }
     }
 
     alert("✅ खर्च सफलतापूर्वक थपियो!");
     document.getElementById("expenseDate").value = "";
+    document.getElementById("expenseBillNo").value = "";
     document.getElementById("expenseCategory").value = "";
     document.getElementById("expenseAmount").value = "";
     document.getElementById("expenseDescription").value = "";
@@ -1287,10 +1300,11 @@
       return;
     }
 
-    let csvContent = "data:text/csv;charset=utf-8,Date,Category,Amount (Rs.),Description\n";
+    let csvContent = "data:text/csv;charset=utf-8,Date,Bill/Receipt No.,Category,Amount (Rs.),Description\n";
     filtered.forEach(e => {
       let rowData = [
         `"${e.date || ''}"`,
+        `"${e.bill_no || '-'}"`,
         `"${e.category || ''}"`,
         `"${e.amount || '0'}"`,
         `"${e.description || ''}"`
@@ -1354,12 +1368,12 @@
     printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
     printWindow.document.write('<h3>Expense Report (' + startDate + ' to ' + endDate + ')</h3>');
     printWindow.document.write('</div>');
-    printWindow.document.write('<table><thead><tr><th>Date</th><th>Category</th><th>Amount (Rs.)</th><th>Description</th></tr></thead><tbody>');
+    printWindow.document.write('<table><thead><tr><th>Date</th><th>Bill/Receipt No.</th><th>Category</th><th>Amount (Rs.)</th><th>Description</th></tr></thead><tbody>');
     
     let totalExpSum = 0;
     filtered.forEach(e => {
       totalExpSum += parseFloat(e.amount) || 0;
-      printWindow.document.write(`<tr><td>${e.date || ''}</td><td>${e.category || ''}</td><td>Rs. ${e.amount || '0'}</td><td>${e.description || ''}</td></tr>`);
+      printWindow.document.write(`<tr><td>${e.date || ''}</td><td><b>${e.bill_no || '-'}</b></td><td>${e.category || ''}</td><td>Rs. ${e.amount || '0'}</td><td>${e.description || ''}</td></tr>`);
     });
 
     printWindow.document.write('</tbody></table>');
