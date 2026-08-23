@@ -283,7 +283,7 @@
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; align-items:center;">
         <select id="staffRoleSelect" style="flex:1; min-width:160px; padding:10px;">
-          <!-- 動態 लोड हुनेछ -->
+          <!-- गतिशील लोड हुनेछ -->
         </select>
         <button onclick="addNewStaff()" style="padding:10px 25px; background:#1976D2; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(25,118,210,0.3);">+ Add Staff</button>
       </div>
@@ -2544,9 +2544,10 @@
     let loggedInRole = sessionStorage.getItem("USER_ROLE") || "Admin";
     let isManager = (String(loggedInRole).toLowerCase() === "manager");
     let isAdminUser = (String(loggedInRole).toLowerCase() === "admin");
+    let isStaffLevel = !isAdminUser && !isManager;
 
-    // यदि एडमिन होइन (अर्थात Staff, Manager, वा अरू कोही हो) भने Staff & Access Management सेक्सन पूरै लुकाउने
-    if (!isAdminUser) {
+    // यदि साधारण स्टाफ (Staff, Marketing, Delivery) हो भने Staff & Access Management सेक्सन पूर्ण रूपमा लुकाउने
+    if (isStaffLevel) {
       if (staffAccessSec) staffAccessSec.style.display = "none";
       loadSalarySheet();
       return;
