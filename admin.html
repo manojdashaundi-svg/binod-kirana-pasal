@@ -541,6 +541,37 @@
 
   </div>
 
+  <!-- Outstanding Dues & Customer Balances Section -->
+  <div id="outstandingDuesMainSection" class="staff-section" style="background:#fff; padding:25px; border-radius:12px; margin-top:30px; border:1px solid #e0e0e0;">
+    <h3 style="color:#C62828; margin-bottom:15px;">📊 Outstanding Dues & Customer Balances (तिर्न बाँकी बक्यौता विवरण)</h3>
+    <div style="background:#f9fbfd; padding:18px; border-radius:10px; margin-bottom:15px; border:1px solid #e0e0e0; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <input type="text" id="duesSearchInput" onkeyup="filterOutstandingDues()" placeholder="🔍 Search Customer Name / Invoice No..." style="flex:2; padding:10px; border-radius:8px; border:1px solid #ccc;">
+      <button onclick="exportOutstandingDuesCSV()" style="padding:10px 18px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel</button>
+      <button onclick="printOutstandingDuesPDF()" style="padding:10px 18px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print Report</button>
+    </div>
+
+    <div style="overflow-x: auto; max-height: 320px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
+      <table>
+        <thead>
+          <tr style="position:sticky; top:0; z-index:10; background:#C62828; color:#fff;">
+            <th>Date</th>
+            <th>Invoice No.</th>
+            <th>Customer Name</th>
+            <th>Total Amount</th>
+            <th>Paid Amount</th>
+            <th>Balance Due (बाँकी)</th>
+          </tr>
+        </thead>
+        <tbody id="outstandingDuesTableBody">
+          <tr><td colspan="6" style="padding:15px;">Loading Outstanding Dues...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="text-align:right; margin-top:12px; font-size:16px; font-weight:bold; color:#C62828;">
+      जम्मा कुल बाँकी बक्यौता (Total Balance Due): <span id="totalBalanceDueDisplay">RM 0.00</span>
+    </div>
+  </div>
+
   <div class="chat-section">
     <h3 style="color: #1976D2; margin-bottom: 15px; font-size: 18px;">💬 Live Support Chat Center</h3>
     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
@@ -842,6 +873,142 @@
         if(localData) extraInvoicesCache = JSON.parse(localData);
       } catch(ex) {}
     }
+    renderOutstandingDuesTable(extraInvoicesCache);
+  }
+
+  function renderOutstandingDuesTable(invoicesList) {
+    let tbody = document.getElementById("outstandingDuesTableBody");
+    if(!tbody) return;
+
+    let duesList = invoicesList.filter(inv => {
+      let tot = parseFloat(inv.total || 0);
+      let paid = parseFloat(inv.paid || 0);
+      return (tot - paid) > 0.01;
+    });
+
+    let html = "";
+    let totalDuesSum = 0;
+
+    if(duesList.length === 0) {
+      html = `<tr><td colspan="6" style="padding:15px; color:#666;">No outstanding dues found. All invoices are fully paid.</td></tr>`;
+    } else {
+      duesList.forEach(inv => {
+        let tot = parseFloat(inv.total || 0);
+        let paid = parseFloat(inv.paid || 0);
+        let due = tot - paid;
+        totalDuesSum += due;
+
+        html += `<tr>
+          <td>${inv.date || '-'}</td>
+          <td><b>${inv.invoice_no || '-'}</b></td>
+          <td style="text-align:left;"><b>${inv.customer_name || '-'}</b></td>
+          <td>RM ${tot.toFixed(2)}</td>
+          <td>RM ${paid.toFixed(2)}</td>
+          <td style="color:#C62828; font-weight:bold;">RM ${due.toFixed(2)}</td>
+        </tr>`;
+      });
+    }
+
+    tbody.innerHTML = html;
+    document.getElementById("totalBalanceDueDisplay").innerText = "RM " + totalDuesSum.toFixed(2);
+  }
+
+  function filterOutstandingDues() {
+    let query = document.getElementById("duesSearchInput").value.trim().toLowerCase();
+    if(!query) {
+      renderOutstandingDuesTable(extraInvoicesCache);
+      return;
+    }
+    let filtered = extraInvoicesCache.filter(inv => 
+      String(inv.customer_name || '').toLowerCase().includes(query) ||
+      String(inv.invoice_no || '').toLowerCase().includes(query)
+    );
+    renderOutstandingDuesTable(filtered);
+  }
+
+  function exportOutstandingDuesCSV() {
+    let duesList = extraInvoicesCache.filter(inv => {
+      let tot = parseFloat(inv.total || 0);
+      let paid = parseFloat(inv.paid || 0);
+      return (tot - paid) > 0.01;
+    });
+
+    if(duesList.length === 0) {
+      alert("कुनै बाँकी बक्यौता रेकर्ड भेटिएन!");
+      return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,Date,Invoice No,Customer Name,Total Amount,Paid Amount,Balance Due (RM)\n";
+    duesList.forEach(inv => {
+      let tot = parseFloat(inv.total || 0);
+      let paid = parseFloat(inv.paid || 0);
+      let due = tot - paid;
+      csvContent += `"${inv.date || ''}","${inv.invoice_no || ''}","${inv.customer_name || ''}","${tot.toFixed(2)}","${paid.toFixed(2)}","${due.toFixed(2)}"\n`;
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "outstanding_dues_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function printOutstandingDuesPDF() {
+    let duesList = extraInvoicesCache.filter(inv => {
+      let tot = parseFloat(inv.total || 0);
+      let paid = parseFloat(inv.paid || 0);
+      return (tot - paid) > 0.01;
+    });
+
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
+    printWindow.document.write('<html><head><title>Outstanding Dues Report</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
+    printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;margin:0;}');
+    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #C62828;padding-bottom:5px;margin-bottom:10px;}');
+    printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
+    printWindow.document.write('h2{margin:2px 0;color:#1976D2;font-size:16px;font-weight:700;}');
+    printWindow.document.write('h3{margin:2px 0;color:#333;font-size:13px;font-weight:600;}');
+    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
+    printWindow.document.write('th,td{border:2px solid #333;padding:7px 8px;text-align:center;font-size:12px;color:#000;font-weight:bold;}');
+    printWindow.document.write('th{background:#C62828;color:white;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('tr:nth-child(even){background-color:#fcf2f5;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('.total-box{text-align:right;margin-top:10px;font-size:14px;font-weight:bold;color:#C62828;}');
+    printWindow.document.write('.print-btn-bar{position:fixed;top:10px;right:10px;background:#C62828;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;z-index:9999;box-shadow:0 2px 5px rgba(0,0,0,0.3);display:block;}');
+    printWindow.document.write('@media print { .print-btn-bar { display: none !important; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<button class="print-btn-bar" onclick="window.print()">🖨️ Print Now / Save PDF</button>');
+    printWindow.document.write('<div class="header">');
+    printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
+    printWindow.document.write('<h2 style="color:#1976D2; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
+    printWindow.document.write('<h3>Outstanding Dues Report (तिर्न बाँकी बक्यौता विवरण)</h3>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('<table><thead><tr><th>Date</th><th>Invoice No.</th><th>Customer Name</th><th>Total Amount</th><th>Paid Amount</th><th>Balance Due</th></tr></thead><tbody>');
+    
+    let totalDuesSum = 0;
+    duesList.forEach(inv => {
+      let tot = parseFloat(inv.total || 0);
+      let paid = parseFloat(inv.paid || 0);
+      let due = tot - paid;
+      totalDuesSum += due;
+      printWindow.document.write(`<tr><td>${inv.date || ''}</td><td><b>${inv.invoice_no || ''}</b></td><td>${inv.customer_name || ''}</td><td>RM ${tot.toFixed(2)}</td><td>RM ${paid.toFixed(2)}</td><td>RM ${due.toFixed(2)}</td></tr>`);
+    });
+
+    if(duesList.length === 0) {
+      printWindow.document.write(`<tr><td colspan="6" style="padding:15px; color:#666;">No outstanding dues found.</td></tr>`);
+    }
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<div class="total-box">Total Balance Due: RM ' + totalDuesSum.toFixed(2) + '</div>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
   }
 
   function renderActiveOrdersTable(ordersToRender) {
@@ -1649,6 +1816,7 @@
       await supabaseClient.from('invoices').insert([invRecord]);
     } catch(e) {}
     updateFinancialSummary();
+    renderOutstandingDuesTable(extraInvoicesCache);
   }
 
   function printExtraInvoice() {
@@ -2571,6 +2739,7 @@
     let tbody = document.getElementById("staffTableList");
     let staffAccessSec = document.getElementById("staffAccessManagementSection");
     let salarySectionContainer = document.getElementById("salarySectionContainer");
+    let duesMainSec = document.getElementById("outstandingDuesMainSection");
     
     let loggedInRole = sessionStorage.getItem("USER_ROLE") || "Admin";
     let roleLower = String(loggedInRole).toLowerCase();
@@ -2578,6 +2747,7 @@
     let isManager = (roleLower === "manager");
     let isAdminUser = (roleLower === "admin");
     let isRestrictedStaff = (roleLower === "staff" || roleLower === "marketing" || roleLower === "delivery");
+    let isDeliveryStaff = (roleLower === "delivery");
 
     if (isRestrictedStaff) {
       if (staffAccessSec) staffAccessSec.style.display = "none";
@@ -2585,6 +2755,15 @@
     } else {
       if (staffAccessSec) staffAccessSec.style.display = "block";
       if (salarySectionContainer) salarySectionContainer.style.display = "block";
+    }
+
+    // Delivery स्टाफको प्यानलमा Outstanding Dues सेक्सन लुकाउने
+    if (duesMainSec) {
+      if (isDeliveryStaff) {
+        duesMainSec.style.display = "none";
+      } else {
+        duesMainSec.style.display = "block";
+      }
     }
 
     if(!tbody) return;
@@ -2865,7 +3044,6 @@
       badgeEl.innerText = loggedInRole.toUpperCase();
     }
 
-    // Role-based UI restriction: Marketing र Delivery का लागि Active Orders र Chat मात्र देखाउने
     let roleLower = String(loggedInRole).toLowerCase();
     if (roleLower === "marketing" || roleLower === "delivery") {
       let salesBox = document.getElementById("salesDashboardBox");
