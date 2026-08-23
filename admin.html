@@ -608,7 +608,7 @@
   var lastAdminChatCount = {};
   var activeProofOrderNo = null;
 
-  // अत्यधिक चर्को, स्पष्ट र कडा 'टुक टुक' (Click/Tap Sound) फंक्सन
+  // माउस क्लिकका लागि चर्को 'टुक टुक' साउन्ड
   function playClickSound() {
     try {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -616,8 +616,6 @@
       if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
       
       let now = window.audioCtx.currentTime;
-
-      // Dual Oscillator सेटअप (अझ गहिरो र चर्को पञ्च आवाजका लागि)
       let osc1 = window.audioCtx.createOscillator();
       let osc2 = window.audioCtx.createOscillator();
       let gainNode = window.audioCtx.createGain();
@@ -625,14 +623,12 @@
       osc1.type = 'square';
       osc2.type = 'sawtooth';
 
-      // फ्रिक्वेन्सी स्वीप (शुरुवातमा उच्च, द्रुत गतिमा तल झर्ने - 'टक' साउन्ड)
       osc1.frequency.setValueAtTime(2200, now);
       osc1.frequency.exponentialRampToValueAtTime(120, now + 0.06);
 
       osc2.frequency.setValueAtTime(1100, now);
       osc2.frequency.exponentialRampToValueAtTime(60, now + 0.06);
 
-      // भोल्युम अधिकतम बूस्ट गरिएको (Super Loud)
       gainNode.gain.setValueAtTime(2.5, now);
       gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
 
@@ -642,13 +638,11 @@
 
       osc1.start(now);
       osc2.start(now);
-      
       osc1.stop(now + 0.06);
       osc2.stop(now + 0.06);
     } catch(e) {}
   }
 
-  // ग्लोबल क्लिक इभेन्ट लिसनर
   document.addEventListener("click", function(event) {
     let adminContent = document.getElementById("adminContent");
     if (adminContent && adminContent.style.display !== "none") {
@@ -656,27 +650,52 @@
     }
   });
 
+  // नयाँ अर्डर आउँदा वा टेस्ट गर्दा बज्ने अत्यधिक चर्को 'टिन-टिन, टिन-टिन, टिन-टिन' (ग्यापसहितको) साउन्ड
   function playTringTringBell() {
     try {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
       if (!window.audioCtx) window.audioCtx = new AudioContext();
       if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
-      let osc = window.audioCtx.createOscillator();
-      let gain = window.audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(1200, window.audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.8, window.audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.3);
-      osc.connect(gain);
-      gain.connect(window.audioCtx.destination);
-      osc.start();
-      osc.stop(window.audioCtx.currentTime + 0.3);
+
+      let now = window.audioCtx.currentTime;
+      
+      // तीनपटक दोहोर्याएर 'टिन-टिन, टिन-टिन, टिन-टिन' बजाउने (प्रत्येक बीचमा सफा ग्यापसहित)
+      for (let i = 0; i < 3; i++) {
+        let startTime = now + (i * 0.28); // 0.28 सेकेन्डको ग्याप/अन्तर
+
+        let osc1 = window.audioCtx.createOscillator();
+        let osc2 = window.audioCtx.createOscillator();
+        let gainNode = window.audioCtx.createGain();
+
+        osc1.type = 'square';
+        osc2.type = 'triangle';
+
+        // उच्च फ्रिक्वेन्सी (टिन साउन्ड)
+        osc1.frequency.setValueAtTime(2800, startTime);
+        osc1.frequency.exponentialRampToValueAtTime(1400, startTime + 0.15);
+
+        osc2.frequency.setValueAtTime(1400, startTime);
+        osc2.frequency.exponentialRampToValueAtTime(700, startTime + 0.15);
+
+        // अधिकतम भोल्युम बुस्टर (Super Loud)
+        gainNode.gain.setValueAtTime(3.0, startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.15);
+
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+        gainNode.connect(window.audioCtx.destination);
+
+        osc1.start(startTime);
+        osc2.start(startTime);
+        osc1.stop(startTime + 0.15);
+        osc2.stop(startTime + 0.15);
+      }
     } catch(e) {}
   };
 
   function testBellSound() {
     playTringTringBell();
-    alert("🔔 डेलिभरी घण्टी सुचारु भयो!");
+    alert("🔔 अर्डर घण्टी (टिन-टिन, टिन-टिन) सुचारु भयो!");
   };
 
   async function handleLogin() {
@@ -788,6 +807,7 @@
     }
   };
 
+  var lastOrderCount = 0;
   async function loadOrders() {
     try {
       let { data, error } = await supabaseClient.from('orders').select('*');
@@ -796,7 +816,15 @@
         return;
       }
       if (data) {
-        activeOrdersCache = data.sort((a, b) => (b.id || 0) - (a.id || 0));
+        let sortedOrders = data.sort((a, b) => (b.id || 0) - (a.id || 0));
+        
+        // नयाँ अर्डर थपिएको पत्ता लागेमा चर्को 'टिन-टिन' साउन्ड बजाउने
+        if (lastOrderCount > 0 && sortedOrders.length > lastOrderCount) {
+          playTringTringBell();
+        }
+        lastOrderCount = sortedOrders.length;
+
+        activeOrdersCache = sortedOrders;
         calculateDashboardStats(activeOrdersCache);
         renderActiveOrdersTable(activeOrdersCache);
         drawMonthlySalesChart(activeOrdersCache);
