@@ -468,7 +468,7 @@
     </div>
 
     <div style="background:#fff; padding:20px; border-radius:10px; border:2px solid #C62828; margin-top:25px; box-shadow:0 4px 12px rgba(198,40,40,0.05);">
-      <h3 style="color:#C62828; margin-top:0; margin-bottom:15px;">🧾 Invoice Generator</h3>
+      <h3 style="color:#C62828; margin-top:0; margin-bottom:15px;">🧾 Invoice</h3>
 
       <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:15px;">
         <div style="flex:2; min-width:250px;">
@@ -1868,10 +1868,9 @@
     document.getElementById("voucherNetDisplay").innerText = "NET Salary: RM " + net.toFixed(2);
   }
 
-  // ✨ अपडेट गरिएको: Company Copy / Staff Copy र सिरियल VOUCHER NO. (V-1001, V-1002...) ✨
+  // ✨ फिक्स गरिएको प्रिन्ट फंक्सन (Company Copy / Staff Copy सहित)
   window.printSalaryVoucherSlip = function(vNo, name, desig, day, month, year, earnList, dedList, payMode, netTotal) {
     
-    // Function to generate a single voucher block with custom copy label
     function getVoucherCard(copyLabel) {
       let earnRowsHtml = "";
       earnList.forEach((e, idx) => {
@@ -2003,12 +2002,12 @@
     let net = totalEarnings - totalDeductions;
     let formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     
-    // सिरियल भौचर नम्बर गणना (V-1001, V-1002...)
+    // ✨ फिक्स गरिएको सिरियल भौचर नम्बर (Database को कुल संख्या + 1 बाट गणना हुने)
     let nextVoucherNumber = "V-1001";
     try {
-      let { count, error } = await supabaseClient.from('salary_vouchers').select('*', { count: 'exact', head: true });
-      if (!error && count !== null) {
-        nextVoucherNumber = "V-" + (1001 + count);
+      let { data: allVouchers, error } = await supabaseClient.from('salary_vouchers').select('id');
+      if (!error && allVouchers) {
+        nextVoucherNumber = "V-" + (1001 + allVouchers.length);
       }
     } catch(e) {}
 
@@ -2023,7 +2022,6 @@
       loadSalaryVouchersHistory();
     } catch(e) {}
 
-    // Call the dual A4 print function with serial voucher number
     window.printSalaryVoucherSlip(nextVoucherNumber, st.name, designation, day, month, year, earnList, dedList, pMode, net);
   }
 
