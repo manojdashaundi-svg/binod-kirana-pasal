@@ -608,30 +608,43 @@
   var lastAdminChatCount = {};
   var activeProofOrderNo = null;
 
-  // अझै चर्को र वास्तविक 'टुक टुक' (Click/Tap Sound) फंक्सन
+  // अत्यधिक चर्को, स्पष्ट र कडा 'टुक टुक' (Click/Tap Sound) फंक्सन
   function playClickSound() {
     try {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
       if (!window.audioCtx) window.audioCtx = new AudioContext();
       if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
       
-      let osc = window.audioCtx.createOscillator();
-      let gain = window.audioCtx.createGain();
+      let now = window.audioCtx.currentTime;
+
+      // Dual Oscillator सेटअप (अझ गहिरो र चर्को पञ्च आवाजका लागि)
+      let osc1 = window.audioCtx.createOscillator();
+      let osc2 = window.audioCtx.createOscillator();
+      let gainNode = window.audioCtx.createGain();
+
+      osc1.type = 'square';
+      osc2.type = 'sawtooth';
+
+      // फ्रिक्वेन्सी स्वीप (शुरुवातमा उच्च, द्रुत गतिमा तल झर्ने - 'टक' साउन्ड)
+      osc1.frequency.setValueAtTime(2200, now);
+      osc1.frequency.exponentialRampToValueAtTime(120, now + 0.06);
+
+      osc2.frequency.setValueAtTime(1100, now);
+      osc2.frequency.exponentialRampToValueAtTime(60, now + 0.06);
+
+      // भोल्युम अधिकतम बूस्ट गरिएको (Super Loud)
+      gainNode.gain.setValueAtTime(2.5, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+      osc1.connect(gainNode);
+      osc2.connect(gainNode);
+      gainNode.connect(window.audioCtx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
       
-      // 'sawtooth' वेभले अझ चर्को र स्पष्ट टुक टुक आवाज दिन्छ
-      osc.type = 'sawtooth'; 
-      osc.frequency.setValueAtTime(1400, window.audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(150, window.audioCtx.currentTime + 0.05);
-      
-      // भोल्युम अधिकतम (1.0) बनाइएको
-      gain.gain.setValueAtTime(1.0, window.audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.05);
-      
-      osc.connect(gain);
-      gain.connect(window.audioCtx.destination);
-      
-      osc.start();
-      osc.stop(window.audioCtx.currentTime + 0.05);
+      osc1.stop(now + 0.06);
+      osc2.stop(now + 0.06);
     } catch(e) {}
   }
 
