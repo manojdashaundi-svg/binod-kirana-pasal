@@ -887,7 +887,7 @@
         if (isMarketingOrDelivery) {
           statusSelect = `<select id="status_${o.order_no}" disabled style="background:#eee; color:#555;">
             <option value="${status}" selected>${status}</option>
-          </select>
+          </select> 
           <button class="updateBtn" disabled style="opacity:0.5; cursor:not-allowed;">Go</button>`;
         } else {
           statusSelect = `<select id="status_${o.order_no}">
@@ -904,13 +904,13 @@
         let actionButtons = "";
         if(status === "Pending") {
           if (isMarketingOrDelivery) {
-            actionButtons = `<button class="actionBtn rcvBtn" disabled style="opacity:0.6; cursor:not-allowed;" title="Disabled for Marketing/Delivery">🎫 Received</button><button class="actionBtn cancelBtn" disabled style="margin-top:5px; opacity:0.5; cursor:not-allowed;">❌ Cancel Order</button>`;
+            actionButtons = `<button class="actionBtn rcvBtn" disabled style="opacity:0.5; cursor:not-allowed;">🎫 Received</button><button class="actionBtn cancelBtn" disabled style="margin-top:5px; opacity:0.5; cursor:not-allowed;">❌ Cancel Order</button>`;
           } else {
             actionButtons = `<button class="actionBtn rcvBtn" onclick="markReceived('${o.order_no}')">🎫 Received</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
           }
         } else if(status === "Preparing") {
           if (isMarketingOrDelivery) {
-            actionButtons = `<button class="actionBtn billBtn" disabled style="opacity:0.6; cursor:not-allowed;" title="Disabled for Marketing/Delivery">🍳 Ready & Bill</button><button class="actionBtn cancelBtn" disabled style="margin-top:5px; opacity:0.5; cursor:not-allowed;">❌ Cancel Order</button>`;
+            actionButtons = `<button class="actionBtn billBtn" disabled style="opacity:0.5; cursor:not-allowed;">🍳 Ready & Bill</button><button class="actionBtn cancelBtn" disabled style="margin-top:5px; opacity:0.5; cursor:not-allowed;">❌ Cancel Order</button>`;
           } else {
             actionButtons = `<button class="actionBtn billBtn" onclick="openBill('${o.order_no}')">🍳 Ready & Bill</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
           }
