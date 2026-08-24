@@ -16,76 +16,716 @@
     body{ font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f4f7f6; margin:0; padding:20px; color: #333; }
     h2{ color:#1976D2; }
     .logout{ position:fixed; top:15px; right:15px; background:#f44336; color:#fff; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight: bold; z-index: 1000; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
+    .bell-btn { position:fixed; top:12px; right:125px; background:#fff; border:2px solid #1976D2; font-size:22px; padding:6px 10px; border-radius:50%; cursor:pointer; z-index: 1000; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    .automation-badge { display: inline-block; background: #e8f5e9; border: 1px solid #4CAF50; color: #2e7d32; font-size: 12px; font-weight: bold; padding: 4px 12px; border-radius: 20px; margin-left: 12px; vertical-align: middle; }
+    
     table { width:100%; border-collapse:collapse; background:#fff; margin-top:0; box-shadow:0 2px 5px rgba(0,0,0,0.05); border-radius: 6px; overflow: hidden; }
-    th{ background:linear-gradient(135deg, #1976D2, #1565C0); color:#fff; padding:12px; font-size:14px; text-align:center; font-weight: 600; }
+    th{ background:linear-gradient(135deg, #1976D2, #1565C0); color:#fff; padding:12px; font-size:14px; text-align:center; font-weight: 600; letter-spacing: 0.5px; }
     td{ padding:12px 10px; border:1px solid #bbb; text-align:center; font-size:13px; vertical-align:middle; color: #222; font-weight: 500; }
+    tr:hover { background-color: #f9fbfd; }
+
     select, input{ padding:9px 12px; border-radius:6px; border:1px solid #ccc; margin:3px; box-sizing: border-box; font-size: 14px; }
-    .staff-section { background:#fff; padding:25px; border-radius:12px; margin-top:30px; border:1px solid #e0e0e0; display:block; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+
+    .actionBtn { color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer; display:block; margin:4px auto; width:135px; font-size:13px; text-align:center; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+    .rcvBtn { background:#4CAF50; }
+    .billBtn { background:#9C27B0; }
+    .dispatchBtn { background:#00BCD4; }
+    .proofBtn { background:#3F51B5; }
+    .deliveredBtn { background:#4CAF50; cursor:default; }
+    .cancelBtn { background:#f44336; }
+    .viewReasonBtn { background:#FF9800; color:white; border:none; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; display:inline-block; margin-top:5px; font-size:12px; }
+
+    .editBtn { background:#FF9800; color:white; border:none; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; }
+    .saveBtn { background:#4CAF50; color:white; border:none; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; }
+    .removeBtn { background:#f44336; color:white; border:none; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; }
+
+    .instock-toggle-btn { background:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; margin-bottom:4px; }
+    .outstock-toggle-btn { background:#f44336; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; margin-bottom:4px; }
+    .lowstock-badge { background:#ffebee; color:#c62828; border:1px solid #ef9a9a; padding:5px 10px; border-radius:6px; font-weight:bold; font-size:12px; display:inline-block; }
+
+    .staff-section, .menu-section, .inventory-section, .salary-section, .invoice-section, .chat-section, .report-section { background:#fff; padding:25px; border-radius:12px; margin-top:30px; border:1px solid #e0e0e0; display:block; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
     .login-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#f4f7f6; display:flex; justify-content:center; align-items:center; z-index:99999; }
     .login-card { background:#fff; padding:35px; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.1); width:100%; max-width:380px; text-align:center; border: 1px solid #e0e0e0; }
     .login-card input { width:100%; padding:12px; margin:10px 0; border:1px solid #ccc; border-radius:8px; font-size:16px; }
-    .login-card button { width:100%; padding:12px; background:#1976D2; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; }
+    .login-card button { width:100%; padding:12px; background:#1976D2; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 2px 6px rgba(25,118,210,0.3); }
+    .proof-thumb { width: 55px; height: 55px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid #1976D2; display: inline-block; background: #eee; }
+
+    .image-viewer-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; justify-content:center; align-items:center; z-index:999999; }
+    .image-viewer-box { background:#fff; padding:20px; border-radius:12px; max-width:90%; max-height:90%; text-align:center; position:relative; box-shadow:0 10px 30px rgba(0,0,0,0.3); }
+    .image-viewer-box img { max-width:100%; max-height:70vh; object-fit:contain; border-radius:8px; display:block; margin-bottom:15px; }
+    .close-viewer-btn { background:#f44336; color:white; border:none; padding:8px 15px; border-radius:6px; font-weight:bold; cursor:pointer; }
+
+    .print-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:none; justify-content:center; align-items:center; z-index:999999; }
+    .print-box { background:#fff; padding:25px; border-radius:12px; width:400px; max-height:85vh; overflow-y:auto; box-shadow:0 10px 30px rgba(0,0,0,0.3); text-align:left; }
+    .print-area { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size:13px; color:#111; line-height:1.4; background:#fff; padding:15px; border:1px solid #aaa; border-radius: 8px; }
+
+    .chart-container { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin:25px 0; border:1px solid #e0e0e0; width:100%; height: 300px; display:block; }
+    .menu-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
   </style>
 </head>
 <body>
+
+<audio id="notificationAudio" preload="auto">
+  <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+</audio>
 
 <div id="loginScreen" class="login-overlay">
   <div class="login-card">
     <img src="https://i.postimg.cc/Hn5Fwwb5/logo.png" style="width:140px; height:auto; object-fit:contain; margin-bottom:15px;" alt="Logo">
     <h2>🔐 STAFF LOGIN</h2>
-    <input id="username" type="text" placeholder="Username / Email" autocomplete="off" value="admin">
-    <input id="password" type="password" placeholder="Password" autocomplete="off" value="admin">
-    <button type="button" onclick="handleLogin()">Login</button>
+    <input id="username" type="text" placeholder="Username / Email" autocomplete="off" value="">
+    <input id="password" type="password" placeholder="Password" autocomplete="off" value="">
+    <button id="loginBtn" type="button" onclick="handleLogin()">Login</button>
   </div>
 </div>
 
 <div id="adminContent" style="display:none;">
-  <button class="logout" onclick="logout()">Logout</button>
-  <h2>📦 PUJA EXPORT & IMPORT - Admin Panel</h2>
+  <button id="systemBellAlertBtn" class="bell-btn" onclick="testBellSound()" title="Test Sound">🔔</button>
+  <button id="globalLogoutBtn" class="logout" onclick="logout()">Logout</button>
 
-  <div class="staff-section">
-    <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">📋 सप्लायरलाई दिन बाँकी रकमको रिपोर्ट (Supplier Due Report)</h3>
-    <div style="background:#f9fbfd; padding:18px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:15px; display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+  <h2>
+    📦 PUJA EXPORT & IMPORT - Admin Panel (<span id="userRoleBadge" style="color:#1976D2;">...</span>)
+    <span id="emailAutomationStatusBadge" class="automation-badge" style="display: inline-block;">🟢 Active</span>
+  </h2>
+
+  <div id="salesDashboardBox" style="display: flex; gap: 15px; margin: 25px 0; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 140px; background: #fff; padding: 20px; border-radius: 12px; border-left: 6px solid #2196F3; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.04);">
+      <span style="font-size: 13px; color: #666; font-weight: 600; text-transform: uppercase;">Total Orders</span>
+      <h2 id="dashTotalOrders" style="margin: 8px 0 0 0; color: #2196F3; font-size: 26px;">0</h2>
+    </div>
+    <div style="flex: 1; min-width: 140px; background: #fff; padding: 20px; border-radius: 12px; border-left: 6px solid #4CAF50; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.04);">
+      <span style="font-size: 13px; color: #666; font-weight: 600; text-transform: uppercase;">Total Revenue</span>
+      <h2 id="dashTotalRevenue" style="margin: 8px 0 0 0; color: #4CAF50; font-size: 26px;">Rs. 0</h2>
+    </div>
+    <div style="flex: 1; min-width: 140px; background: #fff; padding: 20px; border-radius: 12px; border-left: 6px solid #FF9800; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.04);">
+      <span style="font-size: 13px; color: #666; font-weight: 600; text-transform: uppercase;">Today's Sales</span>
+      <h2 id="dashTodaySales" style="margin: 8px 0 0 0; color: #FF9800; font-size: 26px;">Rs. 0</h2>
+    </div>
+    <div style="flex: 1; min-width: 140px; background: #fff; padding: 20px; border-radius: 12px; border-left: 6px solid #9C27B0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.04);">
+      <span style="font-size: 13px; color: #666; font-weight: 600; text-transform: uppercase;">This Month Sales</span>
+      <h2 id="dashMonthSales" style="margin: 8px 0 0 0; color: #9C27B0; font-size: 26px;">Rs. 0</h2>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <h3 style="color:#1976D2; margin: 0 0 15px 0; font-size: 16px;">📊 Monthly Sales Insights & Growth (Rs.)</h3>
+    <div id="monthlySalesChart" style="width: 100%; height: 230px;"></div>
+  </div>
+
+  <div class="chart-container">
+    <h3 style="color:#1976D2; margin: 0 0 15px 0; font-size: 16px;">📈 Today's Hourly Sales Trend (Rs.)</h3>
+    <div id="hourlySalesChart" style="width: 100%; height: 230px;"></div>
+  </div>
+
+  <div class="report-section">
+    <h3 style="color:#1976D2; margin-bottom:15px;">📊 Sales Report Generator & Export</h3>
+    <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
       <div style="flex:1; min-width:180px;">
         <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">Start Date:</label>
-        <input id="supplierDueReportStart" type="date" style="width:100%; padding:10px;" onchange="loadSupplierDueReport()">
+        <input id="reportStartDate" type="date" style="width:100%; padding:10px;">
       </div>
       <div style="flex:1; min-width:180px;">
         <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">End Date:</label>
-        <input id="supplierDueReportEnd" type="date" style="width:100%; padding:10px;" onchange="loadSupplierDueReport()">
-      </div>
-      <div style="flex:1.5; min-width:200px;">
-        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">सप्लायर छान्नुहोस्:</label>
-        <select id="filterSupplier" onchange="loadSupplierDueReport()" style="width:100%; padding:10px;">
-          <option value="ALL">सबै सप्लायरहरू (All Suppliers)</option>
-        </select>
+        <input id="reportEndDate" type="date" style="width:100%; padding:10px;">
       </div>
       <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
-        <button onclick="exportSupplierDueCSV()" style="flex:1; padding:11px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">📥 Export Excel (.CSV)</button>
-        <button onclick="printSupplierDueReportPDF()" style="flex:1; padding:11px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">🖨️ Print / Download PDF</button>
+        <button onclick="exportReportCSV()" style="flex:1; padding:11px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel (.CSV)</button>
+        <button onclick="printReportPDF()" style="flex:1; padding:11px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print / Download PDF</button>
       </div>
     </div>
+  </div>
 
-    <!-- स्वचालित डाटा लोड हुने टेबल -->
-    <div style="overflow-x: auto; max-height: 350px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
+  <div id="mainOrdersTableSection" style="margin-top:40px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+      <h3 style="margin: 0; color:#333;">🛒 Active Orders</h3>
+      <input type="text" id="orderSearchInput" onkeyup="filterActiveOrders()" placeholder="🔍 Search Order No / Customer..." style="padding: 9px 14px; width: 280px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px;">
+    </div>
+    <div style="overflow-x: auto; width:100%; max-height:520px; overflow-y:auto; border:1px solid #e0e0e0; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
       <table>
         <thead>
           <tr style="position:sticky; top:0; z-index:10;">
-            <th>Bill Date</th>
-            <th>Bill No.</th>
-            <th>Supplier Name</th>
-            <th>Grand Total</th>
-            <th>Paid Amount</th>
-            <th>Due Amount</th>
+            <th>Order Date & Time</th>
+            <th>Order No.</th>
+            <th>Customer & Items</th>
+            <th>Total</th>
+            <th>Payment Slip</th>
+            <th>Delivery Date & Time</th>
+            <th>Delivery Proof</th>
+            <th>Status / Change</th>
+            <th>Instant Action</th>
           </tr>
         </thead>
-        <tbody id="supplierDueTableBody">
-          <tr><td colspan="6" style="padding:15px;">Loading data from inventory_purchases...</td></tr>
+        <tbody id="ordersTable">
+          <tr><td colspan="9" style="padding:25px; font-weight:bold; color:#666;">⏳ Loading Active Orders...</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
+  <input type="file" id="proofCameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleProofFileSelected(event)">
+  <input type="file" id="proofGalleryInput" accept="image/*" style="display:none;" onchange="handleProofFileSelected(event)">
+
+  <div class="invoice-section" style="background:#fff; padding:25px; border-radius:12px; margin-top:30px; border:1px solid #e0e0e0;">
+    <h3 style="color:#1976D2; margin-bottom:15px;">🚚 Delivery Zone & District Rate Management (77 Districts)</h3>
+    <div style="background:#f9fbfd; padding:18px; border-radius:10px; margin-bottom:15px; border:1px solid #e0e0e0; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <input id="newDistrictName" type="text" placeholder="जिल्लाको नाम (District Name)" style="flex:2; padding:10px;">
+      <input id="newDistrictRate" type="number" placeholder="रेट (Rs.)" style="flex:1; padding:10px;">
+      <button class="addBtn" onclick="addDeliveryZone()" style="padding:10px 22px; background:#1976D2; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(25,118,210,0.3);">+ जिल्ला थप्नुहोस्</button>
+    </div>
+
+    <div style="overflow-x: auto; max-height: 280px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
+      <table>
+        <thead>
+          <tr style="position:sticky; top:0; z-index:10;">
+            <th style="background:#1976D2; color:#fff;">District Name (जिल्ला)</th>
+            <th style="background:#1976D2; color:#fff;">Delivery Rate (Rs.)</th>
+            <th style="background:#1976D2; color:#fff;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="deliveryZonesTableList">
+          <tr><td colspan="3" style="padding:15px;">Loading Delivery Zones...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="menuManagementBox" class="menu-section">
+    <h3 style="color:#1976D2; margin-bottom:15px;">📦 Product Management</h3>
+    <div style="background:#f9fbfd; padding:18px; border-radius:10px; margin-bottom:20px; border:1px solid #e0e0e0;">
+      <h4 style="margin-top:0; color:#444;">+ Add New Product</h4>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <input id="prodName" type="text" placeholder="Product Name" style="flex:2; min-width:180px;">
+        <input id="prodPrice" type="number" placeholder="Price (Rs.)" style="flex:1; min-width:100px;">
+        <input id="prodUnit" type="text" placeholder="Unit (e.g. 25kg)" style="flex:1; min-width:140px;">
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+        <input id="prodImg" type="text" placeholder="Image URL" style="flex:1; min-width:180px;">
+        <input id="prodDesc" type="text" placeholder="Description" style="flex:1; min-width:180px;">
+        <input id="prodCat" type="text" placeholder="Category (Wholesale/Imports)" style="flex:1; min-width:160px;">
+      </div>
+      <button id="addProductBtn" class="addBtn" onclick="createNewProduct()" style="margin-top:12px; padding:10px 22px; background:#1976D2; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(25,118,210,0.3);">+ Add Product</button>
+    </div>
+
+    <h4 style="color:#444; margin-bottom:10px;">Current Products</h4>
+    <div style="overflow-x: auto; width:100%; max-height:360px; overflow-y:auto; border:1px solid #e0e0e0; border-radius:8px;">
+      <table>
+        <thead>
+          <tr style="position:sticky; top:0; z-index:10;">
+            <th>ID</th>
+            <th>Product Name</th>
+            <th>Price</th>
+            <th>Unit</th>
+            <th>Image</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Stock Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="menuTableList"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="inventory-section">
+    <h3 style="color:#1976D2; margin-bottom:15px;">📦 Inventory Management</h3>
+    <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0;">
+      <div style="margin-bottom:15px;">
+        <select id="inventoryItemSelect" onchange="handleInventorySelectChange()" style="width:100%; padding:12px; font-size:15px;">
+          <option value="">-- Item ID छान्नुहोस् --</option>
+        </select>
+      </div>
+      <div style="margin-bottom:15px; font-size:15px; line-height:1.6; background:#fff; padding:12px; border-radius:6px; border:1px solid #e8e8e8;">
+        <div><b>Name:</b> <span id="invSelectedName" style="color:#1976D2;">-</span></div>
+        <div><b>Category:</b> <span id="invSelectedCategory" style="color:#666;">-</span></div>
+      </div>
+      <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:15px;">
+        <div style="flex:1; min-width:200px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:14px; color:#555;">Current Stock:</label>
+          <input id="invCurrentStockInput" type="number" placeholder="Enter Current Stock" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:200px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:14px; color:#555;">Alert Limit:</label>
+          <input id="invAlertLimitInput" type="number" value="50" style="width:100%; padding:10px;">
+        </div>
+      </div>
+      <button onclick="saveInventoryStock()" style="background:#4CAF50; color:white; border:none; padding:12px 25px; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(76,175,80,0.3);">Save Stock</button>
+    </div>
+
+    <h3 style="color:#f44336; margin:25px 0 15px 0;">⚠️ Stock Alert Items</h3>
+    <div style="overflow-x:auto; border:1px solid #e0e0e0; border-radius:8px;">
+      <table>
+        <thead>
+          <tr style="background:linear-gradient(135deg, #e91e63, #c2185b); color:#fff;">
+            <th>ItemID</th>
+            <th>ItemName</th>
+            <th>Category</th>
+            <th>Current</th>
+            <th>Limit</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="stockAlertsTableBody">
+          <tr><td colspan="6" style="padding:15px; color:#666;">No low stock items.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="staffAccessManagementSection" class="staff-section">
+    <h3 style="color:#1976D2; margin-bottom:15px;">👥 Staff & Access Management</h3>
+    <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:20px;">
+      <h4 style="margin-top:0; color:#444;">+ Add New Staff</h4>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <input id="staffNameInput" type="text" placeholder="Staff Name (नाम)" style="flex:2; min-width:180px;">
+        <input id="staffEmailInput" type="email" placeholder="Email / Username" style="flex:2; min-width:180px;">
+        <input id="staffPassInput" type="text" placeholder="Password" style="flex:1; min-width:140px;">
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; align-items:center;">
+        <select id="staffRoleSelect" style="flex:1; min-width:160px; padding:10px;">
+          <!-- गतिशील लोड हुनेछ -->
+        </select>
+        <button onclick="addNewStaff()" style="padding:10px 25px; background:#1976D2; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(25,118,210,0.3);">+ Add Staff</button>
+      </div>
+    </div>
+
+    <h4 style="margin-bottom:10px; color:#444;">Current Staff Members (Admin Table)</h4>
+    <div style="overflow-x:auto; max-height: 240px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; margin-bottom:30px;">
+      <table>
+        <thead>
+          <tr style="position:sticky; top:0; z-index:10; background:#1976D2; color:#fff;">
+            <th>ID</th>
+            <th>Staff Name</th>
+            <th>Email / Username</th>
+            <th>Password</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="staffTableList">
+          <tr><td colspan="6" style="padding:15px; color:#666;">Loading Staff Members...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="salaryAndExpenseMainSection" class="staff-section">
+    <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:20px;">
+      <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">💰 General Expenses & Profit Tracker</h3>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <input id="expenseDate" type="date" style="flex:1; min-width:140px; padding:10px;">
+        <input id="expenseBillNo" type="text" placeholder="Bill / Receipt No." style="flex:1.2; min-width:150px; padding:10px;">
+        <input id="expenseCategory" type="text" placeholder="Category (e.g. Rent, Salary)" style="flex:1.5; min-width:160px; padding:10px;">
+        <input id="expenseAmount" type="number" placeholder="Amount (Rs.)" style="flex:1; min-width:120px; padding:10px;">
+        <input id="expenseDescription" type="text" placeholder="Description" style="flex:2; min-width:180px; padding:10px;">
+        <button onclick="addExpenseRecord()" style="padding:10px 22px; background:#E91E63; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(233,30,99,0.3);">+ Add Expense</button>
+      </div>
+    </div>
+
+    <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:20px;">
+      <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">📊 Expense Report Generator & Export</h3>
+      <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">Start Date:</label>
+          <input id="expReportStart" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">End Date:</label>
+          <input id="expReportEnd" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
+          <button onclick="exportExpenseCSV()" style="flex:1; padding:11px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel (.CSV)</button>
+          <button onclick="printExpensePDF()" style="flex:1; padding:11px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print / Download PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin:20px 0; font-size:15px; line-height:1.8; font-weight:bold; background:#fff; padding:20px; border-radius:10px; border:1px solid #e0e0e0; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
+      <div style="color:#1976D2; border-bottom:1px solid #f0f0f0; padding-bottom:6px;">जम्मा Total Revenue: <span id="summaryTotalRevenue" style="float:right;">Rs. 0.00</span></div>
+      <div style="color:#D32F2F; border-bottom:1px solid #f0f0f0; padding:6px 0;">जम्मा Total Expense: <span id="summaryTotalExpense" style="float:right;">Rs. 0.00</span></div>
+      <div style="color:#388E3C; padding-top:6px; font-size:17px;">जम्मा Net Profit: <span id="summaryNetProfit" style="float:right;">Rs. 0.00</span></div>
+    </div>
+
+    <div class="inventory-section" style="border: 2px solid #1976D2; background: #fdfefe;">
+      <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">🛒 Inventory Purchase & Costing Calculator (सामान खरिद तथा बिक्रीदर निर्धारण)</h3>
+      
+      <div style="background:#f9fbfd; padding:18px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:15px; display:flex; gap:15px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">सप्लायरको नाम (Supplier Name):</label>
+          <input id="purSupplierName" type="text" placeholder="Supplier Name" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">बिल मिति (Bill Date):</label>
+          <input id="purBillDate" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">बिल नं. (Bill No.):</label>
+          <input id="purBillNo" type="text" placeholder="Bill No." style="width:100%; padding:10px;">
+        </div>
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <label style="font-weight:bold; font-size:14px; color:#333;">बिलका आइटमहरू (Bill Items List):</label>
+          <button type="button" onclick="addPurchaseItemRow()" style="background:#4CAF50; color:white; border:none; padding:6px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">+ आइटम थप्नुहोस्</button>
+        </div>
+        <div id="purchaseItemsContainer" style="display:flex; flex-direction:column; gap:8px;">
+          <div class="pur-item-row" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <input type="text" class="pi-name" placeholder="आइटम नाम (Item Name)" style="flex:2; min-width:160px; padding:9px;">
+            <input type="number" class="pi-price" placeholder="मूल्यदर (Rate)" style="flex:1; min-width:100px; padding:9px;" oninput="calculatePurchaseTotals()">
+            <input type="number" class="pi-qty" placeholder="परिमाण (Qty)" style="flex:1; min-width:90px; padding:9px;" oninput="calculatePurchaseTotals()">
+            <input type="text" class="pi-desc" placeholder="डिस्क्रिप्सन (Description)" style="flex:2; min-width:160px; padding:9px;">
+            <span class="pi-total-txt" style="font-weight:bold; color:#1976D2; min-width:90px;">जम्मा: 0</span>
+            <button type="button" onclick="removePurchaseItemRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#f9fbfd; padding:18px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:15px; display:flex; gap:15px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:160px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">ट्रान्सपोर्ट चार्ज (Transport):</label>
+          <input id="purTransport" type="number" value="0" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
+        </div>
+        <div style="flex:1; min-width:160px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">लेबर चार्ज (Labor):</label>
+          <input id="purLabor" type="number" value="0" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
+        </div>
+        <div style="flex:1; min-width:160px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">मुनाफा प्रतिशत (Profit %):</label>
+          <input id="purProfitPct" type="number" value="10" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
+        </div>
+        <div style="flex:1; min-width:160px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">तिरेको जम्मा रकम (Paid):</label>
+          <input id="purPaidAmount" type="number" value="0" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
+        </div>
+      </div>
+
+      <div style="background:#e8f5e9; border:1px solid #4CAF50; padding:15px; border-radius:8px; margin-bottom:15px; font-size:15px; font-weight:bold; color:#2e7d32; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+        <span>कुल खरिद रकम: <span id="purSubTotalDisplay">0.00</span></span>
+        <span>थप खर्चसहित कुल लागत: <span id="purGrandTotalDisplay">0.00</span></span>
+        <span style="color:#C62828;">तिर्न बाँकी रकम (Balance Due): <span id="purDueAmountDisplay">0.00</span></span>
+        <span style="color:#1976D2;">सुझाव गरिएको बिक्रीदर (Auto Selling Price): <span id="purAutoSellingPriceDisplay">0.00</span></span>
+      </div>
+
+      <button onclick="savePurchaseRecord()" style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(76,175,80,0.3);">💾 खरिद बिल सेभ गर्नुहोस् र स्टकमा जोड्नुहोस्</button>
+    </div>
+
+    <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-top:25px;">
+      <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">📊 Purchase Report Generator & Export (सामान खरिद रिपोर्ट तथा निर्यात)</h3>
+      <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">Start Date:</label>
+          <input id="purchaseReportStart" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">End Date:</label>
+          <input id="purchaseReportEnd" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
+          <button onclick="exportPurchaseCSV()" style="flex:1; padding:11px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel (.CSV)</button>
+          <button onclick="printPurchasePDF()" style="flex:1; padding:11px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print / Download PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         SUPPLIER DUE REPORT GENERATOR & EXPORT SECTION
+         ========================================== -->
+    <div class="card shadow-sm mb-4 mt-4" style="background:#fff; padding:20px; border-radius:10px; border:1px solid #e0e0e0;">
+      <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+        <h5 class="mb-0" style="margin:0; color:#b78103;">📋 सप्लायरलाई दिन बाँकी रकमको रिपोर्ट (Supplier Due Report)</h5>
+      </div>
+      <div class="card-body">
+        <!-- मिति फिल्टर तथा कन्ट्रोल अप्सनहरू -->
+        <div style="background:#f9fbfd; padding:18px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:15px; display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+          <div style="flex:1; min-width:180px;">
+            <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">Start Date:</label>
+            <input id="supplierDueReportStart" type="date" style="width:100%; padding:10px;">
+          </div>
+          <div style="flex:1; min-width:180px;">
+            <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">End Date:</label>
+            <input id="supplierDueReportEnd" type="date" style="width:100%; padding:10px;">
+          </div>
+          <div style="flex:1.5; min-width:200px;">
+            <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">सप्लायर छान्नुहोस्:</label>
+            <select id="filterSupplier" class="form-select" onchange="loadSupplierDueReport()" style="width:100%; padding:10px;">
+              <option value="ALL">सबै सप्लायरहरू (All Suppliers)</option>
+            </select>
+          </div>
+          <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
+            <button onclick="exportSupplierDueCSV()" style="flex:1; padding:11px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel (.CSV)</button>
+            <button onclick="printSupplierDueReportPDF()" style="flex:1; padding:11px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print / Download PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="salarySectionContainer">
+      <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:20px;">
+        <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">💰 Staff Salary Sheet & Voucher System</h3>
+        
+        <div style="background:#fff; padding:15px; border-radius:8px; border:1px solid #e0e0e0; margin-bottom:15px;">
+          <h4 style="margin-top:0; color:#333;">+ Add New Staff & Designation</h4>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <input id="salaryStaffFullName" type="text" placeholder="Full Name (e.g. ram)" style="flex:2; min-width:200px; padding:10px;">
+            <input id="salaryStaffDesignationInput" type="text" placeholder="Designation (e.g. staff)" style="flex:2; min-width:220px; padding:10px;">
+            <button onclick="addNewStaffDesignation()" style="padding:10px 22px; background:#e91e63; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(233,30,99,0.3);">+ Add Staff</button>
+          </div>
+        </div>
+
+        <h4 style="color:#444; margin-bottom:10px;">Staff List (Manage Staff & Designation)</h4>
+        <div style="overflow-x:auto; max-height: 240px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; background:#fff;">
+          <table>
+            <thead>
+              <tr style="position:sticky; top:0; z-index:10; background:#e91e63; color:#fff;">
+                <th>ID</th>
+                <th>Full Name</th>
+                <th>Designation</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="salaryStaffTableList">
+              <tr><td colspan="4" style="padding:15px; color:#666;">Loading Staff List...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="background:#fff; padding:20px; border-radius:10px; border:2px solid #e91e63; margin-top:20px; box-shadow:0 4px 12px rgba(233,30,99,0.05);">
+        <h3 style="color:#e91e63; margin-top:0; margin-bottom:15px;">🧾 Create Salary Voucher</h3>
+        
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+          <div style="flex:2; min-width:220px;">
+            <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px; color:#555;">Employee Name:</label>
+            <select id="voucherStaffSelect" onchange="handleVoucherStaffSelect()" style="width:100%; padding:10px;">
+              <option value="">-- कामदार रोज्नुहोस् --</option>
+            </select>
+          </div>
+          <div style="flex:2; min-width:220px;">
+            <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px; color:#555;">Designation:</label>
+            <input id="voucherStaffDesignation" type="text" placeholder="Designation" style="width:100%; padding:10px; background:#f9f9f9;" readonly>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+          <div style="flex:1; min-width:100px;">
+            <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px; color:#555;">Day:</label>
+            <input id="voucherDay" type="number" style="width:100%; padding:10px;">
+          </div>
+          <div style="flex:1; min-width:100px;">
+            <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px; color:#555;">Month:</label>
+            <input id="voucherMonth" type="number" style="width:100%; padding:10px;">
+          </div>
+          <div style="flex:1; min-width:120px;">
+            <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px; color:#555;">Year:</label>
+            <input id="voucherYear" type="number" style="width:100%; padding:10px;">
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <label style="font-weight:bold; font-size:13px; color:#555;">Earnings & Allowances:</label>
+            <button type="button" onclick="addEarningsRow()" style="background:#4CAF50; color:white; border:none; padding:4px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">+ Add</button>
+          </div>
+          <div id="earningsContainer" style="display:flex; flex-direction:column; gap:6px;">
+            <div class="earnings-row" style="display:flex; gap:10px; align-items:center;">
+              <input type="text" class="earn-desc" value="MONTHLY BASIC SALARY PAYED" style="flex:2; padding:8px; background:#f9f9f9;" readonly>
+              <input type="number" class="earn-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+              <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <label style="font-weight:bold; font-size:13px; color:#555;">Deductions:</label>
+            <button type="button" onclick="addDeductionsRow()" style="background:#4CAF50; color:white; border:none; padding:4px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">+ Add</button>
+          </div>
+          <div id="deductionsContainer" style="display:flex; flex-direction:column; gap:6px;">
+            <div class="deductions-row" style="display:flex; gap:10px; align-items:center;">
+              <input type="text" class="ded-desc" placeholder="Deduction Description" value="Advance / Deduction" style="flex:2; padding:8px;">
+              <input type="number" class="ded-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+              <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:15px;">
+          <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px; color:#555;">Payment Mode:</label>
+          <select id="voucherPaymentMode" style="width:100%; padding:10px;">
+            <option value="CASH PAYMENT">💵 CASH PAYMENT</option>
+            <option value="BANK TRANSFER">🏦 BANK TRANSFER</option>
+          </select>
+        </div>
+
+        <div style="background:#fff0f5; border:1px dashed #e91e63; padding:15px; border-radius:8px; text-align:center; margin-bottom:15px;">
+          <h3 id="voucherNetDisplay" style="color:#e91e63; margin:0; font-size:18px;">NET Salary: RM 0.00</h3>
+        </div>
+
+        <button onclick="saveAndPrintVoucher()" style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 3px 8px rgba(76,175,80,0.3);">💾 Save & Print Salary Voucher</button>
+      </div>
+
+      <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-top:25px;">
+        <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">📊 Salary Statements Export & Report</h3>
+        <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+          <div style="flex:1; min-width:180px;">
+            <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">Start Date:</label>
+            <input id="salaryReportStart" type="date" style="width:100%; padding:10px;">
+          </div>
+          <div style="flex:1; min-width:180px;">
+            <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">End Date:</label>
+            <input id="salaryReportEnd" type="date" style="width:100%; padding:10px;">
+          </div>
+          <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
+            <button onclick="exportSalaryCSV()" style="flex:1; padding:11px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Download Excel (.CSV)</button>
+            <button onclick="printSalaryPDF()" style="flex:1; padding:11px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print / PDF Report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#fff; padding:20px; border-radius:10px; border:2px solid #C62828; margin-top:25px; box-shadow:0 4px 12px rgba(198,40,40,0.05);">
+      <h3 style="color:#C62828; margin-top:0; margin-bottom:15px;">🧾 Invoice</h3>
+
+      <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:15px;">
+        <div style="flex:2; min-width:250px;">
+          <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px; color:#555;">Bill To (Customer Name / Details):</label>
+          <input id="extraInvCustomer" type="text" placeholder="Enter Customer Name / Company" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px; color:#555;">Invoice Date:</label>
+          <input id="extraInvDate" type="date" style="width:100%; padding:10px;">
+        </div>
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+          <label style="font-weight:bold; font-size:13px; color:#555;">Invoice Descriptions & Amounts:</label>
+          <button type="button" onclick="addExtraInvoiceRow()" style="background:#4CAF50; color:white; border:none; padding:4px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">+ Add Item</button>
+        </div>
+        <div id="extraInvItemsContainer" style="display:flex; flex-direction:column; gap:8px;">
+          <div class="extra-inv-row" style="display:flex; gap:10px; align-items:center;">
+            <input type="text" class="ex-desc" placeholder="Service Description" style="flex:2; padding:8px;">
+            <input type="number" class="ex-amt" value="0" oninput="calculateExtraInvoiceTotals()" style="flex:1; padding:8px;">
+            <button type="button" onclick="removeExtraInvoiceRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <label style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px; color:#555;">Paid (RM / Rs.):</label>
+        <input id="extraInvPaid" type="number" value="0" oninput="calculateExtraInvoiceTotals()" style="width:100%; padding:10px;">
+      </div>
+
+      <div style="background:#f9fbfd; border:1px solid #e0e0e0; padding:15px; border-radius:8px; margin-bottom:15px;">
+        <h4 style="margin:0 0 10px 0; color:#333;">Summary Preview:</h4>
+        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:15px; color:#C62828; margin-bottom:6px;">
+          <span>TOTAL:</span>
+          <span id="extraInvTotalDisplay">RM 0.00</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:15px; color:#2E7D32;">
+          <span>BALANCE DUE:</span>
+          <span id="extraInvBalanceDisplay">RM 0.00</span>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:15px; flex-wrap:wrap;">
+        <button onclick="downloadExtraInvoicePDF()" style="flex:1; padding:12px; background:#C62828; color:white; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">💾 Save as PDF (Download)</button>
+        <button onclick="printExtraInvoice()" style="flex:1; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(76,175,80,0.3);">🖨️ Print Invoice</button>
+      </div>
+    </div>
+
+    <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-top:25px;">
+      <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">📊 Total Income Report Generator & Export</h3>
+      <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">Start Date:</label>
+          <input id="incomeReportStart" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">End Date:</label>
+          <input id="incomeReportEnd" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
+          <button onclick="exportTotalIncomeCSV()" style="flex:1; padding:11px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel (.CSV)</button>
+          <button onclick="printTotalIncomePDF()" style="flex:1; padding:11px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print / Download PDF</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="outstandingDuesMainSection" class="staff-section" style="background:#fff; padding:25px; border-radius:12px; margin-top:30px; border:1px solid #e0e0e0;">
+    <h3 style="color:#C62828; margin-bottom:15px;">📊 Outstanding Dues & Customer Balances (तिर्न बाँकी बक्यौता विवरण)</h3>
+    <div style="background:#f9fbfd; padding:18px; border-radius:10px; margin-bottom:15px; border:1px solid #e0e0e0; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <input type="text" id="duesSearchInput" placeholder="🔍 Search Customer Name / Invoice No..." style="flex:2; min-width:200px; padding:10px; border-radius:8px; border:1px solid #ccc; display:none;">
+      
+      <div style="display:flex; align-items:center; gap:5px; flex:1; min-width:140px;">
+        <label style="font-size:12px; font-weight:bold; color:#555;">Start:</label>
+        <input id="duesReportStart" type="date" style="width:100%; padding:8px;">
+      </div>
+      <div style="display:flex; align-items:center; gap:5px; flex:1; min-width:140px;">
+        <label style="font-size:12px; font-weight:bold; color:#555;">End:</label>
+        <input id="duesReportEnd" type="date" style="width:100%; padding:8px;">
+      </div>
+
+      <button onclick="exportOutstandingDuesCSV()" style="padding:10px 18px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel</button>
+      <button onclick="printOutstandingDuesPDF()" style="padding:10px 18px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print Report</button>
+    </div>
+  </div>
+
+  <div class="chat-section">
+    <h3 style="color: #1976D2; margin-bottom: 15px; font-size: 18px;">💬 Live Support Chat Center</h3>
+    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 280px; border-right: 1px solid #e0e0e0; padding-right: 10px;">
+        <h4 style="margin-top:0; color:#444;">Active Chats</h4>
+        <div id="chatListContainer" style="display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto;">
+          <div style="padding: 10px; color: #666;">Loading chats...</div>
+        </div>
+      </div>
+      <div style="flex: 2; min-width: 320px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; margin-bottom: 10px;">
+          <h4 style="margin: 0; color:#444;" id="activeChatTitle">Select a chat from left</h4>
+        </div>
+        <div id="chatMessagesBox" style="background: #f9fbfd; padding: 15px; border-radius: 8px; height: 250px; overflow-y: auto; border: 1px solid #e0e0e0; display: flex; flex-direction: column; gap: 10px;">
+          <div style="color: #777; text-align: center; margin-top: 100px;">No conversation selected.</div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <input type="text" id="adminChatInput" placeholder="Type a reply..." style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc;" onkeypress="if(event.key === 'Enter') sendAdminChat();">
+          <button onclick="sendAdminChat()" style="background: #1976D2; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow:0 2px 5px rgba(25,118,210,0.3);">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="printModalBox" class="print-modal">
+  <div class="print-box">
+    <div id="printableInvoiceArea" class="print-area"></div>
+    <div style="margin-top:20px; text-align:center;">
+       <button class="rcvBtn" onclick="executeSystemPrint()" style="padding:10px 22px; background:#1976D2; border-radius:8px; font-weight:bold; border:none; color:white; cursor:pointer; box-shadow:0 2px 5px rgba(25,118,210,0.3);">🖨 Print</button>
+       <button class="close-viewer-btn" onclick="closePrintModal()" style="padding:10px 22px; margin-left:10px; border-radius:8px;">Close ✕</button>
+    </div>
+  </div>
+</div>
+
+<div id="uploadSourceModal" class="print-modal" style="display:none;">
+  <div class="print-box" style="width:300px; text-align:center;">
+    <h3 style="color:#1976D2; margin-top:0;">📷 Upload Delivery Proof</h3>
+    <p style="font-size:13px; color:#555; margin:10px 0;">तस्वीर कहाँबाट लिन चाहनुहुन्छ?</p>
+    <button class="actionBtn rcvBtn" onclick="openCameraInput()" style="width:100%; padding:12px; margin:8px 0; font-size:15px; border-radius:8px;">📸 Camera</button>
+    <button class="actionBtn dispatchBtn" onclick="openGalleryInput()" style="width:100%; padding:12px; margin:8px 0; font-size:15px; border-radius:8px;">🖼️ Gallery</button>
+    <button class="close-viewer-btn" onclick="closeUploadSourceModal()" style="width:100%; padding:10px; margin-top:10px; border-radius:8px;">Cancel</button>
+  </div>
+</div>
+
+<div id="imageViewerModal" class="image-viewer-modal" onclick="closeImageViewer()">
+  <div class="image-viewer-box" onclick="event.stopPropagation()">
+    <img id="viewerTargetImage" src="" alt="Image Preview">
+    <br>
+    <button class="close-viewer-btn" onclick="closeImageViewer()">Close ✕</button>
+  </div>
 </div>
 
 <script>
@@ -93,7 +733,16 @@
   const SUPABASE_ANON_KEY = 'sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  var activeOrdersCache = [];
+  var menuItemsCache = [];
+  var staffListCache = [];
+  var expenseListCache = [];
   var purchaseListCache = [];
+  var salaryVoucherHistoryCache = [];
+  var extraInvoicesCache = [];
+  var currentSelectedChatSession = null;
+  var lastAdminChatCount = {};
+  var activeProofOrderNo = null;
 
   document.addEventListener("DOMContentLoaded", function() {
     let now = new Date();
@@ -104,51 +753,25 @@
     if(dueStart && !dueStart.value) dueStart.value = todayStr;
     if(dueEnd && !dueEnd.value) dueEnd.value = todayStr;
 
-    if (sessionStorage.getItem("ADMIN_LOGIN") === "true") {
-      showAdminPanel();
-    }
+    loadSupplierDueReport();
   });
 
-  function handleLogin() {
-    sessionStorage.setItem("ADMIN_LOGIN", "true");
-    showAdminPanel();
-  }
-
-  function showAdminPanel() {
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("adminContent").style.display = "block";
-    loadSupplierDueReport();
-  }
-
-  function logout() {
-    sessionStorage.clear();
-    window.location.reload();
-  }
-
-  // inventory_purchases टेबलबाट डाटा ल्याउने मुख्य फंक्सन
   async function loadSupplierDueReport() {
-    try {
-      let { data, error } = await supabaseClient.from('inventory_purchases').select('*').order('id', { ascending: false });
-      if (error) {
-        console.error("Error fetching purchases:", error);
-        return;
-      }
-      purchaseListCache = data || [];
-    } catch(e) {
-      purchaseListCache = [];
-    }
-
     let startDate = document.getElementById('supplierDueReportStart').value;
     let endDate = document.getElementById('supplierDueReportEnd').value;
     let selectedSupplier = document.getElementById('filterSupplier').value;
+
+    await loadPurchaseList();
 
     let start = startDate ? new Date(startDate) : null;
     let end = endDate ? new Date(endDate) : null;
     if(end) end.setHours(23, 59, 59, 999);
 
     let supplierDropdownSet = new Set();
+
     purchaseListCache.forEach(p => {
-      if(p.supplier_name) supplierDropdownSet.add(String(p.supplier_name).trim());
+      let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
+      supplierDropdownSet.add(supName);
     });
 
     let selectEl = document.getElementById('filterSupplier');
@@ -159,131 +782,2788 @@
     });
     selectEl.innerHTML = dropdownHtml;
     selectEl.value = supplierDropdownSet.has(currentSelVal) ? currentSelVal : "ALL";
-
-    // मिति र सप्लायरको आधारमा फिल्टर गर्ने
-    let filtered = purchaseListCache.filter(p => {
-      if(!p.bill_date) return false;
-      let pDate = new Date(p.bill_date);
-      if(isNaN(pDate.getTime())) return false;
-      if(start && end && (pDate < start || pDate > end)) return false;
-      if(selectedSupplier !== "ALL" && String(p.supplier_name).trim() !== selectedSupplier) return false;
-      return true;
-    });
-
-    let tbody = document.getElementById("supplierDueTableBody");
-    let html = "";
-    filtered.forEach(p => {
-      let gt = parseFloat(p.grand_total) || 0;
-      let pd = parseFloat(p.paid_amount) || 0;
-      let du = parseFloat(p.due_amount) || (gt - pd);
-
-      html += `<tr>
-        <td>${p.bill_date || ''}</td>
-        <td><b>${p.bill_no || ''}</b></td>
-        <td><b>${p.supplier_name || ''}</b></td>
-        <td>Rs. ${gt.toFixed(2)}</td>
-        <td>Rs. ${pd.toFixed(2)}</td>
-        <td style="color:red; font-weight:bold;">Rs. ${du.toFixed(2)}</td>
-      </tr>`;
-    });
-
-    if(filtered.length === 0) {
-      html = `<tr><td colspan="6" style="padding:15px; color:#666;">चयनित मिति वा सप्लायरको कुनै पनि खरिद/बक्यौता डाटा भेटिएन।</td></tr>`;
-    }
-    tbody.innerHTML = html;
-  }
-
-  function printSupplierDueReportPDF() {
-    let startDate = document.getElementById('supplierDueReportStart').value;
-    let endDate = document.getElementById('supplierDueReportEnd').value;
-    let selectedSupplier = document.getElementById('filterSupplier').value;
-
-    let start = startDate ? new Date(startDate) : null;
-    let end = endDate ? new Date(endDate) : null;
-    if(end) end.setHours(23, 59, 59, 999);
-
-    let filtered = purchaseListCache.filter(p => {
-      if(!p.bill_date) return false;
-      let pDate = new Date(p.bill_date);
-      if(isNaN(pDate.getTime())) return false;
-      if(start && end && (pDate < start || pDate > end)) return false;
-      if(selectedSupplier !== "ALL" && String(p.supplier_name).trim() !== selectedSupplier) return false;
-      return true;
-    });
-
-    if(filtered.length === 0) {
-      alert("प्रिन्ट गर्नको लागि कुनै डाटा उपलब्ध छैन।");
-      return;
-    }
-
-    let printWindow = window.open('', '_blank', 'height=700,width=900');
-    if (!printWindow) { alert("Popup blocked!"); return; }
-
-    printWindow.document.write('<html><head><title>Supplier Due Report</title>');
-    printWindow.document.write('<style>');
-    printWindow.document.write('body{font-family:Arial,sans-serif;padding:15px;color:#111;}');
-    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:10px;}');
-    printWindow.document.write('th,td{border:1px solid #333;padding:8px;text-align:center;font-size:12px;}');
-    printWindow.document.write('th{background:#1976D2;color:white;}');
-    printWindow.document.write('</style></head><body>');
-    printWindow.document.write('<h2 style="text-align:center;color:#1976D2;">PUJA EXPORT AND IMPORT - Supplier Due Report</h2>');
-    printWindow.document.write('<p style="text-align:center;font-size:12px;">Period: ' + startDate + ' to ' + endDate + '</p>');
-    printWindow.document.write('<table><thead><tr><th>Bill Date</th><th>Bill No.</th><th>Supplier Name</th><th>Grand Total</th><th>Paid Amount</th><th>Due Amount</th></tr></thead><tbody>');
-
-    let totalDueSum = 0;
-    filtered.forEach(p => {
-      let gt = parseFloat(p.grand_total) || 0;
-      let pd = parseFloat(p.paid_amount) || 0;
-      let du = parseFloat(p.due_amount) || (gt - pd);
-      totalDueSum += du;
-      printWindow.document.write(`<tr><td>${p.bill_date}</td><td>${p.bill_no}</td><td>${p.supplier_name}</td><td>Rs. ${gt.toFixed(2)}</td><td>Rs. ${pd.toFixed(2)}</td><td style="color:red;font-weight:bold;">Rs. ${du.toFixed(2)}</td></tr>`);
-    });
-
-    printWindow.document.write('</tbody></table>');
-    printWindow.document.write('<h3 style="text-align:right;margin-top:15px;color:red;">Total Due Amount: Rs. ' + totalDueSum.toFixed(2) + '</h3>');
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    setTimeout(() => { printWindow.print(); }, 300);
   }
 
   function exportSupplierDueCSV() {
-    let startDate = document.getElementById('supplierDueReportStart').value;
-    let endDate = document.getElementById('supplierDueReportEnd').value;
-    let selectedSupplier = document.getElementById('filterSupplier').value;
+    alert("निर्यात गर्नको लागि कुनै डाटा उपलब्ध छैन।");
+  }
 
-    let start = startDate ? new Date(startDate) : null;
-    let end = endDate ? new Date(endDate) : null;
-    if(end) end.setHours(23, 59, 59, 999);
+  function printSupplierDueReportPDF() {
+    alert("प्रिन्ट गर्नको लागि कुनै डाटा उपलब्ध छैन।");
+  }
+
+  async function loadPurchaseList() {
+    try {
+      let { data, error } = await supabaseClient.from('inventory_purchases').select('*').order('id', { ascending: false });
+      if (!error && data) {
+        purchaseListCache = data;
+      }
+    } catch(e) {
+      purchaseListCache = [];
+    }
+  }
+
+  function exportPurchaseCSV() {
+    let startDate = document.getElementById("purchaseReportStart").value;
+    let endDate = document.getElementById("purchaseReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
 
     let filtered = purchaseListCache.filter(p => {
       if(!p.bill_date) return false;
       let pDate = new Date(p.bill_date);
       if(isNaN(pDate.getTime())) return false;
-      if(start && end && (pDate < start || pDate > end)) return false;
-      if(selectedSupplier !== "ALL" && String(p.supplier_name).trim() !== selectedSupplier) return false;
-      return true;
+      return (pDate >= start && pDate <= end);
     });
 
     if(filtered.length === 0) {
-      alert("निर्यात गर्नको लागि कुनै डाटा उपलब्ध छैन।");
+      alert("चयनित मितिभित्र कुनै खरिद रेकर्ड भेटिएन!");
       return;
     }
 
-    let csvContent = "data:text/csv;charset=utf-8,Bill Date,Bill No,Supplier Name,Grand Total,Paid Amount,Due Amount\n";
+    let csvContent = "data:text/csv;charset=utf-8,Bill Date,Bill No,Supplier Name,Item Name,Rate,Qty,Item Desc,Transport,Labor,Grand Total,Selling Price,Paid Amount,Due Amount,Profit %\n";
+    
     filtered.forEach(p => {
-      let gt = parseFloat(p.grand_total) || 0;
-      let pd = parseFloat(p.paid_amount) || 0;
-      let du = parseFloat(p.due_amount) || (gt - pd);
-      csvContent += `"${p.bill_date}","${p.bill_no}","${p.supplier_name}","${gt.toFixed(2)}","${pd.toFixed(2)}","${du.toFixed(2)}"\n`;
+      let items = [];
+      try {
+        if (p.items_json) {
+          items = typeof p.items_json === 'string' ? JSON.parse(p.items_json) : p.items_json;
+        }
+      } catch(e) { items = []; }
+
+      let sellingPriceVal = p.selling_price || 0;
+
+      if (items.length > 0) {
+        items.forEach(it => {
+          csvContent += `"${p.bill_date || ''}","${p.bill_no || ''}","${p.supplier_name || ''}","${it.name || ''}","${it.price || 0}","${it.qty || 0}","${it.description || ''}","${p.transport || 0}","${p.labor || 0}","${p.grand_total || 0}","${sellingPriceVal}","${p.paid_amount || 0}","${p.due_amount || 0}","${p.profit_pct || 0}"\n`;
+        });
+      } else {
+        csvContent += `"${p.bill_date || ''}","${p.bill_no || ''}","${p.supplier_name || ''}","-","-","-","-","${p.transport || 0}","${p.labor || 0}","${p.grand_total || 0}","${sellingPriceVal}","${p.paid_amount || 0}","${p.due_amount || 0}","${p.profit_pct || 0}"\n`;
+      }
     });
 
     let encodedUri = encodeURI(csvContent);
     let link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "supplier_due_report.csv");
+    link.setAttribute("download", "purchase_detailed_report.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  function printPurchasePDF() {
+    let startDate = document.getElementById("purchaseReportStart").value;
+    let endDate = document.getElementById("purchaseReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = purchaseListCache.filter(p => {
+      if(!p.bill_date) return false;
+      let pDate = new Date(p.bill_date);
+      if(isNaN(pDate.getTime())) return false;
+      return (pDate >= start && pDate <= end);
+    });
+
+    let printWindow = window.open('', '_blank', 'height=700,width=1100');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
+    printWindow.document.write('<html><head><title>Detailed Purchase Report</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
+    printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;margin:0;}');
+    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #1976D2;padding-bottom:5mm;margin-bottom:10px;}');
+    printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
+    printWindow.document.write('h2{margin:2px 0;color:#1976D2;font-size:16px;font-weight:700;}');
+    printWindow.document.write('h3{margin:2px 0;color:#333;font-size:13px;font-weight:600;}');
+    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
+    printWindow.document.write('th,td{border:1.5px solid #333;padding:6px 8px;text-align:center;font-size:11px;color:#000;}');
+    printWindow.document.write('th{background:#1976D2;color:white;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('tr:nth-child(even){background-color:#f4f8fb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('.total-box{text-align:right;margin-top:10px;font-size:13px;font-weight:bold;color:#1976D2;}');
+    printWindow.document.write('.print-btn-bar{position:fixed;top:10px;right:10px;background:#1976D2;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;z-index:9999;box-shadow:0 2px 5px rgba(0,0,0,0.3);display:block;}');
+    printWindow.document.write('@media print { .print-btn-bar { display: none !important; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<button class="print-btn-bar" onclick="window.print()">🖨️ Print Now / Save PDF</button>');
+    printWindow.document.write('<div class="header">');
+    printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
+    printWindow.document.write('<h2 style="color:#1976D2; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
+    printWindow.document.write('<h3>Detailed Purchase Report (' + startDate + ' to ' + endDate + ')</h3>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('<table><thead><tr><th>Bill Date</th><th>Bill No.</th><th>Supplier Name</th><th>Item Name</th><th>Rate</th><th>Qty</th><th>Sub Total</th><th>Transport</th><th>Labor</th><th>Grand Total</th><th>Selling Price</th><th>Paid</th><th>Due</th></tr></thead><tbody>');
+    
+    let totalGrandSum = 0;
+    filtered.forEach(p => {
+      let gt = parseFloat(p.grand_total) || 0;
+      let pd = parseFloat(p.paid_amount) || 0;
+      let du = parseFloat(p.due_amount) || 0;
+      let sellingPriceVal = parseFloat(p.selling_price) || 0;
+      totalGrandSum += gt;
+
+      let items = [];
+      try {
+        if (p.items_json) {
+          items = typeof p.items_json === 'string' ? JSON.parse(p.items_json) : p.items_json;
+        }
+      } catch(e) { items = []; }
+
+      if (items.length > 0) {
+        items.forEach((it, idx) => {
+          let itemTotal = (parseFloat(it.price) || 0) * (parseFloat(it.qty) || 0);
+          printWindow.document.write(`<tr>`);
+          if(idx === 0) {
+            printWindow.document.write(`<td rowspan="${items.length}">${p.bill_date || ''}</td><td rowspan="${items.length}"><b>${p.bill_no || ''}</b></td><td rowspan="${items.length}"><b>${p.supplier_name || ''}</b></td>`);
+          }
+          printWindow.document.write(`<td style="text-align:left;">${it.name || ''} ${it.description ? '('+it.description+')' : ''}</td><td>Rs. ${parseFloat(it.price || 0).toFixed(2)}</td><td>${it.qty || 0}</td><td>Rs. ${itemTotal.toFixed(2)}</td>`);
+          if(idx === 0) {
+            printWindow.document.write(`<td rowspan="${items.length}">Rs. ${parseFloat(p.transport || 0).toFixed(2)}</td><td rowspan="${items.length}">Rs. ${parseFloat(p.labor || 0).toFixed(2)}</td><td rowspan="${items.length}"><b>Rs. ${gt.toFixed(2)}</b></td><td rowspan="${items.length}" style="color:#2E7D32; font-weight:bold;">Rs. ${sellingPriceVal.toFixed(2)}</td><td rowspan="${items.length}">Rs. ${pd.toFixed(2)}</td><td rowspan="${items.length}" style="color:red;">Rs. ${du.toFixed(2)}</td>`);
+          }
+          printWindow.document.write(`</tr>`);
+        });
+      } else {
+        printWindow.document.write(`<tr><td>${p.bill_date || ''}</td><td><b>${p.bill_no || ''}</b></td><td>${p.supplier_name || ''}</td><td colspan="4">-</td><td>Rs. ${parseFloat(p.transport || 0).toFixed(2)}</td><td>Rs. ${parseFloat(p.labor || 0).toFixed(2)}</td><td><b>Rs. ${gt.toFixed(2)}</b></td><td style="color:#2E7D32; font-weight:bold;">Rs. ${sellingPriceVal.toFixed(2)}</td><td>Rs. ${pd.toFixed(2)}</td><td style="color:red;">Rs. ${du.toFixed(2)}</td></tr>`);
+      }
+    });
+
+    if(filtered.length === 0) {
+      printWindow.document.write(`<tr><td colspan="13" style="padding:15px; color:#666;">No purchase records found.</td></tr>`);
+    }
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<div class="total-box">Total Purchase Grand Total: Rs. ' + totalGrandSum.toFixed(2) + '</div>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+  }
+
+  function addPurchaseItemRow() {
+    let container = document.getElementById("purchaseItemsContainer");
+    let div = document.createElement("div");
+    div.className = "pur-item-row";
+    div.style.cssText = "display:flex; gap:10px; align-items:center; flex-wrap:wrap;";
+    div.innerHTML = `
+      <input type="text" class="pi-name" placeholder="आइटम नाम (Item Name)" style="flex:2; min-width:160px; padding:9px;">
+      <input type="number" class="pi-price" placeholder="मूल्यदर (Rate)" style="flex:1; min-width:100px; padding:9px;" oninput="calculatePurchaseTotals()">
+      <input type="number" class="pi-qty" placeholder="परिमाण (Qty)" style="flex:1; min-width:90px; padding:9px;" oninput="calculatePurchaseTotals()">
+      <input type="text" class="pi-desc" placeholder="डिस्क्रिप्सन (Description)" style="flex:2; min-width:160px; padding:9px;">
+      <span class="pi-total-txt" style="font-weight:bold; color:#1976D2; min-width:90px;">जम्मा: 0</span>
+      <button type="button" onclick="removePurchaseItemRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">❌</button>
+    `;
+    container.appendChild(div);
+    updatePurchaseRemoveButtons();
+  }
+
+  function removePurchaseItemRow(btn) {
+    let row = btn.parentElement;
+    let container = row.parentElement;
+    if(container.children.length > 1) {
+      container.removeChild(row);
+      updatePurchaseRemoveButtons();
+      calculatePurchaseTotals();
+    }
+  }
+
+  function updatePurchaseRemoveButtons() {
+    let rows = document.querySelectorAll(".pur-item-row");
+    if(rows.length === 1) {
+      rows[0].querySelector("button").disabled = true;
+    } else {
+      rows.forEach(r => r.querySelector("button").disabled = false);
+    }
+  }
+
+  function calculatePurchaseTotals() {
+    let subTotal = 0;
+    let totalQty = 0;
+
+    document.querySelectorAll(".pur-item-row").forEach(row => {
+      let price = parseFloat(row.querySelector(".pi-price").value) || 0;
+      let qty = parseFloat(row.querySelector(".pi-qty").value) || 0;
+      let rowTot = price * qty;
+      row.querySelector(".pi-total-txt").innerText = "जम्मा: " + rowTot.toFixed(2);
+      subTotal += rowTot;
+      totalQty += qty;
+    });
+
+    let transport = parseFloat(document.getElementById("purTransport").value) || 0;
+    let labor = parseFloat(document.getElementById("purLabor").value) || 0;
+    let profitPct = parseFloat(document.getElementById("purProfitPct").value) || 0;
+    let paidAmount = parseFloat(document.getElementById("purPaidAmount").value) || 0;
+
+    let grandTotal = subTotal + transport + labor;
+    let dueAmount = grandTotal - paidAmount;
+    if(dueAmount < 0) dueAmount = 0;
+
+    let avgCostPerUnit = totalQty > 0 ? (grandTotal / totalQty) : 0;
+    let autoSellingPrice = avgCostPerUnit + (avgCostPerUnit * (profitPct / 100));
+
+    document.getElementById("purSubTotalDisplay").innerText = subTotal.toFixed(2);
+    document.getElementById("purGrandTotalDisplay").innerText = grandTotal.toFixed(2);
+    document.getElementById("purDueAmountDisplay").innerText = dueAmount.toFixed(2);
+    document.getElementById("purAutoSellingPriceDisplay").innerText = autoSellingPrice.toFixed(2) + " प्रति युनिट";
+  }
+
+  async function savePurchaseRecord() {
+    let supplierName = document.getElementById("purSupplierName").value.trim();
+    let date = document.getElementById("purBillDate").value;
+    let billNo = document.getElementById("purBillNo").value.trim();
+    
+    if(!supplierName || !date || !billNo) {
+      alert("कृपया सप्लायरको नाम, बिल मिति र बिल नम्बर भर्नुहोस्!");
+      return;
+    }
+
+    let itemsSaved = 0;
+    let rows = document.querySelectorAll(".pur-item-row");
+    
+    let transport = parseFloat(document.getElementById("purTransport").value) || 0;
+    let labor = parseFloat(document.getElementById("purLabor").value) || 0;
+    let profitPct = parseFloat(document.getElementById("purProfitPct").value) || 0;
+    let paidAmount = parseFloat(document.getElementById("purPaidAmount").value) || 0;
+
+    let subTotForShare = 0;
+    let totalQtyAll = 0;
+    let itemsArray = [];
+
+    rows.forEach(row => {
+      let name = row.querySelector(".pi-name").value.trim();
+      let price = parseFloat(row.querySelector(".pi-price").value) || 0;
+      let qty = parseFloat(row.querySelector(".pi-qty").value) || 0;
+      let desc = row.querySelector(".pi-desc").value.trim();
+      if(name && price > 0 && qty > 0) {
+        subTotForShare += (price * qty);
+        totalQtyAll += qty;
+        itemsArray.push({ name, price, qty, description: desc });
+      }
+    });
+
+    if(itemsArray.length === 0) {
+      alert("⚠️ कृपया कम्तीमा एउटा आइटमको नाम, मूल्य र परिमाण सही भर्नुहोस्!");
+      return;
+    }
+
+    let grandTotal = subTotForShare + transport + labor;
+    let dueAmount = grandTotal - paidAmount;
+    if(dueAmount < 0) dueAmount = 0;
+
+    let avgCostPerUnit = totalQtyAll > 0 ? (grandTotal / totalQtyAll) : 0;
+    let finalAutoSellingPrice = avgCostPerUnit + (avgCostPerUnit * (profitPct / 100));
+
+    let { error: purError } = await supabaseClient.from('inventory_purchases').insert([{
+      supplier_name: supplierName,
+      bill_date: date,
+      bill_no: billNo,
+      items_json: JSON.stringify(itemsArray),
+      sub_total: subTotForShare,
+      transport: transport,
+      labor: labor,
+      grand_total: grandTotal,
+      paid_amount: paidAmount,
+      due_amount: dueAmount,
+      profit_pct: profitPct,
+      selling_price: parseFloat(finalAutoSellingPrice.toFixed(2))
+    }]);
+
+    if(purError) {
+      console.log("Purchase insert error: " + purError.message);
+    }
+
+    for(let item of itemsArray) {
+      let itemBase = item.price * item.qty;
+      let shareOfExtra = subTotForShare > 0 ? (itemBase / subTotForShare) * (transport + labor) : 0;
+      let totalCostForItem = itemBase + shareOfExtra;
+      let unitCost = totalCostForItem / item.qty;
+      let sellingPrice = unitCost + (unitCost * (profitPct / 100));
+
+      await supabaseClient.from('menu_items').insert([{
+        name: item.name + (item.description ? " (" + item.description + ")" : ""),
+        price: parseFloat(sellingPrice.toFixed(2)),
+        unit: item.qty + " Unit",
+        description: "Supplier: " + supplierName + " | Bill No: " + billNo + " | " + item.description,
+        category: "Purchased Inventory",
+        status: "In Stock",
+        stock: item.qty,
+        alert_limit: 10
+      }]);
+      itemsSaved++;
+    }
+
+    if(itemsSaved > 0) {
+      alert("✅ खरिद बिल, Auto Selling Price सहित सफलतापूर्वक Supabase मा सेभ भयो!");
+      
+      document.getElementById("purSupplierName").value = "";
+      document.getElementById("purBillNo").value = "";
+      document.getElementById("purTransport").value = "0";
+      document.getElementById("purLabor").value = "0";
+      document.getElementById("purProfitPct").value = "10";
+      document.getElementById("purPaidAmount").value = "0";
+      
+      let container = document.getElementById("purchaseItemsContainer");
+      container.innerHTML = `
+        <div class="pur-item-row" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <input type="text" class="pi-name" placeholder="आइटम नाम (Item Name)" style="flex:2; min-width:160px; padding:9px;">
+          <input type="number" class="pi-price" placeholder="मूल्यदर (Rate)" style="flex:1; min-width:100px; padding:9px;" oninput="calculatePurchaseTotals()">
+          <input type="number" class="pi-qty" placeholder="परिमाण (Qty)" style="flex:1; min-width:90px; padding:9px;" oninput="calculatePurchaseTotals()">
+          <input type="text" class="pi-desc" placeholder="डिस्क्रिप्सन (Description)" style="flex:2; min-width:160px; padding:9px;">
+          <span class="pi-total-txt" style="font-weight:bold; color:#1976D2; min-width:90px;">जम्मा: 0</span>
+          <button type="button" onclick="removePurchaseItemRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+        </div>
+      `;
+      calculatePurchaseTotals();
+      loadMenuList();
+      loadPurchaseList();
+      loadSupplierDueReport();
+    }
+  }
+
+  function playClickSound() {
+    try {
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!window.audioCtx) window.audioCtx = new AudioContext();
+      if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
+      
+      let now = window.audioCtx.currentTime;
+      let osc1 = window.audioCtx.createOscillator();
+      let osc2 = window.audioCtx.createOscillator();
+      let gainNode = window.audioCtx.createGain();
+
+      osc1.type = 'square';
+      osc2.type = 'sawtooth';
+
+      osc1.frequency.setValueAtTime(2200, now);
+      osc1.frequency.exponentialRampToValueAtTime(120, now + 0.06);
+
+      osc2.frequency.setValueAtTime(1100, now);
+      osc2.frequency.exponentialRampToValueAtTime(60, now + 0.06);
+
+      gainNode.gain.setValueAtTime(2.5, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+      osc1.connect(gainNode);
+      osc2.connect(gainNode);
+      gainNode.connect(window.audioCtx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 0.06);
+      osc2.stop(now + 0.06);
+    } catch(e) {}
+  }
+
+  document.addEventListener("click", function(event) {
+    let adminContent = document.getElementById("adminContent");
+    if (adminContent && adminContent.style.display !== "none") {
+      playClickSound();
+    }
+  });
+
+  function playTringTringBell() {
+    try {
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!window.audioCtx) window.audioCtx = new AudioContext();
+      if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
+
+      let now = window.audioCtx.currentTime;
+      
+      for (let i = 0; i < 3; i++) {
+        let startTime = now + (i * 0.30);
+
+        let osc1 = window.audioCtx.createOscillator();
+        let osc2 = window.audioCtx.createOscillator();
+        let gainNode = window.audioCtx.createGain();
+
+        osc1.type = 'sine';
+        osc2.type = 'square';
+
+        osc1.frequency.setValueAtTime(1320, startTime);
+        osc1.frequency.exponentialRampToValueAtTime(660, startTime + 0.16);
+
+        osc2.frequency.setValueAtTime(2640, startTime);
+        osc2.frequency.exponentialRampToValueAtTime(1320, startTime + 0.16);
+
+        gainNode.gain.setValueAtTime(4.0, startTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.16);
+
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+        gainNode.connect(window.audioCtx.destination);
+
+        osc1.start(startTime);
+        osc2.start(startTime);
+        osc1.stop(startTime + 0.16);
+        osc2.stop(startTime + 0.16);
+      }
+    } catch(e) {}
+  };
+
+  function testBellSound() {
+    playTringTringBell();
+    alert("🔔 नयाँ टोनको घण्टी (टिन-टिन, टिन-टिन) सफलतापूर्वक बज्यो!");
+  };
+
+  async function handleLogin() {
+    var u = document.getElementById("username").value.trim().toLowerCase();
+    var p = document.getElementById("password").value.trim();
+    if(u === "" || p === "") { alert("Enter credentials."); return; }
+
+    if (u === "manojdashaundi@gmail.com" || u === "admin@pooja.com" || u === "admin") {
+      sessionStorage.setItem("ADMIN_LOGIN", "true");
+      sessionStorage.setItem("USER_ROLE", "admin");
+      sessionStorage.setItem("LOGGED_IN_USER", u);
+      showAdminPanel();
+      return;
+    }
+
+    try {
+      let { data, error } = await supabaseClient.from('admin').select('*').eq('email', u).single();
+      if (!error && data && String(data.password).trim() === p) {
+        sessionStorage.setItem("ADMIN_LOGIN", "true");
+        sessionStorage.setItem("USER_ROLE", data.role || "Admin");
+        sessionStorage.setItem("LOGGED_IN_USER", data.name || u);
+        showAdminPanel();
+        return;
+      }
+    } catch(e) {}
+
+    alert("❌ Invalid Username or Password!");
+  };
+
+  async function loadDeliveryZones() {
+    let tbody = document.getElementById("deliveryZonesTableList");
+    if (!tbody) return;
+    try {
+      let { data, error } = await supabaseClient.from('delivery_zones').select('*').order('district_name', { ascending: true });
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="padding:15px;">No delivery zones found.</td></tr>`;
+        return;
+      }
+      let html = "";
+      data.forEach(z => {
+        html += `<tr id="dz_row_${z.id}">
+          <td>
+            <span id="dz_name_txt_${z.id}"><b>${z.district_name}</b></span>
+            <input type="text" id="dz_name_input_${z.id}" value="${z.district_name}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </td>
+          <td>
+            <span id="dz_rate_txt_${z.id}" style="color:#1976D2; font-weight:bold;">Rs. ${z.rate}</span>
+            <input type="number" id="dz_rate_input_${z.id}" value="${z.rate}" style="display:none; width:80px; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </td>
+          <td style="white-space: nowrap;">
+            <button id="dz_edit_btn_${z.id}" class="editBtn" onclick="enableZoneEdit(${z.id})">✏️ Edit</button>
+            <button id="dz_save_btn_${z.id}" class="saveBtn" style="display:none;" onclick="saveZoneEdit(${z.id})">💾 Save</button>
+            <button class="removeBtn" onclick="deleteDeliveryZone(${z.id})" style="margin-left:5px;">❌ Delete</button>
+          </td>
+        </tr>`;
+      });
+      tbody.innerHTML = html;
+    } catch(e) {}
+  };
+
+  function enableZoneEdit(id) {
+    document.getElementById(`dz_name_txt_${id}`).style.display = 'none';
+    document.getElementById(`dz_rate_txt_${id}`).style.display = 'none';
+    document.getElementById(`dz_edit_btn_${id}`).style.display = 'none';
+
+    document.getElementById(`dz_name_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`dz_rate_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`dz_save_btn_${id}`).style.display = 'inline-block';
+  }
+
+  async function saveZoneEdit(id) {
+    let newName = document.getElementById(`dz_name_input_${id}`).value.trim();
+    let newRate = parseFloat(document.getElementById(`dz_rate_input_${id}`).value);
+
+    if (!newName || isNaN(newRate)) { 
+      alert("कृपया सही जिल्लाको नाम र रेट राख्नुहोस्!"); 
+      return; 
+    }
+
+    let { error } = await supabaseClient
+      .from('delivery_zones')
+      .update({ district_name: newName, rate: newRate })
+      .eq('id', id);
+
+    if (error) {
+      alert("Error: " + error.message);
+    } else {
+      alert("✅ जिल्ला र रेट सफलतापूर्वक अपडेट भयो!");
+      loadDeliveryZones(); 
+    }
+  }
+
+  async function addDeliveryZone() {
+    let dName = document.getElementById("newDistrictName").value.trim();
+    let dRate = parseFloat(document.getElementById("newDistrictRate").value);
+    if (!dName || isNaN(dRate)) { alert("कृपया जिल्लाको नाम र रेट सही भर्नुहोस्!"); return; }
+    let { error } = await supabaseClient.from('delivery_zones').insert([{ district_name: dName, rate: dRate }]);
+    if (error) { alert("Error: " + error.message); return; }
+    alert("✅ जिल्ला र रेट सफलतापूर्वक थपियो!");
+    document.getElementById("newDistrictName").value = "";
+    document.getElementById("newDistrictRate").value = "";
+    loadDeliveryZones();
+  };
+
+  async function deleteDeliveryZone(id) {
+    if (confirm("के तपाई यो जिल्ला हटाउन चाहनुहुन्छ?")) {
+      await supabaseClient.from('delivery_zones').delete().eq('id', id);
+      loadDeliveryZones();
+    }
+  };
+
+  var lastOrderCount = 0;
+  async function loadOrders() {
+    try {
+      let { data, error } = await supabaseClient.from('orders').select('*');
+      if (error) {
+        console.error("Error loading orders:", error);
+        return;
+      }
+      if (data) {
+        let sortedOrders = data.sort((a, b) => (b.id || 0) - (a.id || 0));
+        
+        if (lastOrderCount > 0 && sortedOrders.length > lastOrderCount) {
+          playTringTringBell();
+        }
+        lastOrderCount = sortedOrders.length;
+
+        activeOrdersCache = sortedOrders;
+        calculateDashboardStats(activeOrdersCache);
+        renderActiveOrdersTable(activeOrdersCache);
+        drawMonthlySalesChart(activeOrdersCache);
+        drawHourlySalesChart(activeOrdersCache);
+        updateFinancialSummary();
+      }
+    } catch(err) {}
+  };
+
+  async function loadExtraInvoicesHistory() {
+    try {
+      let { data, error } = await supabaseClient.from('invoices').select('*').order('id', { ascending: false });
+      if (!error && data) {
+        extraInvoicesCache = data;
+      }
+    } catch(e) {
+      extraInvoicesCache = [];
+    }
+  }
+
+  async function exportOutstandingDuesCSV() {
+    await loadExtraInvoicesHistory();
+    let startDate = document.getElementById("duesReportStart").value;
+    let endDate = document.getElementById("duesReportEnd").value;
+
+    let filtered = extraInvoicesCache.filter(inv => {
+      let tot = parseFloat(inv.total || 0);
+      let paid = parseFloat(inv.paid || 0);
+      let hasDue = (tot - paid) > 0.01;
+      if(!hasDue) return false;
+
+      if(startDate && endDate && inv.date) {
+        let d = new Date(inv.date);
+        let start = new Date(startDate);
+        let end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        return (d >= start && d <= end);
+      }
+      return true;
+    });
+
+    let duesList = filtered;
+
+    if(duesList.length === 0) {
+      alert("चयनित मिति वा फिल्टरभित्र कुनै बाँकी बक्यौता रेकर्ड भेटिएन!");
+      return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,Date,Invoice No,Customer Name,Total Amount,Paid Amount,Balance Due (RM)\n";
+    duesList.forEach(inv => {
+      let tot = parseFloat(inv.total || 0);
+      let paid = parseFloat(inv.paid || 0);
+      let due = tot - paid;
+      csvContent += `"${inv.date || ''}","${inv.invoice_no || ''}","${inv.customer_name || ''}","${tot.toFixed(2)}","${paid.toFixed(2)}","${due.toFixed(2)}"\n`;
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "outstanding_dues_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  async function printOutstandingDuesPDF() {
+    await loadExtraInvoicesHistory();
+    let startDate = document.getElementById("duesReportStart").value;
+    let endDate = document.getElementById("duesReportEnd").value;
+
+    let filtered = extraInvoicesCache.filter(inv => {
+      let tot = parseFloat(inv.total || 0);
+      let paid = parseFloat(inv.paid || 0);
+      let hasDue = (tot - paid) > 0.01;
+      if(!hasDue) return false;
+
+      if(startDate && endDate && inv.date) {
+        let d = new Date(inv.date);
+        let start = new Date(startDate);
+        let end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        return (d >= start && d <= end);
+      }
+      return true;
+    });
+
+    let duesList = filtered;
+
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
+    printWindow.document.write('<html><head><title>Outstanding Dues Report</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
+    printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;margin:0;}');
+    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #C62828;padding-bottom:5mm;margin-bottom:10px;}');
+    printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
+    printWindow.document.write('h2{margin:2px 0;color:#1976D2;font-size:16px;font-weight:700;}');
+    printWindow.document.write('h3{margin:2px 0;color:#333;font-size:13px;font-weight:600;}');
+    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
+    printWindow.document.write('th,td{border:2px solid #333;padding:7px 8px;text-align:center;font-size:12px;color:#000;font-weight:bold;}');
+    printWindow.document.write('th{background:#C62828;color:white;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('tr:nth-child(even){background-color:#fcf2f5;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('.total-box{text-align:right;margin-top:10px;font-size:14px;font-weight:bold;color:#C62828;}');
+    printWindow.document.write('.print-btn-bar{position:fixed;top:10px;right:10px;background:#C62828;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;z-index:9999;box-shadow:0 2px 5px rgba(0,0,0,0.3);display:block;}');
+    printWindow.document.write('@media print { .print-btn-bar { display: none !important; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<button class="print-btn-bar" onclick="window.print()">🖨️ Print Now / Save PDF</button>');
+    printWindow.document.write('<div class="header">');
+    printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
+    printWindow.document.write('<h2 style="color:#1976D2; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
+    printWindow.document.write('<h3>Outstanding Dues Report (तिर्न बाँकी बक्यौता विवरण)</h3>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('<table><thead><tr><th>Date</th><th>Invoice No.</th><th>Customer Name</th><th>Total Amount</th><th>Paid Amount</th><th>Balance Due</th></tr></thead><tbody>');
+    
+    let totalDuesSum = 0;
+    duesList.forEach(inv => {
+      let tot = parseFloat(inv.total || 0);
+      let paid = parseFloat(inv.paid || 0);
+      let due = tot - paid;
+      totalDuesSum += due;
+      printWindow.document.write(`<tr><td>${inv.date || ''}</td><td><b>${inv.invoice_no || ''}</b></td><td>${inv.customer_name || ''}</td><td>RM ${tot.toFixed(2)}</td><td>RM ${paid.toFixed(2)}</td><td>RM ${due.toFixed(2)}</td></tr>`);
+    });
+
+    if(duesList.length === 0) {
+      printWindow.document.write(`<tr><td colspan="6" style="padding:15px; color:#666;">No outstanding dues found.</td></tr>`);
+    }
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<div class="total-box">Total Balance Due: RM ' + totalDuesSum.toFixed(2) + '</div>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+  }
+
+  function renderActiveOrdersTable(ordersToRender) {
+    let tableBody = document.getElementById("ordersTable");
+    if(!tableBody) return;
+
+    let loggedInRole = (sessionStorage.getItem("USER_ROLE") || "admin").toLowerCase();
+    let isMarketingOrDelivery = (loggedInRole === "marketing" || loggedInRole === "delivery");
+
+    let finalOrdersToRender = ordersToRender;
+    if (isMarketingOrDelivery) {
+      finalOrdersToRender = ordersToRender.filter(o => {
+        let st = o.status ? String(o.status).trim() : "Pending";
+        return st !== "Delivered";
+      });
+    }
+
+    let html = "";
+    if(finalOrdersToRender.length === 0) {
+      html = `<tr><td colspan="9" style="padding:20px;">No Active Orders Found.</td></tr>`;
+    } else {
+      finalOrdersToRender.forEach(function(o){
+        let status = o.status ? String(o.status).trim() : "Pending";
+
+        let slipSrc = o.payment_slip || o.slip || o.payment || o.qr_image || o.proof || "";
+        let slipHtml = "No Slip";
+        if (slipSrc && slipSrc !== "None" && slipSrc !== "Slip Uploaded" && slipSrc.length > 5) {
+          slipHtml = `<img src="${slipSrc}" class="proof-thumb" onclick="openImageViewer('${slipSrc}')">`;
+        }
+
+        let delivSrc = o.proof_img || o.delivery_proof || "";
+        let delivHtml = "None";
+        if (delivSrc && delivSrc !== "None" && delivSrc !== "EMPTY" && delivSrc.length > 5) {
+          delivHtml = `<img src="${delivSrc}" class="proof-thumb" onclick="openImageViewer('${delivSrc}')">`;
+        }
+
+        let deliveryTimeDisplay = o.delivery_time || o.delivery_date || "-";
+        if (!o.delivery_time && !o.delivery_date) {
+          deliveryTimeDisplay = "-";
+        }
+
+        let statusSelect = "";
+        if (isMarketingOrDelivery) {
+          statusSelect = `<select id="status_${o.order_no}" disabled style="background:#eee; color:#555;">
+            <option value="${status}" selected>${status}</option>
+          </select> 
+          <button class="updateBtn" disabled style="opacity:0.5; cursor:not-allowed;">Go</button>`;
+        } else {
+          statusSelect = `<select id="status_${o.order_no}">
+            <option value="Pending" ${status==="Pending"?"selected":""}>Pending</option>
+            <option value="Preparing" ${status==="Preparing"?"selected":""}>Preparing</option>
+            <option value="Ready" ${status==="Ready"?"selected":""}>Ready</option>
+            <option value="Out for Delivery" ${status==="Out for Delivery"?"selected":""}>Out for Delivery</option>
+            <option value="Delivered" ${status==="Delivered"?"selected":""}>Delivered</option>
+            <option value="Cancelled" ${status==="Cancelled"?"selected":""} style="color:red; font-weight:bold;">Cancelled</option>
+          </select> 
+          <button class="updateBtn" onclick="manualUpdate('${o.order_no}')">Go</button>`;
+        }
+
+        let actionButtons = "";
+        if(status === "Pending") {
+          if (isMarketingOrDelivery) {
+            actionButtons = `<button class="actionBtn rcvBtn" disabled style="opacity:0.5; cursor:not-allowed;">🎫 Received</button><button class="actionBtn cancelBtn" disabled style="margin-top:5px; opacity:0.5; cursor:not-allowed;">❌ Cancel Order</button>`;
+          } else {
+            actionButtons = `<button class="actionBtn rcvBtn" onclick="markReceived('${o.order_no}')">🎫 Received</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+          }
+        } else if(status === "Preparing") {
+          if (isMarketingOrDelivery) {
+            actionButtons = `<button class="actionBtn billBtn" disabled style="opacity:0.5; cursor:not-allowed;">🍳 Ready & Bill</button><button class="actionBtn cancelBtn" disabled style="margin-top:5px; opacity:0.5; cursor:not-allowed;">❌ Cancel Order</button>`;
+          } else {
+            actionButtons = `<button class="actionBtn billBtn" onclick="openBill('${o.order_no}')">🍳 Ready & Bill</button><button class="actionBtn cancelBtn" onclick="promptCancelOrder('${o.order_no}')" style="margin-top:5px;">❌ Cancel Order</button>`;
+          }
+        } else if(status === "Ready") {
+          actionButtons = `<button class="actionBtn dispatchBtn" onclick="updateOrderStatus('${o.order_no}', 'Out for Delivery')">🚚 Dispatch</button>${isMarketingOrDelivery ? '<button class="actionBtn cancelBtn" disabled style="margin-top:5px; opacity:0.5; cursor:not-allowed;">❌ Cancel Order</button>' : '<button class="actionBtn cancelBtn" onclick="promptCancelOrder(\'' + o.order_no + '\')" style="margin-top:5px;">❌ Cancel Order</button>'}`;
+        } else if(status === "Out for Delivery") {
+          actionButtons = `<button class="actionBtn proofBtn" onclick="promptUploadProof('${o.order_no}')">📸 Upload Proof</button>${isMarketingOrDelivery ? '<button class="actionBtn cancelBtn" disabled style="margin-top:5px; opacity:0.5; cursor:not-allowed;">❌ Cancel Order</button>' : '<button class="actionBtn cancelBtn" onclick="promptCancelOrder(\'' + o.order_no + '\')" style="margin-top:5px;">❌ Cancel Order</button>'}`;
+        } else if(status === "Delivered") {
+          actionButtons = `<button class="actionBtn deliveredBtn">✔ Delivered</button>`;
+        } else if(status === "Cancelled") {
+          let reasonText = o.cancel_reason || "No reason provided";
+          let adminBy = o.cancelled_by || "Admin";
+          actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default; background:#f44336;">❌ Cancelled</button>
+                             <button class="viewReasonBtn" onclick="viewCancelReason('${encodeURIComponent(reasonText)}', '${encodeURIComponent(adminBy)}')">👁️ View Reason</button>`;
+        } else {
+          actionButtons = `<button class="actionBtn cancelBtn" style="cursor:default;">❌ Cancelled</button>`;
+        }
+
+        html += `<tr>
+          <td style="font-size:12px; color:#333; font-weight:600;">${o.time || '-'}</td>
+          <td><b>${o.order_no || ''}</b></td>
+          <td style="text-align:left;"><b>${o.customer_name || '-'}</b><br><small style="color:#444; font-weight:600;">${o.phone || ''}</small><br><small style="color:#222; font-weight:600; white-space:pre-line;">${o.items || ''}</small><br><small style="color:#333; font-weight:600;">${o.address || '-'}</small></td>
+          <td style="color:#1976D2; font-weight:bold;">Rs. ${o.total || '0'}</td>
+          <td>${slipHtml}</td>
+          <td style="font-size:12px; color:#333; font-weight:600;">${deliveryTimeDisplay}</td>
+          <td>${delivHtml}</td>
+          <td>${statusSelect}</td>
+          <td>${actionButtons}</td>
+        </tr>`;
+      });
+    }
+    tableBody.innerHTML = html;
+  };
+
+  function promptCancelOrder(orderNo) {
+    let reason = prompt("कृपया अर्डर क्यान्सिल गर्नुको कारण (Reason) लेख्नुहोस्:");
+    if (reason !== null) {
+      reason = reason.trim() === "" ? "No reason provided" : reason.trim();
+      let currentAdmin = sessionStorage.getItem("LOGGED_IN_USER") || "Admin";
+      updateOrderStatus(orderNo, 'Cancelled', { 
+        cancel_reason: reason, 
+        cancelled_by: currentAdmin 
+      });
+    }
+  }
+
+  function viewCancelReason(encodedReason, encodedAdmin) {
+    let reason = decodeURIComponent(encodedReason);
+    let admin = decodeURIComponent(encodedAdmin);
+    alert(`❌ Cancellation Details:\n\n👤 Cancelled By: ${admin}\n📝 Reason: ${reason}`);
+  }
+
+  function filterActiveOrders() {
+    let query = document.getElementById("orderSearchInput").value.trim().toLowerCase();
+    if(!query) { renderActiveOrdersTable(activeOrdersCache); return; }
+    let filtered = activeOrdersCache.filter(o => 
+      String(o.order_no || '').toLowerCase().includes(query) || 
+      String(o.customer_name || '').toLowerCase().includes(query)
+    );
+    renderActiveOrdersTable(filtered);
+  };
+
+  async function updateOrderStatus(orderNo, newStatus, extraData = {}) {
+    let updatePayload = { status: newStatus, ...extraData };
+    let { error } = await supabaseClient.from('orders').update(updatePayload).eq('order_no', orderNo);
+    if(error) {
+      await supabaseClient.from('orders').update({ status: newStatus }).eq('order_no', orderNo);
+    }
+    loadOrders();
+  };
+
+  async function manualUpdate(orderNo) {
+    var s = document.getElementById("status_" + orderNo).value;
+    if (s === "Cancelled") {
+      let reason = prompt("कृपया अर्डर क्यान्सिल गर्नुको कारण (Reason) लेख्नुहोस्:");
+      reason = (reason && reason.trim() !== "") ? reason.trim() : "No reason provided";
+      let currentAdmin = sessionStorage.getItem("LOGGED_IN_USER") || "Admin";
+      await updateOrderStatus(orderNo, s, { cancel_reason: reason, cancelled_by: currentAdmin });
+    } else {
+      await updateOrderStatus(orderNo, s);
+    }
+  };
+
+  function markReceived(orderNo) {
+    updateOrderStatus(orderNo, 'Preparing');
+  }
+
+  function openBill(orderNo) {
+    let order = activeOrdersCache.find(o => o.order_no === orderNo);
+    if(!order) return;
+
+    let billHtml = `
+      <div style="text-align:center; padding-bottom:8px; border-bottom:2px solid #1976D2;">
+        <img src="https://i.postimg.cc/Hn5Fwwb5/logo.png" style="max-width:110px; height:auto; margin-bottom:5px;">
+        <h2 style="margin:2px 0; color:#1976D2; font-size:17px; font-weight:700;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>
+        <p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>
+        <p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>
+        <p style="margin:4px 0 0 0; font-size:12px; color:#444; font-weight:700; letter-spacing:1px;">RETAIL TAX INVOICE</p>
+      </div>
+      <div style="margin:10px 0; font-size:13px; line-height:1.5; font-weight:600;">
+        <div style="display:flex; justify-content:between;"><span><b>Order No:</b> ${order.order_no}</span><span style="float:right;"><b>Date:</b> ${order.time}</span></div>
+        <div><b>Customer:</b> ${order.customer_name} (${order.phone})</div>
+        <div><b>Address:</b> ${order.address}</div>
+      </div>
+      <hr style="border:0; border-top:1.5px dashed #888; margin:8px 0;">
+      <p style="margin:4px 0; font-weight:bold; font-size:13px; color:#222;">Items Summary:</p>
+      <div style="background:#f9fbfd; padding:8px; border-radius:6px; border:1px solid #ccc;">
+        <pre style="font-family:inherit; white-space:pre-line; margin:0; font-size:13px; color:#111; font-weight:600;">${order.items || ''}</pre>
+      </div>
+      <hr style="border:0; border-top:1.5px dashed #888; margin:8px 0;">
+      <h3 style="text-align:right; color:#1976D2; margin:8px 0; font-weight:700;">Grand Total: Rs. ${order.total}</h3>
+      <hr style="border:0; border-top:2px solid #1976D2; margin:10px 0 6px 0;">
+      <div style="text-align:center; font-size:11px; color:#555; font-weight:600;">
+        <p style="margin:2px 0;">Thank you for your business!</p>
+        <p style="margin:2px 0;">Global Trade • Better Future</p>
+      </div>
+    `;
+    document.getElementById("printableInvoiceArea").innerHTML = billHtml;
+    document.getElementById("printModalBox").style.display = "flex";
+
+    updateOrderStatus(orderNo, 'Ready');
+  }
+
+  function executeSystemPrint() {
+    window.print();
+  }
+
+  function closePrintModal() {
+    document.getElementById("printModalBox").style.display = "none";
+  }
+
+  function promptUploadProof(orderNo) {
+    activeProofOrderNo = orderNo;
+    document.getElementById("uploadSourceModal").style.display = "flex";
+  }
+
+  function closeUploadSourceModal() {
+    document.getElementById("uploadSourceModal").style.display = "none";
+  }
+
+  function openCameraInput() {
+    closeUploadSourceModal();
+    document.getElementById("proofCameraInput").click();
+  }
+
+  function openGalleryInput() {
+    closeUploadSourceModal();
+    document.getElementById("proofGalleryInput").click();
+  }
+
+  function handleProofFileSelected(event) {
+    const file = event.target.files[0];
+    if(!file || !activeProofOrderNo) return;
+
+    const reader = new FileReader();
+    reader.onloadend = async function() {
+      let base64Image = reader.result;
+      let currentDateTime = new Date().toLocaleString();
+
+      let { error } = await supabaseClient.from('orders').update({
+        status: 'Delivered',
+        proof_img: base64Image,
+        delivery_time: currentDateTime
+      }).eq('order_no', activeProofOrderNo);
+
+      if (error) {
+        alert("Error saving proof: " + error.message);
+      } else {
+        alert("✅ Delivery Proof Uploaded Successfully & Order Marked as Delivered!");
+      }
+
+      activeProofOrderNo = null;
+      document.getElementById("proofCameraInput").value = "";
+      document.getElementById("proofGalleryInput").value = "";
+      loadOrders();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function calculateDashboardStats(orders) {
+    let totalOrders = orders.length;
+    let totalRevenue = 0, todaySales = 0, monthSales = 0;
+    let now = new Date();
+
+    orders.forEach(o => {
+      let amount = parseFloat(o.total) || 0;
+      totalRevenue += amount;
+      if (o.time) {
+        let orderDate = new Date(o.time);
+        if (!isNaN(orderDate.getTime())) {
+          if (orderDate.getDate() === now.getDate() && orderDate.getMonth() === now.getMonth()) todaySales += amount;
+          if (orderDate.getMonth() === now.getMonth()) monthSales += amount;
+        }
+      }
+    });
+
+    document.getElementById("dashTotalOrders").innerText = totalOrders;
+    document.getElementById("dashTotalRevenue").innerText = "Rs. " + totalRevenue.toFixed(2);
+    document.getElementById("dashTodaySales").innerText = "Rs. " + todaySales.toFixed(2);
+    document.getElementById("dashMonthSales").innerText = "Rs. " + monthSales.toFixed(2);
+  };
+
+  function drawMonthlySalesChart(orders) {
+    if (typeof google === 'undefined' || !google.visualization) return;
+    let monthlyTotals = {};
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    orders.forEach(o => {
+      let amount = parseFloat(o.total) || 0;
+      if (o.time) {
+        let d = new Date(o.time);
+        if (!isNaN(d.getTime())) {
+          let mKey = monthNames[d.getMonth()] + " " + d.getFullYear();
+          monthlyTotals[mKey] = (monthlyTotals[mKey] || 0) + amount;
+        }
+      }
+    });
+
+    let chartDataArray = [['Month', 'Sales (Rs.)']];
+    let keys = Object.keys(monthlyTotals);
+    if(keys.length === 0) {
+      chartDataArray.push(['Current', 0]);
+    } else {
+      keys.forEach(k => { chartDataArray.push([k, monthlyTotals[k]]); });
+    }
+
+    let data = google.visualization.arrayToDataTable(chartDataArray);
+    let options = {
+      title: 'Monthly Sales Insights & Growth',
+      colors: ['#1976D2'],
+      legend: { position: 'none' },
+      hAxis: { title: 'Month' },
+      vAxis: { title: 'Sales (Rs.)' },
+      backgroundColor: 'transparent'
+    };
+    let chart = new google.visualization.ColumnChart(document.getElementById('monthlySalesChart'));
+    chart.draw(data, options);
+  }
+
+  function drawHourlySalesChart(orders) {
+    if (typeof google === 'undefined' || !google.visualization) return;
+    let hourlyTotals = {};
+    for(let i=0; i<24; i++) {
+      let hLabel = (i < 10 ? "0" + i : i) + ":00";
+      hourlyTotals[hLabel] = 0;
+    }
+
+    let now = new Date();
+    orders.forEach(o => {
+      let amount = parseFloat(o.total) || 0;
+      if (o.time) {
+        let d = new Date(o.time);
+        if (!isNaN(d.getTime())) {
+          if (d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+            let hr = d.getHours();
+            let hLabel = (hr < 10 ? "0" + hr : hr) + ":00";
+            hourlyTotals[hLabel] = (hourlyTotals[hLabel] || 0) + amount;
+          }
+        }
+      }
+    });
+
+    let chartDataArray = [['Hour', 'Sales (Rs.)']];
+    Object.keys(hourlyTotals).forEach(h => {
+      chartDataArray.push([h, hourlyTotals[h]]);
+    });
+
+    let data = google.visualization.arrayToDataTable(chartDataArray);
+    let options = {
+      title: "Today's Hourly Sales Trend",
+      colors: ['#2196F3'],
+      legend: { position: 'none' },
+      hAxis: { title: 'Time (Hour)' },
+      vAxis: { title: 'Sales (Rs.)' },
+      backgroundColor: 'transparent'
+    };
+    let chart = new google.visualization.LineChart(document.getElementById('hourlySalesChart'));
+    chart.draw(data, options);
+  }
+
+  function exportReportCSV() {
+    let startDate = document.getElementById("reportStartDate").value;
+    let endDate = document.getElementById("reportEndDate").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = activeOrdersCache.filter(o => {
+      if(!o.time) return false;
+      let oDate = new Date(o.time);
+      if(isNaN(oDate.getTime())) return false;
+      return (oDate >= start && oDate <= end);
+    });
+
+    if(filtered.length === 0) {
+      alert("चयनित मितिभित्र कुनै अर्डर भेटिएन!");
+      return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,Date & Time,Order No,Customer Name,Phone,Total (Rs.),Status\n";
+    filtered.forEach(o => {
+      let rowData = [
+        `"${o.time || ''}"`,
+        `"${o.order_no || ''}"`,
+        `"${o.customer_name || ''}"`,
+        `"${o.phone || ''}"`,
+        `"${o.total || '0'}"`,
+        `"${o.status || 'Pending'}"`
+      ];
+      csvContent += rowData.join(",") + "\n";
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "sales_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function printReportPDF() {
+    let startDate = document.getElementById("reportStartDate").value;
+    let endDate = document.getElementById("reportEndDate").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = activeOrdersCache.filter(o => {
+      if(!o.time) return false;
+      let oDate = new Date(o.time);
+      if(isNaN(oDate.getTime())) return false;
+      return (oDate >= start && oDate <= end);
+    });
+
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
+    printWindow.document.write('<html><head><title>Sales Report</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
+    printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;margin:0;}');
+    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #1976D2;padding-bottom:5mm;margin-bottom:10px;}');
+    printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
+    printWindow.document.write('h2{margin:2px 0;color:#1976D2;font-size:16px;font-weight:700;}');
+    printWindow.document.write('h3{margin:2px 0;color:#333;font-size:13px;font-weight:600;}');
+    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
+    printWindow.document.write('th,td{border:2px solid #333;padding:7px 8px;text-align:center;font-size:12px;color:#000;font-weight:bold;}');
+    printWindow.document.write('th{background:#1976D2;color:white;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('tr:nth-child(even){background-color:#f4f8fb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('.total-box{text-align:right;margin-top:10px;font-size:14px;font-weight:bold;color:#1976D2;}');
+    printWindow.document.write('.print-btn-bar{position:fixed;top:10px;right:10px;background:#1976D2;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;z-index:9999;box-shadow:0 2px 5px rgba(0,0,0,0.3);display:block;}');
+    printWindow.document.write('@media print { .print-btn-bar { display: none !important; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<button class="print-btn-bar" onclick="window.print()">🖨️ Print Now / Save PDF</button>');
+    printWindow.document.write('<div class="header">');
+    printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
+    printWindow.document.write('<h2 style="color:#1976D2; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
+    printWindow.document.write('<h3>Sales Report (' + startDate + ' to ' + endDate + ')</h3>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('<table><thead><tr><th>Date & Time</th><th>Order No.</th><th>Customer Name</th><th>Phone</th><th>Total (Rs.)</th><th>Status</th></tr></thead><tbody>');
+    
+    let totalSum = 0;
+    filtered.forEach(o => {
+      totalSum += parseFloat(o.total) || 0;
+      printWindow.document.write(`<tr><td>${o.time || ''}</td><td><b>${o.order_no || ''}</b></td><td>${o.customer_name || ''}</td><td>${o.phone || ''}</td><td>Rs. ${o.total || '0'}</td><td>${o.status || ''}</td></tr>`);
+    });
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<div class="total-box">Total Revenue: Rs. ' + totalSum.toFixed(2) + '</div>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+  }
+
+  async function loadExpenseList() {
+    try {
+      let { data, error } = await supabaseClient.from('expenses').select('*').order('id', { ascending: false });
+      if (!error && data) {
+        expenseListCache = data;
+        updateFinancialSummary();
+      }
+    } catch(e) {}
+  }
+
+  async function addExpenseRecord() {
+    let date = document.getElementById("expenseDate").value;
+    let billNo = document.getElementById("expenseBillNo").value.trim();
+    let category = document.getElementById("expenseCategory").value.trim();
+    let amount = parseFloat(document.getElementById("expenseAmount").value);
+    let description = document.getElementById("expenseDescription").value.trim();
+
+    if(!date || !category || isNaN(amount)) {
+      alert("कृपया मिति, क्याटेगरी र रकम सही भर्नुहोस्!");
+      return;
+    }
+
+    let { error } = await supabaseClient.from('expenses').insert([{
+      date: date,
+      bill_no: billNo || '-',
+      category: category,
+      amount: amount,
+      description: description
+    }]);
+
+    if(error) {
+      let { error: err2 } = await supabaseClient.from('expenses').insert([{
+        date: date,
+        category: category,
+        amount: amount,
+        description: description
+      }]);
+      if(err2) {
+        alert("Error adding expense: " + err2.message);
+        return;
+      }
+    }
+
+    alert("✅ खर्च सफलतापूर्वक थपियो!");
+    document.getElementById("expenseDate").value = "";
+    document.getElementById("expenseBillNo").value = "";
+    document.getElementById("expenseCategory").value = "";
+    document.getElementById("expenseAmount").value = "";
+    document.getElementById("expenseDescription").value = "";
+    loadExpenseList();
+  }
+
+  async function loadSalaryVouchersHistory() {
+    try {
+      let { data, error } = await supabaseClient.from('salary_vouchers').select('*').order('id', { ascending: false });
+      if (!error && data) {
+        salaryVoucherHistoryCache = data;
+      }
+    } catch(e) {}
+  }
+
+  function updateFinancialSummary() {
+    let totalRev = 0;
+    activeOrdersCache.forEach(o => { totalRev += parseFloat(o.total) || 0; });
+    extraInvoicesCache.forEach(inv => { totalRev += parseFloat(inv.total || inv.paid) || 0; });
+
+    let totalExp = 0;
+    expenseListCache.forEach(e => { totalExp += parseFloat(e.amount) || 0; });
+
+    let netProfit = totalRev - totalExp;
+
+    document.getElementById("summaryTotalRevenue").innerText = "Rs. " + totalRev.toFixed(2);
+    document.getElementById("summaryTotalExpense").innerText = "Rs. " + totalExp.toFixed(2);
+    document.getElementById("summaryNetProfit").innerText = "Rs. " + netProfit.toFixed(2);
+  }
+
+  function exportExpenseCSV() {
+    let startDate = document.getElementById("expReportStart").value;
+    let endDate = document.getElementById("expReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = expenseListCache.filter(e => {
+      if(!e.date) return false;
+      let eDate = new Date(e.date);
+      if(isNaN(eDate.getTime())) return false;
+      return (eDate >= start && eDate <= end);
+    });
+
+    if(filtered.length === 0) {
+      alert("चयनित मितिभित्र कुनै खर्चको रेकर्ड भेटिएन!");
+      return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,Date,Bill/Receipt No.,Category,Amount (Rs.),Description\n";
+    filtered.forEach(e => {
+      let rowData = [
+        `"${e.date || ''}"`,
+        `"${e.bill_no || '-'}"`,
+        `"${e.category || ''}"`,
+        `"${e.amount || '0'}"`,
+        `"${e.description || ''}"`
+      ];
+      csvContent += rowData.join(",") + "\n";
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "expense_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function printExpensePDF() {
+    let startDate = document.getElementById("expReportStart").value;
+    let endDate = document.getElementById("expReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = expenseListCache.filter(e => {
+      if(!e.date) return false;
+      let eDate = new Date(e.date);
+      if(isNaN(eDate.getTime())) return false;
+      return (eDate >= start && eDate <= end);
+    });
+
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
+    printWindow.document.write('<html><head><title>Expense Report</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
+    printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;margin:0;}');
+    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #E91E63;padding-bottom:5mm;margin-bottom:10px;}');
+    printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
+    printWindow.document.write('h2{margin:2px 0;color:#1976D2;font-size:16px;font-weight:700;}');
+    printWindow.document.write('h3{margin:2px 0;color:#333;font-size:13px;font-weight:600;}');
+    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
+    printWindow.document.write('th,td{border:2px solid #333;padding:7px 8px;text-align:center;font-size:12px;color:#000;font-weight:bold;}');
+    printWindow.document.write('th{background:#E91E63;color:white;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('tr:nth-child(even){background-color:#fcf2f5;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('.total-box{text-align:right;margin-top:10px;font-size:14px;font-weight:bold;color:#D32F2F;}');
+    printWindow.document.write('.print-btn-bar{position:fixed;top:10px;right:10px;background:#E91E63;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;z-index:9999;box-shadow:0 2px 5px rgba(0,0,0,0.3);display:block;}');
+    printWindow.document.write('@media print { .print-btn-bar { display: none !important; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<button class="print-btn-bar" onclick="window.print()">🖨️ Print Now / Save PDF</button>');
+    printWindow.document.write('<div class="header">');
+    printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
+    printWindow.document.write('<h2 style="color:#1976D2; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
+    printWindow.document.write('<h3>Expense Report (' + startDate + ' to ' + endDate + ')</h3>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('<table><thead><tr><th>Date</th><th>Bill/Receipt No.</th><th>Category</th><th>Amount (Rs.)</th><th>Description</th></tr></thead><tbody>');
+    
+    let totalExpSum = 0;
+    filtered.forEach(e => {
+      totalExpSum += parseFloat(e.amount) || 0;
+      printWindow.document.write(`<tr><td>${e.date || ''}</td><td><b>${e.bill_no || '-'}</b></td><td>${e.category || ''}</td><td>Rs. ${e.amount || '0'}</td><td>${e.description || ''}</td></tr>`);
+    });
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<div class="total-box">Total Expense: Rs. ' + totalExpSum.toFixed(2) + '</div>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+  }
+
+  function exportSalaryCSV() {
+    let startDate = document.getElementById("salaryReportStart").value;
+    let endDate = document.getElementById("salaryReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = salaryVoucherHistoryCache.filter(v => {
+      if(!v.date) return false;
+      let vDate = new Date(v.date);
+      if(isNaN(vDate.getTime())) return false;
+      return (vDate >= start && vDate <= end);
+    });
+
+    if(filtered.length === 0) {
+      alert("चयनित मितिभित्र कुनै तलबको रेकर्ड भेटिएन!");
+      return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,Voucher No,Date,Employee Name,Designation,Payment Mode,Net Salary (Rs.)\n";
+    filtered.forEach(v => {
+      let rowData = [
+        `"${v.voucher_no || 'V-1000'}"`,
+        `"${v.date || ''}"`,
+        `"${v.staff_name || ''}"`,
+        `"${v.designation || ''}"`,
+        `"${v.payment_mode || ''}"`,
+        `"${v.net_salary || '0'}"`
+      ];
+      csvContent += rowData.join(",") + "\n";
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "salary_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function printSalaryPDF() {
+    let startDate = document.getElementById("salaryReportStart").value;
+    let endDate = document.getElementById("salaryReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = salaryVoucherHistoryCache.filter(v => {
+      if(!v.date) return false;
+      let vDate = new Date(v.date);
+      if(isNaN(vDate.getTime())) return false;
+      return (vDate >= start && vDate <= end);
+    });
+
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
+    printWindow.document.write('<html><head><title>Salary Report</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
+    printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;margin:0;}');
+    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #4CAF50;padding-bottom:5mm;margin-bottom:10px;}');
+    printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
+    printWindow.document.write('h2{margin:2px 0;color:#4CAF50;font-size:16px;font-weight:700;}');
+    printWindow.document.write('h3{margin:2px 0;color:#333;font-size:13px;font-weight:600;}');
+    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
+    printWindow.document.write('th,td{border:2px solid #333;padding:7px 8px;text-align:center;font-size:12px;color:#000;font-weight:bold;}');
+    printWindow.document.write('th{background:#4CAF50;color:white;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('tr:nth-child(even){background-color:#f2f9f2;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('.total-box{text-align:right;margin-top:10px;font-size:14px;font-weight:bold;color:#2E7D32;}');
+    printWindow.document.write('.print-btn-bar{position:fixed;top:10px;right:10px;background:#4CAF50;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;z-index:9999;box-shadow:0 2px 5px rgba(0,0,0,0.3);display:block;}');
+    printWindow.document.write('@media print { .print-btn-bar { display: none !important; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<button class="print-btn-bar" onclick="window.print()">🖨️ Print Now / Save PDF</button>');
+    printWindow.document.write('<div class="header">');
+    printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
+    printWindow.document.write('<h2 style="color:#1976D2; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
+    printWindow.document.write('<h3>Salary Report (' + startDate + ' to ' + endDate + ')</h3>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('<table><thead><tr><th>Voucher No.</th><th>Date</th><th>Employee Name</th><th>Designation</th><th>Payment Mode</th><th>Net Salary (Rs.)</th></tr></thead><tbody>');
+    
+    let totalSalarySum = 0;
+    filtered.forEach(v => {
+      let net = parseFloat(v.net_salary) || 0;
+      totalSalarySum += net;
+      let vNoDisplay = v.voucher_no || 'V-1000';
+      printWindow.document.write(`<tr><td><b>${vNoDisplay}</b></td><td>${v.date || ''}</td><td><b>${v.staff_name || ''}</b></td><td>${v.designation || ''}</td><td>${v.payment_mode || ''}</td><td>Rs. ${net.toFixed(2)}</td></tr>`);
+    });
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<div class="total-box">Total Salary Paid: Rs. ' + totalSalarySum.toFixed(2) + '</div>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+  }
+
+  function addExtraInvoiceRow() {
+    let container = document.getElementById("extraInvItemsContainer");
+    let div = document.createElement("div");
+    div.className = "extra-inv-row";
+    div.style.cssText = "display:flex; gap:10px; align-items:center;";
+    div.innerHTML = `
+      <input type="text" class="ex-desc" placeholder="Service Description" style="flex:2; padding:8px;">
+      <input type="number" class="ex-amt" value="0" oninput="calculateExtraInvoiceTotals()" style="flex:1; padding:8px;">
+      <button type="button" onclick="removeExtraInvoiceRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">❌</button>
+    `;
+    container.appendChild(div);
+    updateExtraInvoiceRemoveButtons();
+  }
+
+  function removeExtraInvoiceRow(btn) {
+    let row = btn.parentElement;
+    let container = row.parentElement;
+    if(container.children.length > 1) {
+      container.removeChild(row);
+      updateExtraInvoiceRemoveButtons();
+      calculateExtraInvoiceTotals();
+    }
+  }
+
+  function updateExtraInvoiceRemoveButtons() {
+    let rows = document.querySelectorAll(".extra-inv-row");
+    if(rows.length === 1) {
+      rows[0].querySelector("button").disabled = true;
+    } else {
+      rows.forEach(r => r.querySelector("button").disabled = false);
+    }
+  }
+
+  function calculateExtraInvoiceTotals() {
+    let total = 0;
+    document.querySelectorAll(".ex-amt").forEach(input => {
+      total += parseFloat(input.value) || 0;
+    });
+
+    let paid = parseFloat(document.getElementById("extraInvPaid").value) || 0;
+    let balance = total - paid;
+
+    document.getElementById("extraInvTotalDisplay").innerText = "RM " + total.toFixed(2);
+    document.getElementById("extraInvBalanceDisplay").innerText = "RM " + balance.toFixed(2);
+  }
+
+  async function saveInvoiceRecordToDB(invNo, customer, date, totalAmt, paidAmt, itemsList) {
+    let invRecord = {
+      invoice_no: invNo,
+      customer_name: customer,
+      date: date,
+      total: totalAmt,
+      paid: paidAmt,
+      items: itemsList
+    };
+    
+    try {
+      let { error } = await supabaseClient.from('invoices').insert([invRecord]);
+      if(error) {
+        console.log("Supabase insert error: " + error.message);
+      }
+    } catch(e) {}
+    loadExtraInvoicesHistory();
+  }
+
+  function printExtraInvoice() {
+    let customer = document.getElementById("extraInvCustomer").value || "Valued Customer";
+    let date = document.getElementById("extraInvDate").value || new Date().toISOString().split('T')[0];
+    let paid = parseFloat(document.getElementById("extraInvPaid").value) || 0;
+
+    let lastInvNum = parseInt(localStorage.getItem("PUJA_LAST_INV_NO") || "1000");
+    let nextInvNum = lastInvNum + 1;
+    localStorage.setItem("PUJA_LAST_INV_NO", nextInvNum);
+    let invNo = "INV-" + nextInvNum;
+
+    let itemsHTML = "";
+    let total = 0;
+    let itemsDescSummary = [];
+    document.querySelectorAll(".extra-inv-row").forEach(row => {
+      let desc = row.querySelector(".ex-desc").value || "Service";
+      let amt = parseFloat(row.querySelector(".ex-amt").value) || 0;
+      total += amt;
+      itemsDescSummary.push(`${desc}: RM ${amt}`);
+      itemsHTML += `<tr><td style="padding:7px; border-bottom:2px solid #333; font-weight:bold; color:#000;">${desc}</td><td style="padding:7px; border-bottom:2px solid #333; text-align:right; font-weight:bold; color:#000;">RM ${amt.toFixed(2)}</td></tr>`;
+    });
+
+    let balance = total - paid;
+    saveInvoiceRecordToDB(invNo, customer, date, total, paid, itemsDescSummary.join(", "));
+
+    let printWindow = window.open('', '_blank', 'height=700,width=600');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
+    printWindow.document.write('<html><head><title>Invoice</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
+    printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;font-size:13px;line-height:1.4;margin:0;}');
+    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #C62828;padding-bottom:5mm;margin-bottom:10px;}');
+    printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
+    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
+    printWindow.document.write('th{background:#C62828;color:white;padding:7px;text-align:left;font-size:12px;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('.summary{margin-top:10px;text-align:right;font-size:13px;font-weight:bold;}');
+    printWindow.document.write('.print-btn-bar{position:fixed;top:10px;right:10px;background:#C62828;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;z-index:9999;box-shadow:0 2px 5px rgba(0,0,0,0.3);display:block;}');
+    printWindow.document.write('@media print { .print-btn-bar { display: none !important; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<button class="print-btn-bar" onclick="window.print()">🖨️ Print Now / Save PDF</button>');
+    printWindow.document.write('<div class="header">');
+    printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
+    printWindow.document.write('<h2 style="color:#1976D2; font-weight:bold; margin:2px 0; font-size:16px;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
+    printWindow.document.write('<p style="margin:5px 0 2px 0; font-weight:bold; color:#333; font-size:14px; letter-spacing:1px;">INVOICE</p>');
+    printWindow.document.write('</div>');
+    
+    printWindow.document.write('<div style="display:flex; justify-content:space-between; font-weight:bold; color:#000; margin-bottom:5px;"><span>Invoice No: ' + invNo + '</span><span>Date: ' + date + '</span></div>');
+    printWindow.document.write('<p style="font-weight:bold; color:#000; margin:5px 0;"><b>Customer:</b> ' + customer + '</p>');
+    
+    printWindow.document.write('<table><thead><tr><th>Description</th><th style="text-align:right;">Amount</th></tr></thead><tbody>' + itemsHTML + '</tbody></table>');
+    printWindow.document.write('<div class="summary">');
+    printWindow.document.write('<p style="margin:3px 0; color:#000;">TOTAL: RM ' + total.toFixed(2) + '</p>');
+    printWindow.document.write('<p style="margin:3px 0; color:#000;">Paid: RM ' + paid.toFixed(2) + '</p>');
+    printWindow.document.write('<p style="margin:3px 0; color:#C62828; font-size:15px;">BALANCE DUE: RM ' + balance.toFixed(2) + '</p>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('<hr style="border:0; border-top:1.5px dashed #888; margin:15px 0;">');
+    printWindow.document.write('<center><p style="color:#555; font-size:12px; font-weight:bold;">Thank you for your business!</p></center>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+  }
+
+  function downloadExtraInvoicePDF() {
+    printExtraInvoice();
+  }
+
+  function exportTotalIncomeCSV() {
+    let startDate = document.getElementById("incomeReportStart").value;
+    let endDate = document.getElementById("incomeReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filteredOrders = activeOrdersCache.filter(o => {
+      if(!o.time) return false;
+      let oDate = new Date(o.time);
+      if(isNaN(oDate.getTime())) return false;
+      return (oDate >= start && oDate <= end);
+    });
+
+    let filteredInvoices = extraInvoicesCache.filter(inv => {
+      if(!inv.date) return false;
+      let iDate = new Date(inv.date);
+      if(isNaN(iDate.getTime())) return false;
+      return (iDate >= start && iDate <= end);
+    });
+
+    if(filteredOrders.length === 0 && filteredInvoices.length === 0) {
+      alert("चयनित मितिभित्र कुनै आम्दानीको रेकर्ड भेटिएन!");
+      return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,Type,Date & Time,Ref No,Customer Name,Phone/Details,Income Amount (Rs./RM)\n";
+    filteredOrders.forEach(o => {
+      csvContent += `"Order","${o.time || ''}","${o.order_no || ''}","${o.customer_name || ''}","${o.phone || ''}","${o.total || '0'}"\n`;
+    });
+    filteredInvoices.forEach(inv => {
+      csvContent += `"Invoice","${inv.date || ''}","${inv.invoice_no || ''}","${inv.customer_name || ''}","${inv.items || ''}","${inv.total || inv.paid || '0'}"\n`;
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "total_income_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    document.getElementById("incomeReportStart").value = "";
+    document.getElementById("incomeReportEnd").value = "";
+  }
+
+  function printTotalIncomePDF() {
+    let startDate = document.getElementById("incomeReportStart").value;
+    let endDate = document.getElementById("incomeReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filteredOrders = activeOrdersCache.filter(o => {
+      if(!o.time) return false;
+      let oDate = new Date(o.time);
+      if(isNaN(oDate.getTime())) {
+        return String(o.time).includes(startDate);
+      }
+      return (oDate >= start && oDate <= end);
+    });
+
+    let filteredInvoices = extraInvoicesCache.filter(inv => {
+      if(!inv.date) return false;
+      let iDate = new Date(inv.date);
+      if(isNaN(iDate.getTime())) {
+        return String(inv.date).includes(startDate);
+      }
+      return (iDate >= start && iDate <= end);
+    });
+
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
+    printWindow.document.write('<html><head><title>Total Income Report</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
+    printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;margin:0;}');
+    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #1976D2;padding-bottom:5mm;margin-bottom:10px;}');
+    printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
+    printWindow.document.write('h2{margin:2px 0;color:#1976D2;font-size:16px;font-weight:700;}');
+    printWindow.document.write('h3{margin:2px 0;color:#333;font-size:13px;font-weight:600;}');
+    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
+    printWindow.document.write('th,td{border:2px solid #333;padding:7px 8px;text-align:center;font-size:12px;color:#000;font-weight:bold;}');
+    printWindow.document.write('th{background:#1976D2;color:white;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('tr:nth-child(even){background-color:#f4f8fb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('.total-box{text-align:right;margin-top:10px;font-size:14px;font-weight:bold;color:#1976D2;}');
+    printWindow.document.write('.print-btn-bar{position:fixed;top:10px;right:10px;background:#1976D2;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;z-index:9999;box-shadow:0 2px 5px rgba(0,0,0,0.3);display:block;}');
+    printWindow.document.write('@media print { .print-btn-bar { display: none !important; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<button class="print-btn-bar" onclick="window.print()">🖨️ Print Now / Save PDF</button>');
+    printWindow.document.write('<div class="header">');
+    printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
+    printWindow.document.write('<h2 style="color:#1976D2; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
+    printWindow.document.write('<h3>Total Income Report (' + startDate + ' to ' + endDate + ')</h3>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('<table><thead><tr><th>Type</th><th>Date & Time</th><th>Ref No.</th><th>Customer Name</th><th>Details</th><th>Income (Rs./RM)</th></tr></thead><tbody>');
+    
+    let totalIncomeSum = 0;
+    filteredOrders.forEach(o => {
+      let amt = parseFloat(o.total) || 0;
+      totalIncomeSum += amt;
+      printWindow.document.write(`<tr><td>Order</td><td>${o.time || ''}</td><td><b>${o.order_no || ''}</b></td><td>${o.customer_name || ''}</td><td>${o.phone || ''}</td><td>Rs. ${amt.toFixed(2)}</td></tr>`);
+    });
+
+    filteredInvoices.forEach(inv => {
+      let amt = parseFloat(inv.total || inv.paid) || 0;
+      totalIncomeSum += amt;
+      printWindow.document.write(`<tr><td>Invoice</td><td>${inv.date || ''}</td><td><b>${inv.invoice_no || ''}</b></td><td>${inv.customer_name || ''}</td><td>${inv.items || ''}</td><td>RM ${amt.toFixed(2)}</td></tr>`);
+    });
+
+    if(filteredOrders.length === 0 && filteredInvoices.length === 0) {
+      printWindow.document.write(`<tr><td colspan="6" style="padding:15px; color:#666;">No income records found for this date range.</td></tr>`);
+    }
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<div class="total-box">Total Combined Income: ' + totalIncomeSum.toFixed(2) + '</div>');
+    printWindow.document.close();
+
+    document.getElementById("incomeReportStart").value = "";
+    document.getElementById("incomeReportEnd").value = "";
+  }
+
+  async function loadSalarySheet() {
+    let selectEl = document.getElementById("voucherStaffSelect");
+    let salaryTableTbody = document.getElementById("salaryStaffTableList");
+    if(!selectEl || !salaryTableTbody) return;
+
+    try {
+      let { data, error } = await supabaseClient.from('staff').select('*').order('id', { ascending: true });
+      if (error || !data || data.length === 0) {
+        selectEl.innerHTML = `<option value="">-- कामदार रोज्नुहोस् --</option>`;
+        salaryTableTbody.innerHTML = `<tr><td colspan="4" style="padding:15px; color:#666;">No staff members found.</td></tr>`;
+        return;
+      }
+      staffListCache = data;
+      let selectHtml = `<option value="">-- कामदार रोज्नुहोस् --</option>`;
+      let tableHtml = "";
+
+      let now = new Date();
+      document.getElementById("voucherDay").value = now.getDate();
+      document.getElementById("voucherMonth").value = now.getMonth() + 1;
+      document.getElementById("voucherYear").value = now.getFullYear();
+      document.getElementById("extraInvDate").value = now.toISOString().split('T')[0];
+      document.getElementById("purBillDate").value = now.toISOString().split('T')[0];
+      
+      let todayStr = now.toISOString().split('T')[0];
+      let incStart = document.getElementById("incomeReportStart");
+      let incEnd = document.getElementById("incomeReportEnd");
+      if(incStart && !incStart.value) incStart.value = todayStr;
+      if(incEnd && !incEnd.value) incEnd.value = todayStr;
+
+      let purStart = document.getElementById("purchaseReportStart");
+      let purEnd = document.getElementById("purchaseReportEnd");
+      if(purStart && !purStart.value) purStart.value = todayStr;
+      if(purEnd && !purEnd.value) purEnd.value = todayStr;
+
+      data.forEach((s, idx) => {
+        selectHtml += `<option value="${s.id}">${s.name} (${s.role || 'Staff'})</option>`;
+
+        tableHtml += `<tr id="salary_staff_row_${s.id}">
+          <td><b>${idx + 1}</b></td>
+          <td>
+            <span id="sal_staff_name_txt_${s.id}"><b>${s.name || ''}</b></span>
+            <input type="text" id="sal_staff_name_input_${s.id}" value="${s.name || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </td>
+          <td>
+            <span id="sal_staff_role_txt_${s.id}"><b>${s.role || ''}</b></span>
+            <input type="text" id="sal_staff_role_input_${s.id}" value="${s.role || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </td>
+          <td style="white-space: nowrap;">
+            <button id="sal_staff_edit_btn_${s.id}" class="editBtn" onclick="enableSalaryStaffEdit(${s.id})">✏️ Edit</button>
+            <button id="sal_staff_save_btn_${s.id}" class="saveBtn" style="display:none;" onclick="saveSalaryStaffEdit(${s.id})">💾 Save</button>
+            <button class="removeBtn" onclick="deleteSalaryStaff(${s.id})" style="margin-left:5px;">❌ Delete</button>
+          </td>
+        </tr>`;
+      });
+
+      selectEl.innerHTML = selectHtml;
+      salaryTableTbody.innerHTML = tableHtml;
+    } catch(e) {}
+  }
+
+  function enableSalaryStaffEdit(id) {
+    document.getElementById(`sal_staff_name_txt_${id}`).style.display = 'none';
+    document.getElementById(`sal_staff_role_txt_${id}`).style.display = 'none';
+    document.getElementById(`sal_staff_edit_btn_${id}`).style.display = 'none';
+
+    document.getElementById(`sal_staff_name_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`sal_staff_role_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`sal_staff_save_btn_${id}`).style.display = 'inline-block';
+  }
+
+  async function saveSalaryStaffEdit(id) {
+    let name = document.getElementById(`sal_staff_name_input_${id}`).value.trim();
+    let role = document.getElementById(`sal_staff_role_input_${id}`).value.trim();
+
+    if(!name || !role) {
+      alert("कृपया नाम र पद (Designation) दुवै भर्नुहोस्!");
+      return;
+    }
+
+    let { error } = await supabaseClient.from('staff').update({
+      name: name,
+      role: role
+    }).eq('id', id);
+
+    if(error) {
+      alert("Error updating staff: " + error.message);
+    } else {
+      alert("✅ स्टाफ सफलतापूर्वक अपडेट भयो!");
+      loadSalarySheet();
+    }
+  }
+
+  async function deleteSalaryStaff(id) {
+    if(confirm("के तपाइँ यो स्टाफलाई हटाउन चाहनुहुन्छ?")) {
+      let { error } = await supabaseClient.from('staff').delete().eq('id', id);
+      if(error) {
+        alert("Error deleting staff: " + error.message);
+      } else {
+        alert("✅ स्टाफ सफलतापूर्वक हटाइयो!");
+        loadSalarySheet();
+      }
+    }
+  }
+
+  async function addNewStaffDesignation() {
+    let fullName = document.getElementById("salaryStaffFullName").value.trim();
+    let designation = document.getElementById("salaryStaffDesignationInput").value.trim();
+
+    if(!fullName || !designation) {
+      alert("कृपया पूरा नाम र पद (Designation) दुवै भर्नुहोस्!");
+      return;
+    }
+
+    let { error } = await supabaseClient.from('staff').insert([{
+      name: fullName,
+      role: designation
+    }]);
+
+    if(error) {
+      alert("Error adding staff to staff table: " + error.message);
+      return;
+    }
+
+    alert("✅ नयाँ कर्मचारी सफलतापूर्वक स्टाफ टेबलमा सेभ भयो!");
+    document.getElementById("salaryStaffFullName").value = "";
+    document.getElementById("salaryStaffDesignationInput").value = "";
+    loadSalarySheet();
+  }
+
+  function handleVoucherStaffSelect() {
+    let staffId = document.getElementById("voucherStaffSelect").value;
+    if(!staffId) {
+      document.getElementById("voucherStaffDesignation").value = "";
+      let earnInputs = document.querySelectorAll(".earn-amt");
+      if(earnInputs.length > 0) earnInputs[0].value = 0;
+      calculateVoucherNet();
+      return;
+    }
+    let st = staffListCache.find(s => String(s.id) === String(staffId));
+    if(st) {
+      document.getElementById("voucherStaffDesignation").value = st.role || "Staff";
+      let earnInputs = document.querySelectorAll(".earn-amt");
+      if(earnInputs.length > 0) {
+        earnInputs[0].value = (st.basic_salary !== undefined && st.basic_salary !== null) ? st.basic_salary : 0;
+      }
+      calculateVoucherNet();
+    }
+  }
+
+  function addEarningsRow() {
+    let container = document.getElementById("earningsContainer");
+    let div = document.createElement("div");
+    div.className = "earnings-row";
+    div.style.cssText = "display:flex; gap:10px; align-items:center;";
+    div.innerHTML = `
+      <input type="text" class="earn-desc" placeholder="Allowance / Earnings Description" style="flex:2; padding:8px;">
+      <input type="number" class="earn-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+      <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">❌</button>
+    `;
+    container.appendChild(div);
+    updateRemoveButtonsState();
+  }
+
+  function addDeductionsRow() {
+    let container = document.getElementById("deductionsContainer");
+    let div = document.createElement("div");
+    div.className = "deductions-row";
+    div.style.cssText = "display:flex; gap:10px; align-items:center;";
+    div.innerHTML = `
+      <input type="text" class="ded-desc" placeholder="Deduction Description" style="flex:2; padding:8px;">
+      <input type="number" class="ded-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+      <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">❌</button>
+    `;
+    container.appendChild(div);
+    updateRemoveButtonsState();
+  }
+
+  function removeRow(btn) {
+    let row = btn.parentElement;
+    let container = row.parentElement;
+    if(container.children.length > 1) {
+      container.removeChild(row);
+      updateRemoveButtonsState();
+      calculateVoucherNet();
+    }
+  }
+
+  function updateRemoveButtonsState() {
+    let earnRows = document.querySelectorAll(".earnings-row");
+    if(earnRows.length === 1) {
+      earnRows[0].querySelector("button").disabled = true;
+    } else {
+      earnRows.forEach(r => r.querySelector("button").disabled = false);
+    }
+
+    let dedRows = document.querySelectorAll(".deductions-row");
+    if(dedRows.length === 1) {
+      dedRows[0].querySelector("button").disabled = true;
+    } else {
+      dedRows.forEach(r => r.querySelector("button").disabled = false);
+    }
+  }
+
+  function calculateVoucherNet() {
+    let totalEarnings = 0;
+    document.querySelectorAll(".earn-amt").forEach(input => {
+      totalEarnings += parseFloat(input.value) || 0;
+    });
+
+    let totalDeductions = 0;
+    document.querySelectorAll(".ded-amt").forEach(input => {
+      totalDeductions += parseFloat(input.value) || 0;
+    });
+
+    let net = totalEarnings - totalDeductions;
+    document.getElementById("voucherNetDisplay").innerText = "NET Salary: RM " + net.toFixed(2);
+  }
+
+  function resetSalaryVoucherForm() {
+    document.getElementById("voucherStaffSelect").value = "";
+    document.getElementById("voucherStaffDesignation").value = "";
+    
+    let now = new Date();
+    document.getElementById("voucherDay").value = now.getDate();
+    document.getElementById("voucherMonth").value = now.getMonth() + 1;
+    document.getElementById("voucherYear").value = now.getFullYear();
+
+    let earnContainer = document.getElementById("earningsContainer");
+    earnContainer.innerHTML = `
+      <div class="earnings-row" style="display:flex; gap:10px; align-items:center;">
+        <input type="text" class="earn-desc" value="MONTHLY BASIC SALARY PAYED" style="flex:2; padding:8px; background:#f9f9f9;" readonly>
+        <input type="number" class="earn-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+        <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+      </div>
+    `;
+
+    let dedContainer = document.getElementById("deductionsContainer");
+    dedContainer.innerHTML = `
+      <div class="deductions-row" style="display:flex; gap:10px; align-items:center;">
+        <input type="text" class="ded-desc" placeholder="Deduction Description" value="Advance / Deduction" style="flex:2; padding:8px;">
+        <input type="number" class="ded-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
+        <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+      </div>
+    `;
+
+    document.getElementById("voucherPaymentMode").selectedIndex = 0;
+    document.getElementById("voucherNetDisplay").innerText = "NET Salary: RM 0.00";
+  }
+
+  window.printSalaryVoucherSlip = function(vNo, name, desig, day, month, year, earnList, dedList, payMode, netTotal) {
+    function getVoucherCard(copyLabel) {
+      let earnRowsHtml = "";
+      earnList.forEach((e, idx) => {
+          earnRowsHtml += `<tr><td style="border:1px solid #bce8f1; padding:5px; text-align:left; width:75%; font-weight:600;">${idx+1}. ${e.desc}</td><td style="border:1px solid #bce8f1; padding:5px; text-align:right; width:25%; font-weight:600;">${e.amt.toFixed(2)}</td></tr>`;
+      });
+
+      let dedRowsHtml = "";
+      dedList.forEach((d, idx) => {
+          dedRowsHtml += `<tr><td style="border:1px solid #f2dede; padding:5px; text-align:left; width:75%; font-weight:600;">${idx+1}. ${d.desc}</td><td style="border:1px solid #f2dede; padding:5px; text-align:right; width:25%; font-weight:600;">${d.amt.toFixed(2)}</td></tr>`;
+      });
+
+      return `
+        <div style="width: 100%; text-align: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11px; line-height: 1.3; color:#222; background:#fff; padding: 12px; border: 2px solid #1976D2; border-radius: 8px; box-sizing: border-box; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+            <img src="https://i.postimg.cc/Hn5Fwwb5/logo.png" style="max-width:55px; height:auto; margin-bottom:2px;">
+            <h3 style="margin:0; font-size:15px; font-weight:bold; color:#1976D2;">PUJA EXPORT AND IMPORT PVT. LTD.</h3>
+            <p style="margin:2px 0; font-size:9.5px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>
+            <p style="margin:2px 0; font-size:9.5px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>
+            <div style="border-top:2px solid #1976D2; margin:5px 0;"></div>
+            <h4 style="margin:3px 0; font-size:13px; color:#E91E63; text-decoration:underline; font-weight:bold;">SALARY VOUCHER</h4>
+            
+            <div style="text-align:left; margin-top:6px; font-size:11px; background:#f9fbfd; padding:6px 10px; border-radius:6px; border:1px solid #e0e0e0;">
+                <div><b>Employee Name :</b> <span style="color:#1976D2;">${name}</span></div>
+                <div><b>Designation :</b> ${desig}</div>
+                <div><b>Date:</b> ${day}/${month}/${year}</div>
+            </div>
+
+            <div style="background:linear-gradient(135deg, #1976D2, #1565C0); color:#fff; font-weight:bold; padding:4px 8px; margin:6px 0; font-size:11.5px; text-align:left; border-radius:4px;">VOUCHER NO. ${vNo}</div>
+            
+            <table style="width:100%; border-collapse:collapse; font-size:10.5px; margin-top:4px;">
+                <tr style="background:#e3f2fd; color:#0d47a1; border-bottom:1.5px solid #1976D2;">
+                    <th style="border:1px solid #bbdefb; padding:4px 6px; text-align:left; width:75%;">Earnings & Allowances</th>
+                    <th style="border:1px solid #bbdefb; padding:4px 6px; text-align:right; width:25%;">RM</th>
+                </tr>
+                ${earnRowsHtml}
+            </table>
+
+            ${dedList.length > 0 ? `
+            <table style="width:100%; border-collapse:collapse; font-size:10.5px; margin-top:5px;">
+                <tr style="background:#ffebee; color:#c62828; border-bottom:1.5px solid #e91e63;">
+                    <th style="border:1px solid #ffcdd2; padding:4px 6px; text-align:left; width:75%;">Deductions</th>
+                    <th style="border:1px solid #ffcdd2; padding:4px 6px; text-align:right; width:25%;">RM</th>
+                </tr>
+                ${dedRowsHtml}
+            </table>` : ''}
+
+            <div style="border:1.5px solid #4CAF50; padding:5px 8px; margin-top:6px; text-align:right; font-size:12.5px; font-weight:bold; background:#e8f5e9; color:#2e7d32; border-radius:6px;">
+                NET Salary: RM ${Number(netTotal).toFixed(2)}
+            </div>
+
+            <div style="text-align:left; margin-top:6px; font-size:11px; font-weight:bold; color:#333;">
+                <div>☑ Payment Mode: <span style="color:#1976D2;">${payMode}</span></div>
+            </div>
+
+            <div style="margin-top:16px; display:flex; justify-content:space-between; font-size:10.5px; align-items:flex-end;">
+                <div><b style="color:#555;">${copyLabel}</b></div>
+                <div style="text-align:right;">
+                    --------------------------<br>
+                    <b style="color:#333;">Employee Signature</b>
+                </div>
+            </div>
+        </div>
+      `;
+    }
+
+    let singleVoucherHtml1 = getVoucherCard("Company Copy");
+    let singleVoucherHtml2 = getVoucherCard("Staff Copy");
+
+    let a4DualHtml = `
+        <html>
+        <head>
+            <title>Salary Voucher Print</title>
+            <style>
+                @page { size: A4 portrait; margin: 0; }
+                body { margin: 0; padding: 0; background: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                .voucher-page { width: 190mm; height: 280mm; margin: auto; display: flex; flex-direction: column; justify-content: space-between; align-items: center; box-sizing: border-box; padding: 8mm 0; }
+                .voucher-item { width: 100%; }
+            </style>
+        </head>
+        <body>
+            <div class="voucher-page">
+                <div class="voucher-item">${singleVoucherHtml1}</div>
+                <div style="width: 100%; border-top: 2px dashed #999; margin: 4px 0;"></div>
+                <div class="voucher-item">${singleVoucherHtml2}</div>
+            </div>
+        </body>
+        </html>
+    `;
+
+    var printWindow = window.open('', '_blank', 'height=800,width=700');
+    if (!printWindow) { alert("⚠️ कृपया आफ्नो ब्राउजरको Pop-up Blocker बन्द गर्नुहोस्!"); return; }
+    printWindow.document.write(a4DualHtml);
+    printWindow.document.close();
+    printWindow.focus();
+    
+    resetSalaryVoucherForm();
+
+    setTimeout(() => { printWindow.print(); }, 500);
+  };
+
+  async function saveAndPrintVoucher() {
+    let staffId = document.getElementById("voucherStaffSelect").value;
+    if(!staffId) {
+      alert("⚠️ चेतावनी: कृपया कामदार (Employee Name) छान्नुहोस्!");
+      return;
+    }
+
+    let day = document.getElementById("voucherDay").value.trim();
+    let month = document.getElementById("voucherMonth").value.trim();
+    let year = document.getElementById("voucherYear").value.trim();
+
+    if(!day || !month || !year) {
+      alert("⚠️ चेतावनी: कृपया मिति (Day, Month, Year) खाली नछोड्नुहोस्!");
+      return;
+    }
+
+    let st = staffListCache.find(s => String(s.id) === String(staffId));
+    if(!st) {
+      alert("⚠️ चेतावनी: चयन गरिएको कर्मचारीको विवरण भेटिएन!");
+      return;
+    }
+
+    let designation = document.getElementById("voucherStaffDesignation").value;
+    let pMode = document.getElementById("voucherPaymentMode").value;
+
+    let earnList = [];
+    let totalEarnings = 0;
+    let hasInvalidEarn = false;
+
+    document.querySelectorAll(".earnings-row").forEach(row => {
+      let descInput = row.querySelector(".earn-desc");
+      let amtInput = row.querySelector(".earn-amt");
+      let desc = descInput ? descInput.value.trim() : "";
+      let amt = parseFloat(amtInput ? amtInput.value : 0) || 0;
+
+      if(!desc) {
+        hasInvalidEarn = true;
+      }
+      totalEarnings += amt;
+      earnList.push({ desc: desc, amt: amt });
+    });
+
+    if(hasInvalidEarn) {
+      alert("⚠️ चेतावनी: सबै Earnings/Allowances विवरणहरू खाली छोड्न पाइँदैन!");
+      return;
+    }
+
+    let dedList = [];
+    let totalDeductions = 0;
+
+    document.querySelectorAll(".deductions-row").forEach(row => {
+      let descInput = row.querySelector(".ded-desc");
+      let amtInput = row.querySelector(".ded-amt");
+      let desc = descInput ? descInput.value.trim() : "";
+      let amt = parseFloat(amtInput ? amtInput.value : 0) || 0;
+
+      if(desc && amt > 0) {
+        dedList.push({ desc: desc, amt: amt });
+        totalDeductions += amt;
+      } else if(desc && amt === 0) {
+        dedList.push({ desc: desc, amt: 0 });
+      }
+    });
+
+    let net = totalEarnings - totalDeductions;
+    if(net < 0) {
+      alert("⚠️ चेतावनी: खुद तलब (NET Salary) शून्य वा माइनस हुन सक्दैन!");
+      return;
+    }
+
+    let formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    
+    let nextVoucherNumber = "V-" + (1000 + salaryVoucherHistoryCache.length + 1);
+    try {
+      let { count, error: countErr } = await supabaseClient.from('salary_vouchers').select('*', { count: 'exact', head: true });
+      if (!countErr && count !== null) {
+        nextVoucherNumber = "V-" + (1001 + count);
+      }
+    } catch(e) {
+      nextVoucherNumber = "V-" + Math.floor(1000 + Math.random() * 9000);
+    }
+
+    try {
+      let { error: insertError } = await supabaseClient.from('salary_vouchers').insert([{
+        voucher_no: nextVoucherNumber,
+        date: formattedDate,
+        staff_name: st.name,
+        designation: designation,
+        payment_mode: pMode,
+        net_salary: net
+      }]);
+      
+      if (insertError) {
+        alert("Error saving voucher: " + insertError.message);
+        return;
+      }
+      loadSalaryVouchersHistory();
+    } catch(e) {}
+
+    window.printSalaryVoucherSlip(nextVoucherNumber, st.name, designation, day, month, year, earnList, dedList, pMode, net);
+  }
+
+  async function loadMenuList() {
+    let { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
+    if (data) menuItemsCache = data;
+    var menuList = document.getElementById("menuTableList");
+    if(!menuList) return;
+    let html = "";
+    menuItemsCache.forEach((r, index) => {
+      let currentStockStatus = r.status ? String(r.status).trim() : "In Stock";
+      let stockBtnClass = (currentStockStatus === "Out of Stock") ? "outstock-toggle-btn" : "instock-toggle-btn";
+      let stockBtnText = (currentStockStatus === "Out of Stock") ? "🔴 Out of Stock" : "🟢 In Stock";
+
+      html += `<tr id="prod_row_${r.id}">
+        <td><b>${index + 1}</b></td>
+        <td>
+          <span id="prod_name_txt_${r.id}"><b>${r.name || ''}</b></span>
+          <input type="text" id="prod_name_input_${r.id}" value="${r.name || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+        </td>
+        <td>
+          <span id="prod_price_txt_${r.id}" style="color:#1976D2; font-weight:bold;">Rs. ${r.price || 0}</span>
+          <input type="number" id="prod_price_input_${r.id}" value="${r.price || 0}" style="display:none; width:80px; padding:6px; border:1px solid #ccc; border-radius:4px;">
+        </td>
+        <td>
+          <span id="prod_unit_txt_${r.id}"><b>${r.unit || '-'}</b></span>
+          <input type="text" id="prod_unit_input_${r.id}" value="${r.unit || ''}" style="display:none; width:90px; padding:6px; border:1px solid #ccc; border-radius:4px;">
+        </td>
+        <td>
+          <span id="prod_img_txt_${r.id}">${r.image ? `<img src="${r.image}" class="menu-thumb">` : 'No Image'}</span>
+          <input type="text" id="prod_img_input_${r.id}" value="${r.image || ''}" placeholder="Image URL" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px; margin-top:4px;">
+        </td>
+        <td>
+          <span id="prod_desc_txt_${r.id}">${r.description || ''}</span>
+          <input type="text" id="prod_desc_input_${r.id}" value="${r.description || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+        </td>
+        <td>
+          <span id="prod_cat_txt_${r.id}"><b>${r.category || ''}</b></span>
+          <input type="text" id="prod_cat_input_${r.id}" value="${r.category || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+        </td>
+        <td>
+          <button class="${stockBtnClass}" onclick="toggleStockStatus(${r.id}, '${currentStockStatus}')">${stockBtnText}</button>
+        </td>
+        <td style="white-space: nowrap;">
+          <button id="prod_edit_btn_${r.id}" class="editBtn" onclick="enableProductEdit(${r.id})">✏️ Edit</button>
+          <button id="prod_save_btn_${r.id}" class="saveBtn" style="display:none;" onclick="saveProductEdit(${r.id})">💾 Save</button>
+          <button class="removeBtn" onclick="deleteProduct(${r.id})" style="margin-left:5px;">❌ Delete</button>
+        </td>
+      </tr>`;
+    });
+    menuList.innerHTML = html;
+    loadInventoryDropdown();
+    loadStockAlerts();
+  };
+
+  function loadInventoryDropdown() {
+    let selectEl = document.getElementById("inventoryItemSelect");
+    if(!selectEl) return;
+    let html = `<option value="">-- Item ID छान्नुहोस् --</option>`;
+    menuItemsCache.forEach(r => {
+      html += `<option value="${r.id}">${r.id} - ${r.name}</option>`;
+    });
+    selectEl.innerHTML = html;
+  }
+
+  function handleInventorySelectChange() {
+    let id = document.getElementById("inventoryItemSelect").value;
+    if(!id) {
+      document.getElementById("invSelectedName").innerText = "-";
+      document.getElementById("invSelectedCategory").innerText = "-";
+      document.getElementById("invCurrentStockInput").value = "";
+      document.getElementById("invAlertLimitInput").value = "50";
+      return;
+    }
+    let item = menuItemsCache.find(r => String(r.id) === String(id));
+    if(item) {
+      document.getElementById("invSelectedName").innerText = item.name || "-";
+      document.getElementById("invSelectedCategory").innerText = item.category || "-";
+      document.getElementById("invCurrentStockInput").value = (item.stock !== undefined && item.stock !== null) ? item.stock : 0;
+      document.getElementById("invAlertLimitInput").value = (item.alert_limit !== undefined && item.alert_limit !== null) ? item.alert_limit : 50;
+    }
+  }
+
+  async function saveInventoryStock() {
+    let id = document.getElementById("inventoryItemSelect").value;
+    if(!id) { alert("कृपया Item छान्नुहोस्!"); return; }
+    let stockVal = parseInt(document.getElementById("invCurrentStockInput").value);
+    let limitVal = parseInt(document.getElementById("invAlertLimitInput").value);
+
+    if(isNaN(stockVal)) stockVal = 0;
+    if(isNaN(limitVal)) limitVal = 50;
+
+    let item = menuItemsCache.find(r => String(r.id) === String(id));
+    if(item) {
+      item.stock = stockVal;
+      item.alert_limit = limitVal;
+    }
+
+    let { error } = await supabaseClient.from('menu_items').update({
+      stock: stockVal,
+      alert_limit: limitVal
+    }).eq('id', id);
+
+    if(error) {
+      let { error: err2 } = await supabaseClient.from('menu_items').update({ stock: stockVal }).eq('id', id);
+      if(err2) {
+        alert("Error saving stock: " + err2.message);
+        return;
+      }
+    }
+
+    alert("✅ स्टक सफलतापूर्वक सेभ भयो!");
+    loadStockAlerts();
+  }
+
+  function loadStockAlerts() {
+    let tbody = document.getElementById("stockAlertsTableBody");
+    if(!tbody) return;
+
+    let lowStockItems = menuItemsCache.filter(r => {
+      let stk = (r.stock !== undefined && r.stock !== null) ? parseInt(r.stock) : 0;
+      let lim = (r.alert_limit !== undefined && r.alert_limit !== null) ? parseInt(r.alert_limit) : 50;
+      return stk <= lim;
+    });
+
+    let html = "";
+    lowStockItems.forEach(r => {
+      let stk = (r.stock !== undefined && r.stock !== null) ? r.stock : 0;
+      let lim = (r.alert_limit !== undefined && r.alert_limit !== null) ? r.alert_limit : 50;
+      html += `<tr>
+        <td><b>${r.id}</b></td>
+        <td style="text-align:left;"><b>${r.name || ''}</b></td>
+        <td>${r.category || '-'}</td>
+        <td style="color:red; font-weight:bold;">${stk}</td>
+        <td>${lim}</td>
+        <td><span class="lowstock-badge">🔴 Low Stock</span></td>
+      </tr>`;
+    });
+
+    if(html === "") {
+      html = `<tr><td colspan="6" style="padding:15px; color:#666;">No low stock items.</td></tr>`;
+    }
+    tbody.innerHTML = html;
+  }
+
+  async function toggleStockStatus(id, currentStatus) {
+    let newStatus = (currentStatus === "Out of Stock") ? "In Stock" : "Out of Stock";
+    let { error } = await supabaseClient.from('menu_items').update({ status: newStatus }).eq('id', id);
+    if (error) {
+      alert("Error: " + error.message);
+    } else {
+      loadMenuList();
+    }
+  }
+
+  function enableProductEdit(id) {
+    document.getElementById(`prod_name_txt_${id}`).style.display = 'none';
+    document.getElementById(`prod_price_txt_${id}`).style.display = 'none';
+    document.getElementById(`prod_unit_txt_${id}`).style.display = 'none';
+    document.getElementById(`prod_img_txt_${id}`).style.display = 'none';
+    document.getElementById(`prod_desc_txt_${id}`).style.display = 'none';
+    document.getElementById(`prod_cat_txt_${id}`).style.display = 'none';
+    document.getElementById(`prod_edit_btn_${id}`).style.display = 'none';
+
+    document.getElementById(`prod_name_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`prod_price_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`prod_unit_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`prod_img_input_${id}`).style.display = 'block';
+    document.getElementById(`prod_desc_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`prod_cat_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`prod_save_btn_${id}`).style.display = 'inline-block';
+  }
+
+  async function saveProductEdit(id) {
+    let name = document.getElementById(`prod_name_input_${id}`).value.trim();
+    let price = parseFloat(document.getElementById(`prod_price_input_${id}`).value);
+    let unit = document.getElementById(`prod_unit_input_${id}`).value.trim();
+    let image = document.getElementById(`prod_img_input_${id}`).value.trim();
+    let description = document.getElementById(`prod_desc_input_${id}`).value.trim();
+    let category = document.getElementById(`prod_cat_input_${id}`).value.trim();
+
+    if(!name || isNaN(price)) { alert("नाम र मूल्य सही भर्नुहोस्!"); return; }
+
+    let { error } = await supabaseClient.from('menu_items').update({
+      name: name,
+      price: price,
+      unit: unit,
+      image: image,
+      description: description,
+      category: category
+    }).eq('id', id);
+
+    if (error) {
+      alert("Error: " + error.message);
+    } else {
+      alert("✅ उत्पादन सफलतापूर्वक अपडेट भयो!");
+      loadMenuList();
+    }
+  }
+
+  async function createNewProduct() {
+    var name = document.getElementById("prodName").value.trim();
+    var price = parseFloat(document.getElementById("prodPrice").value) || 0;
+    var unit = document.getElementById("prodUnit").value.trim();
+    var image = document.getElementById("prodImg").value.trim();
+    var description = document.getElementById("prodDesc").value.trim();
+    var category = document.getElementById("prodCat").value.trim() || "Wholesale";
+
+    if(!name || !price) { alert("कृपया उत्पादनको नाम र मूल्य (Price) भर्नुहोस्!"); return; }
+
+    let { error } = await supabaseClient.from('menu_items').insert([{ 
+      name: name, 
+      price: price, 
+      unit: unit,
+      image: image, 
+      description: description, 
+      category: category,
+      status: "In Stock",
+      stock: 0,
+      alert_limit: 50
+    }]);
+
+    if (error) {
+      alert("Error: " + error.message);
+      return;
+    }
+
+    alert("✅ नयाँ उत्पादन सफलतापूर्वक थपियो!");
+    document.getElementById("prodName").value = "";
+    document.getElementById("prodPrice").value = "";
+    document.getElementById("prodUnit").value = "";
+    document.getElementById("prodImg").value = "";
+    document.getElementById("prodDesc").value = "";
+    document.getElementById("prodCat").value = "";
+    loadMenuList();
+  };
+
+  async function deleteProduct(rowId) {
+    if(confirm("के तपाइँ यो उत्पादन हटाउन चाहनुहुन्छ?")) {
+      await supabaseClient.from('menu_items').delete().eq('id', rowId);
+      loadMenuList();
+    }
+  };
+
+  function setupRoleDropdowns(currentLoggedInRole) {
+    let roleSelect = document.getElementById("staffRoleSelect");
+    if (!roleSelect) return;
+
+    let isManager = (String(currentLoggedInRole).toLowerCase() === "manager");
+    
+    if (isManager) {
+      roleSelect.innerHTML = `
+        <option value="Staff">Staff</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Delivery">Delivery</option>
+      `;
+    } else {
+      roleSelect.innerHTML = `
+        <option value="Admin">Admin</option>
+        <option value="Manager">Manager</option>
+        <option value="Staff">Staff</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Delivery">Delivery</option>
+      `;
+    }
+  }
+
+  async function loadStaffList() {
+    let tbody = document.getElementById("staffTableList");
+    let staffAccessSec = document.getElementById("staffAccessManagementSection");
+    let salarySectionContainer = document.getElementById("salarySectionContainer");
+    let duesMainSec = document.getElementById("outstandingDuesMainSection");
+    
+    let loggedInRole = sessionStorage.getItem("USER_ROLE") || "Admin";
+    let roleLower = String(loggedInRole).toLowerCase();
+    
+    let isManager = (roleLower === "manager");
+    let isAdminUser = (roleLower === "admin");
+    let isRestrictedStaff = (roleLower === "staff" || roleLower === "marketing" || roleLower === "delivery");
+    let isDeliveryStaff = (roleLower === "delivery");
+
+    if (isRestrictedStaff) {
+      if (staffAccessSec) staffAccessSec.style.display = "none";
+      if (salarySectionContainer) salarySectionContainer.style.display = "none";
+    } else {
+      if (staffAccessSec) staffAccessSec.style.display = "block";
+      if (salarySectionContainer) salarySectionContainer.style.display = "block";
+    }
+
+    if (duesMainSec) {
+      if (isDeliveryStaff) {
+        duesMainSec.style.display = "none";
+      } else {
+        duesMainSec.style.display = "block";
+      }
+    }
+
+    if(!tbody) return;
+
+    setupRoleDropdowns(loggedInRole);
+    document.getElementById("userRoleBadge").innerText = loggedInRole.toUpperCase();
+
+    try {
+      let { data, error } = await supabaseClient.from('admin').select('*').order('id', { ascending: true });
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">No staff members found.</td></tr>`;
+        return;
+      }
+
+      let filteredData = data;
+      if (isManager) {
+        filteredData = data.filter(s => {
+          let r = String(s.role || '').toLowerCase();
+          return r === 'staff' || r === 'marketing' || r === 'delivery';
+        });
+      }
+
+      if (filteredData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">No staff members found.</td></tr>`;
+        return;
+      }
+
+      let html = "";
+      filteredData.forEach((s, idx) => {
+        let currentRole = s.role || 'Staff';
+        
+        let roleDropdownOptions = isManager ? `
+          <option value="Staff" ${currentRole==='Staff'?'selected':''}>Staff</option>
+          <option value="Marketing" ${currentRole==='Marketing'?'selected':''}>Marketing</option>
+          <option value="Delivery" ${currentRole==='Delivery'?'selected':''}>Delivery</option>
+        ` : `
+          <option value="Admin" ${currentRole==='Admin'?'selected':''}>Admin</option>
+          <option value="Manager" ${currentRole==='Manager'?'selected':''}>Manager</option>
+          <option value="Staff" ${currentRole==='Staff'?'selected':''}>Staff</option>
+          <option value="Marketing" ${currentRole==='Marketing'?'selected':''}>Marketing</option>
+          <option value="Delivery" ${currentRole==='Delivery'?'selected':''}>Delivery</option>
+        `;
+
+        html += `<tr id="staff_row_${s.id}">
+          <td><b>${idx + 1}</b></td>
+          <td>
+            <span id="staff_name_txt_${s.id}"><b>${s.name || ''}</b></span>
+            <input type="text" id="staff_name_input_${s.id}" value="${s.name || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </td>
+          <td>
+            <span id="staff_email_txt_${s.id}">${s.email || ''}</span>
+            <input type="text" id="staff_email_input_${s.id}" value="${s.email || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </td>
+          <td>
+            <span id="staff_pass_txt_${s.id}">${s.password || ''}</span>
+            <input type="text" id="staff_pass_input_${s.id}" value="${s.password || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
+          </td>
+          <td>
+            <span id="staff_role_txt_${s.id}"><b>${currentRole}</b></span>
+            <select id="staff_role_input_${s.id}" style="display:none; padding:6px; border:1px solid #ccc; border-radius:4px;">
+              ${roleDropdownOptions}
+            </select>
+          </td>
+          <td style="white-space: nowrap;">
+            <button id="staff_edit_btn_${s.id}" class="editBtn" onclick="enableStaffEdit(${s.id})">✏️ Edit</button>
+            <button id="staff_save_btn_${s.id}" class="saveBtn" style="display:none;" onclick="saveStaffEdit(${s.id})">💾 Save</button>
+            <button class="removeBtn" onclick="deleteStaff(${s.id})" style="margin-left:5px;">❌ Delete</button>
+          </td>
+        </tr>`;
+      });
+      tbody.innerHTML = html;
+      
+      if (!isRestrictedStaff) {
+        loadSalarySheet();
+      }
+    } catch(e) {
+      tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">Error loading staff.</td></tr>`;
+    }
+  }
+
+  function enableStaffEdit(id) {
+    document.getElementById(`staff_name_txt_${id}`).style.display = 'none';
+    document.getElementById(`staff_email_txt_${id}`).style.display = 'none';
+    document.getElementById(`staff_pass_txt_${id}`).style.display = 'none';
+    document.getElementById(`staff_role_txt_${id}`).style.display = 'none';
+    document.getElementById(`staff_edit_btn_${id}`).style.display = 'none';
+
+    document.getElementById(`staff_name_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`staff_email_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`staff_pass_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`staff_role_input_${id}`).style.display = 'inline-block';
+    document.getElementById(`staff_save_btn_${id}`).style.display = 'inline-block';
+  }
+
+  async function saveStaffEdit(id) {
+    let name = document.getElementById(`staff_name_input_${id}`).value.trim();
+    let email = document.getElementById(`staff_email_input_${id}`).value.trim();
+    let password = document.getElementById(`staff_pass_input_${id}`).value.trim();
+    let role = document.getElementById(`staff_role_input_${id}`).value;
+
+    if(!name || !email || !password) {
+      alert("कृपया नाम, इमेल र पासवर्ड सबै भर्नुहोस्!");
+      return;
+    }
+
+    let { error } = await supabaseClient.from('admin').update({
+      name: name,
+      email: email,
+      password: password,
+      role: role
+    }).eq('id', id);
+
+    if(error) {
+      alert("Error updating staff: " + error.message);
+    } else {
+      alert("✅ स्टाफ सफलतापूर्वक अपडेट भयो!");
+      loadStaffList();
+      loadSalarySheet();
+    }
+  }
+
+  async function addNewStaff() {
+    let name = document.getElementById("staffNameInput").value.trim();
+    let email = document.getElementById("staffEmailInput").value.trim();
+    let password = document.getElementById("staffPassInput").value.trim();
+    let role = document.getElementById("staffRoleSelect").value;
+
+    if(!name || !email || !password) {
+      alert("कृपया नाम, इमेल र पासवर्ड सबै भर्नुहोस्!");
+      return;
+    }
+
+    let { error: adminError } = await supabaseClient.from('admin').insert([{
+      name: name,
+      email: email,
+      password: password,
+      role: role
+    }]);
+
+    if(adminError) {
+      alert("Error adding staff: " + adminError.message);
+      return;
+    }
+
+    let { error: staffError } = await supabaseClient.from('staff').insert([{
+      name: name,
+      role: role
+    }]);
+
+    if(staffError) {
+      console.log("Staff table insert warning: " + staffError.message);
+    }
+
+    alert("✅ नयाँ स्टाफ एडमिन र स्टाफ दुवै टेबलमा सफलतापूर्वक थपियो!");
+    document.getElementById("staffNameInput").value = "";
+    document.getElementById("staffEmailInput").value = "";
+    document.getElementById("staffPassInput").value = "";
+    loadStaffList();
+    loadSalarySheet();
+  }
+
+  async function deleteStaff(id) {
+    if(confirm("के तपाइँ यो स्टाफलाई हटाउन चाहनुहुन्छ?")) {
+      let { error } = await supabaseClient.from('admin').delete().eq('id', id);
+      if(error) {
+        alert("Error deleting staff: " + error.message);
+      } else {
+        loadStaffList();
+      }
+    }
+  }
+
+  async function loadAdminChatsList() {
+    try {
+      let { data, error } = await supabaseClient.from('chats').select('*').order('id', { ascending: true });
+      if(error || !data) return;
+
+      let sessionsMap = {};
+      data.forEach(m => {
+        if(!sessionsMap[m.session_id]) {
+          sessionsMap[m.session_id] = [];
+        }
+        sessionsMap[m.session_id].push(m);
+      });
+
+      let container = document.getElementById("chatListContainer");
+      if(!container) return;
+      let html = "";
+
+      Object.keys(sessionsMap).forEach(sessionId => {
+        let msgs = sessionsMap[sessionId];
+        let lastMsg = msgs[msgs.length - 1];
+        let isSelected = (currentSelectedChatSession === sessionId) ? "background:#e3f2fd;" : "";
+
+        if (lastAdminChatCount[sessionId] !== undefined && msgs.length > lastAdminChatCount[sessionId]) {
+          if (lastMsg.sender === "Customer") {
+            playTringTringBell();
+          }
+        }
+        lastAdminChatCount[sessionId] = msgs.length;
+
+        html += `<div onclick="selectChatSession('${sessionId}')" style="padding:10px; border-radius:8px; border:1px solid #e0e0e0; cursor:pointer; ${isSelected}">
+          <div style="font-weight:bold; color:#1976D2;">${sessionId}</div>
+          <div style="font-size:12px; color:#666; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${lastMsg ? lastMsg.message : ''}</div>
+        </div>`;
+      });
+
+      if(html === "") {
+        html = `<div style="padding:10px; color:#666;">No chats available.</div>`;
+      }
+      container.innerHTML = html;
+
+      if(currentSelectedChatSession) {
+        renderAdminChatMessages(sessionsMap[currentSelectedChatSession] || []);
+      }
+    } catch(e) {}
+  }
+
+  function selectChatSession(sessionId) {
+    currentSelectedChatSession = sessionId;
+    document.getElementById("activeChatTitle").innerText = `Chat: ${sessionId}`;
+    loadAdminChatsList();
+  }
+
+  function renderAdminChatMessages(msgs) {
+    let box = document.getElementById("chatMessagesBox");
+    if(!box) return;
+    let html = "";
+    msgs.forEach(m => {
+      let align = (m.sender === "Customer") ? "text-align:left;" : "text-align:right;";
+      let bg = (m.sender === "Customer") ? "#fff; border:1px solid #e0e0e0;" : "#1976D2; color:white;";
+      html += `<div style="${align} margin-bottom:8px;">
+        <span style="display:inline-block; padding:8px 12px; border-radius:8px; background:${bg}; max-width:80%; text-align:left;">
+          <small style="font-size:9px; opacity:0.8; display:block;">${m.sender} - ${m.time || ''}</small>
+          <div>${m.message}</div>
+        </span>
+      </div>`;
+    });
+    box.innerHTML = html;
+    box.scrollTop = box.scrollHeight;
+  }
+
+  async function sendAdminChat() {
+    if(!currentSelectedChatSession) { alert("Please select a chat first!"); return; }
+    let inputEl = document.getElementById("adminTestInput") || document.getElementById("adminChatInput");
+    let msg = inputEl.value.trim();
+    if(!msg) return;
+    inputEl.value = "";
+    try {
+      await supabaseClient.from('chats').insert([{
+        session_id: currentSelectedChatSession,
+        customer_name: "Admin",
+        support_type: "Support",
+        sender: "Admin",
+        message: msg,
+        time: new Date().toLocaleString()
+      }]);
+      loadAdminChatsList();
+    } catch(e) {}
+  }
+
+  function openImageViewer(imgUrl) {
+    document.getElementById("viewerTargetImage").src = imgUrl;
+    document.getElementById("imageViewerModal").style.display = "flex";
+  };
+
+  function closeImageViewer() {
+    document.getElementById("imageViewerModal").style.display = "none";
+  };
+
+  function showAdminPanel() {
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("adminContent").style.display = "block";
+    
+    let loggedInRole = sessionStorage.getItem("USER_ROLE") || "Admin";
+    let badgeEl = document.getElementById("userRoleBadge");
+    if (badgeEl) {
+      badgeEl.innerText = loggedInRole.toUpperCase();
+    }
+
+    let roleLower = String(loggedInRole).toLowerCase();
+    if (roleLower === "marketing" || roleLower === "delivery") {
+      let salesBox = document.getElementById("salesDashboardBox");
+      if(salesBox) salesBox.style.display = "none";
+
+      let charts = document.querySelectorAll(".chart-container");
+      charts.forEach(c => c.style.display = "none");
+
+      let reports = document.querySelectorAll(".report-section");
+      reports.forEach(r => r.style.display = "none");
+
+      let invoiceSec = document.querySelector(".invoice-section");
+      if(invoiceSec) invoiceSec.style.display = "none";
+
+      let menuSec = document.getElementById("menuManagementBox");
+      if(menuSec) menuSec.style.display = "none";
+
+      let invSec = document.querySelector(".inventory-section");
+      if(invSec) invSec.style.display = "none";
+
+      let staffSec = document.getElementById("staffAccessManagementSection");
+      if(staffSec) staffSec.style.display = "none";
+
+      let salarySec = document.getElementById("salaryAndExpenseMainSection");
+      if(salarySec) salarySec.style.display = "none";
+    }
+
+    loadDeliveryZones();
+    loadMenuList();
+    loadOrders();
+    loadStaffList();
+    loadExpenseList();
+    loadPurchaseList();
+    loadSalaryVouchersHistory();
+    loadExtraInvoicesHistory();
+    loadAdminChatsList();
+    loadSupplierDueReport();
+
+    setInterval(() => { 
+      loadOrders(); 
+      loadAdminChatsList();
+      loadStockAlerts();
+    }, 5000);
+  };
+
+  function logout() { sessionStorage.clear(); window.location.reload(); };
+
+  if (sessionStorage.getItem("ADMIN_LOGIN") === "true") {
+    showAdminPanel();
+  } else {
+    document.getElementById("loginScreen").style.display = "flex";
   }
 </script>
 </body>
