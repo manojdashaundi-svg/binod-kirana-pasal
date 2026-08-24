@@ -756,19 +756,28 @@
     loadSupplierDueReport();
   });
 
+  async function loadPurchaseList() {
+    try {
+      let { data, error } = await supabaseClient.from('inventory_purchases').select('*').order('id', { ascending: false });
+      if (!error && data) {
+        purchaseListCache = data;
+      }
+    } catch(e) {
+      purchaseListCache = [];
+    }
+  }
+
   async function loadSupplierDueReport() {
+    await loadPurchaseList();
     let startDate = document.getElementById('supplierDueReportStart').value;
     let endDate = document.getElementById('supplierDueReportEnd').value;
     let selectedSupplier = document.getElementById('filterSupplier').value;
-
-    await loadPurchaseList();
 
     let start = startDate ? new Date(startDate) : null;
     let end = endDate ? new Date(endDate) : null;
     if(end) end.setHours(23, 59, 59, 999);
 
     let supplierDropdownSet = new Set();
-
     purchaseListCache.forEach(p => {
       let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
       supplierDropdownSet.add(supName);
@@ -782,25 +791,96 @@
     });
     selectEl.innerHTML = dropdownHtml;
     selectEl.value = supplierDropdownSet.has(currentSelVal) ? currentSelVal : "ALL";
+
+    let filtered = purchaseListCache.filter(p => {
+      if(!p.bill_date) return false;
+      let pDate = new Date(p.bill_date);
+      if(isNaN(pDate.getTime())) return false;
+      if(start && end && (pDate < start || pDate > end)) return false;
+      if(selectedSupplier !== "ALL" && String(p.supplier_name).trim() !== selectedSupplier) return false;
+      return true;
+    });
+
+    return filtered;
   }
 
-  function exportSupplierDueCSV() {
-    alert("निर्यात गर्नको लागि कुनै डाटा उपलब्ध छैन।");
-  }
-
-  function printSupplierDueReportPDF() {
-    alert("प्रिन्ट गर्नको लागि कुनै डाटा उपलब्ध छैन।");
-  }
-
-  async function loadPurchaseList() {
-    try {
-      let { data, error } = await supabaseClient.from('inventory_purchases').select('*').order('id', { ascending: false });
-      if (!error && data) {
-        purchaseListCache = data;
-      }
-    } catch(e) {
-      purchaseListCache = [];
+  async function exportSupplierDueCSV() {
+    let filtered = await loadSupplierDueReport();
+    if(filtered.length === 0) {
+      alert("निर्यात गर्नको लागि कुनै डाटा उपलब्ध छैन।");
+      return;
     }
+
+    let csvContent = "data:text/csv;charset=utf-8,Bill Date,Bill No,Supplier Name,Grand Total,Paid Amount,Due Amount\n";
+    filtered.forEach(p => {
+      let gt = parseFloat(p.grand_total) || 0;
+      let pd = parseFloat(p.paid_amount) || 0;
+      let du = parseFloat(p.due_amount) || (gt - pd);
+      csvContent += `"${p.bill_date || ''}","${p.bill_no || ''}","${p.supplier_name || ''}","${gt.toFixed(2)}","${pd.toFixed(2)}","${du.toFixed(2)}"\n`;
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "supplier_due_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  async function printSupplierDueReportPDF() {
+    let startDate = document.getElementById('supplierDueReportStart').value;
+    let endDate = document.getElementById('supplierDueReportEnd').value;
+    let filtered = await loadSupplierDueReport();
+
+    if(filtered.length === 0) {
+      alert("प्रिन्ट गर्नको लागि कुनै डाटा उपलब्ध छैन।");
+      return;
+    }
+
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
+    printWindow.document.write('<html><head><title>Supplier Due Report</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
+    printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;margin:0;}');
+    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #b78103;padding-bottom:5mm;margin-bottom:10px;}');
+    printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
+    printWindow.document.write('h2{margin:2px 0;color:#1976D2;font-size:16px;font-weight:700;}');
+    printWindow.document.write('h3{margin:2px 0;color:#333;font-size:13px;font-weight:600;}');
+    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
+    printWindow.document.write('th,td{border:2px solid #333;padding:7px 8px;text-align:center;font-size:12px;color:#000;font-weight:bold;}');
+    printWindow.document.write('th{background:#b78103;color:white;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('tr:nth-child(even){background-color:#fef9e7;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('.total-box{text-align:right;margin-top:10px;font-size:14px;font-weight:bold;color:#b78103;}');
+    printWindow.document.write('.print-btn-bar{position:fixed;top:10px;right:10px;background:#b78103;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;z-index:9999;box-shadow:0 2px 5px rgba(0,0,0,0.3);display:block;}');
+    printWindow.document.write('@media print { .print-btn-bar { display: none !important; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<button class="print-btn-bar" onclick="window.print()">🖨️ Print Now / Save PDF</button>');
+    printWindow.document.write('<div class="header">');
+    printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
+    printWindow.document.write('<h2 style="color:#1976D2; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
+    printWindow.document.write('<h3>Supplier Due Report (' + startDate + ' to ' + endDate + ')</h3>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('<table><thead><tr><th>Bill Date</th><th>Bill No.</th><th>Supplier Name</th><th>Grand Total</th><th>Paid Amount</th><th>Due Amount</th></tr></thead><tbody>');
+
+    let totalDueSum = 0;
+    filtered.forEach(p => {
+      let gt = parseFloat(p.grand_total) || 0;
+      let pd = parseFloat(p.paid_amount) || 0;
+      let du = parseFloat(p.due_amount) || (gt - pd);
+      totalDueSum += du;
+      printWindow.document.write(`<tr><td>${p.bill_date || ''}</td><td><b>${p.bill_no || ''}</b></td><td>${p.supplier_name || ''}</td><td>Rs. ${gt.toFixed(2)}</td><td>Rs. ${pd.toFixed(2)}</td><td style="color:red;">Rs. ${du.toFixed(2)}</td></tr>`);
+    });
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<div class="total-box">Total Due Amount: Rs. ' + totalDueSum.toFixed(2) + '</div>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
   }
 
   function exportPurchaseCSV() {
@@ -2687,884 +2767,4 @@
 
     let dedRows = document.querySelectorAll(".deductions-row");
     if(dedRows.length === 1) {
-      dedRows[0].querySelector("button").disabled = true;
-    } else {
-      dedRows.forEach(r => r.querySelector("button").disabled = false);
-    }
-  }
-
-  function calculateVoucherNet() {
-    let totalEarnings = 0;
-    document.querySelectorAll(".earn-amt").forEach(input => {
-      totalEarnings += parseFloat(input.value) || 0;
-    });
-
-    let totalDeductions = 0;
-    document.querySelectorAll(".ded-amt").forEach(input => {
-      totalDeductions += parseFloat(input.value) || 0;
-    });
-
-    let net = totalEarnings - totalDeductions;
-    document.getElementById("voucherNetDisplay").innerText = "NET Salary: RM " + net.toFixed(2);
-  }
-
-  function resetSalaryVoucherForm() {
-    document.getElementById("voucherStaffSelect").value = "";
-    document.getElementById("voucherStaffDesignation").value = "";
-    
-    let now = new Date();
-    document.getElementById("voucherDay").value = now.getDate();
-    document.getElementById("voucherMonth").value = now.getMonth() + 1;
-    document.getElementById("voucherYear").value = now.getFullYear();
-
-    let earnContainer = document.getElementById("earningsContainer");
-    earnContainer.innerHTML = `
-      <div class="earnings-row" style="display:flex; gap:10px; align-items:center;">
-        <input type="text" class="earn-desc" value="MONTHLY BASIC SALARY PAYED" style="flex:2; padding:8px; background:#f9f9f9;" readonly>
-        <input type="number" class="earn-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
-        <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
-      </div>
-    `;
-
-    let dedContainer = document.getElementById("deductionsContainer");
-    dedContainer.innerHTML = `
-      <div class="deductions-row" style="display:flex; gap:10px; align-items:center;">
-        <input type="text" class="ded-desc" placeholder="Deduction Description" value="Advance / Deduction" style="flex:2; padding:8px;">
-        <input type="number" class="ded-amt" value="0" oninput="calculateVoucherNet()" style="flex:1; padding:8px;">
-        <button type="button" onclick="removeRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
-      </div>
-    `;
-
-    document.getElementById("voucherPaymentMode").selectedIndex = 0;
-    document.getElementById("voucherNetDisplay").innerText = "NET Salary: RM 0.00";
-  }
-
-  window.printSalaryVoucherSlip = function(vNo, name, desig, day, month, year, earnList, dedList, payMode, netTotal) {
-    function getVoucherCard(copyLabel) {
-      let earnRowsHtml = "";
-      earnList.forEach((e, idx) => {
-          earnRowsHtml += `<tr><td style="border:1px solid #bce8f1; padding:5px; text-align:left; width:75%; font-weight:600;">${idx+1}. ${e.desc}</td><td style="border:1px solid #bce8f1; padding:5px; text-align:right; width:25%; font-weight:600;">${e.amt.toFixed(2)}</td></tr>`;
-      });
-
-      let dedRowsHtml = "";
-      dedList.forEach((d, idx) => {
-          dedRowsHtml += `<tr><td style="border:1px solid #f2dede; padding:5px; text-align:left; width:75%; font-weight:600;">${idx+1}. ${d.desc}</td><td style="border:1px solid #f2dede; padding:5px; text-align:right; width:25%; font-weight:600;">${d.amt.toFixed(2)}</td></tr>`;
-      });
-
-      return `
-        <div style="width: 100%; text-align: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11px; line-height: 1.3; color:#222; background:#fff; padding: 12px; border: 2px solid #1976D2; border-radius: 8px; box-sizing: border-box; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
-            <img src="https://i.postimg.cc/Hn5Fwwb5/logo.png" style="max-width:55px; height:auto; margin-bottom:2px;">
-            <h3 style="margin:0; font-size:15px; font-weight:bold; color:#1976D2;">PUJA EXPORT AND IMPORT PVT. LTD.</h3>
-            <p style="margin:2px 0; font-size:9.5px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>
-            <p style="margin:2px 0; font-size:9.5px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>
-            <div style="border-top:2px solid #1976D2; margin:5px 0;"></div>
-            <h4 style="margin:3px 0; font-size:13px; color:#E91E63; text-decoration:underline; font-weight:bold;">SALARY VOUCHER</h4>
-            
-            <div style="text-align:left; margin-top:6px; font-size:11px; background:#f9fbfd; padding:6px 10px; border-radius:6px; border:1px solid #e0e0e0;">
-                <div><b>Employee Name :</b> <span style="color:#1976D2;">${name}</span></div>
-                <div><b>Designation :</b> ${desig}</div>
-                <div><b>Date:</b> ${day}/${month}/${year}</div>
-            </div>
-
-            <div style="background:linear-gradient(135deg, #1976D2, #1565C0); color:#fff; font-weight:bold; padding:4px 8px; margin:6px 0; font-size:11.5px; text-align:left; border-radius:4px;">VOUCHER NO. ${vNo}</div>
-            
-            <table style="width:100%; border-collapse:collapse; font-size:10.5px; margin-top:4px;">
-                <tr style="background:#e3f2fd; color:#0d47a1; border-bottom:1.5px solid #1976D2;">
-                    <th style="border:1px solid #bbdefb; padding:4px 6px; text-align:left; width:75%;">Earnings & Allowances</th>
-                    <th style="border:1px solid #bbdefb; padding:4px 6px; text-align:right; width:25%;">RM</th>
-                </tr>
-                ${earnRowsHtml}
-            </table>
-
-            ${dedList.length > 0 ? `
-            <table style="width:100%; border-collapse:collapse; font-size:10.5px; margin-top:5px;">
-                <tr style="background:#ffebee; color:#c62828; border-bottom:1.5px solid #e91e63;">
-                    <th style="border:1px solid #ffcdd2; padding:4px 6px; text-align:left; width:75%;">Deductions</th>
-                    <th style="border:1px solid #ffcdd2; padding:4px 6px; text-align:right; width:25%;">RM</th>
-                </tr>
-                ${dedRowsHtml}
-            </table>` : ''}
-
-            <div style="border:1.5px solid #4CAF50; padding:5px 8px; margin-top:6px; text-align:right; font-size:12.5px; font-weight:bold; background:#e8f5e9; color:#2e7d32; border-radius:6px;">
-                NET Salary: RM ${Number(netTotal).toFixed(2)}
-            </div>
-
-            <div style="text-align:left; margin-top:6px; font-size:11px; font-weight:bold; color:#333;">
-                <div>☑ Payment Mode: <span style="color:#1976D2;">${payMode}</span></div>
-            </div>
-
-            <div style="margin-top:16px; display:flex; justify-content:space-between; font-size:10.5px; align-items:flex-end;">
-                <div><b style="color:#555;">${copyLabel}</b></div>
-                <div style="text-align:right;">
-                    --------------------------<br>
-                    <b style="color:#333;">Employee Signature</b>
-                </div>
-            </div>
-        </div>
-      `;
-    }
-
-    let singleVoucherHtml1 = getVoucherCard("Company Copy");
-    let singleVoucherHtml2 = getVoucherCard("Staff Copy");
-
-    let a4DualHtml = `
-        <html>
-        <head>
-            <title>Salary Voucher Print</title>
-            <style>
-                @page { size: A4 portrait; margin: 0; }
-                body { margin: 0; padding: 0; background: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                .voucher-page { width: 190mm; height: 280mm; margin: auto; display: flex; flex-direction: column; justify-content: space-between; align-items: center; box-sizing: border-box; padding: 8mm 0; }
-                .voucher-item { width: 100%; }
-            </style>
-        </head>
-        <body>
-            <div class="voucher-page">
-                <div class="voucher-item">${singleVoucherHtml1}</div>
-                <div style="width: 100%; border-top: 2px dashed #999; margin: 4px 0;"></div>
-                <div class="voucher-item">${singleVoucherHtml2}</div>
-            </div>
-        </body>
-        </html>
-    `;
-
-    var printWindow = window.open('', '_blank', 'height=800,width=700');
-    if (!printWindow) { alert("⚠️ कृपया आफ्नो ब्राउजरको Pop-up Blocker बन्द गर्नुहोस्!"); return; }
-    printWindow.document.write(a4DualHtml);
-    printWindow.document.close();
-    printWindow.focus();
-    
-    resetSalaryVoucherForm();
-
-    setTimeout(() => { printWindow.print(); }, 500);
-  };
-
-  async function saveAndPrintVoucher() {
-    let staffId = document.getElementById("voucherStaffSelect").value;
-    if(!staffId) {
-      alert("⚠️ चेतावनी: कृपया कामदार (Employee Name) छान्नुहोस्!");
-      return;
-    }
-
-    let day = document.getElementById("voucherDay").value.trim();
-    let month = document.getElementById("voucherMonth").value.trim();
-    let year = document.getElementById("voucherYear").value.trim();
-
-    if(!day || !month || !year) {
-      alert("⚠️ चेतावनी: कृपया मिति (Day, Month, Year) खाली नछोड्नुहोस्!");
-      return;
-    }
-
-    let st = staffListCache.find(s => String(s.id) === String(staffId));
-    if(!st) {
-      alert("⚠️ चेतावनी: चयन गरिएको कर्मचारीको विवरण भेटिएन!");
-      return;
-    }
-
-    let designation = document.getElementById("voucherStaffDesignation").value;
-    let pMode = document.getElementById("voucherPaymentMode").value;
-
-    let earnList = [];
-    let totalEarnings = 0;
-    let hasInvalidEarn = false;
-
-    document.querySelectorAll(".earnings-row").forEach(row => {
-      let descInput = row.querySelector(".earn-desc");
-      let amtInput = row.querySelector(".earn-amt");
-      let desc = descInput ? descInput.value.trim() : "";
-      let amt = parseFloat(amtInput ? amtInput.value : 0) || 0;
-
-      if(!desc) {
-        hasInvalidEarn = true;
-      }
-      totalEarnings += amt;
-      earnList.push({ desc: desc, amt: amt });
-    });
-
-    if(hasInvalidEarn) {
-      alert("⚠️ चेतावनी: सबै Earnings/Allowances विवरणहरू खाली छोड्न पाइँदैन!");
-      return;
-    }
-
-    let dedList = [];
-    let totalDeductions = 0;
-
-    document.querySelectorAll(".deductions-row").forEach(row => {
-      let descInput = row.querySelector(".ded-desc");
-      let amtInput = row.querySelector(".ded-amt");
-      let desc = descInput ? descInput.value.trim() : "";
-      let amt = parseFloat(amtInput ? amtInput.value : 0) || 0;
-
-      if(desc && amt > 0) {
-        dedList.push({ desc: desc, amt: amt });
-        totalDeductions += amt;
-      } else if(desc && amt === 0) {
-        dedList.push({ desc: desc, amt: 0 });
-      }
-    });
-
-    let net = totalEarnings - totalDeductions;
-    if(net < 0) {
-      alert("⚠️ चेतावनी: खुद तलब (NET Salary) शून्य वा माइनस हुन सक्दैन!");
-      return;
-    }
-
-    let formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    
-    let nextVoucherNumber = "V-" + (1000 + salaryVoucherHistoryCache.length + 1);
-    try {
-      let { count, error: countErr } = await supabaseClient.from('salary_vouchers').select('*', { count: 'exact', head: true });
-      if (!countErr && count !== null) {
-        nextVoucherNumber = "V-" + (1001 + count);
-      }
-    } catch(e) {
-      nextVoucherNumber = "V-" + Math.floor(1000 + Math.random() * 9000);
-    }
-
-    try {
-      let { error: insertError } = await supabaseClient.from('salary_vouchers').insert([{
-        voucher_no: nextVoucherNumber,
-        date: formattedDate,
-        staff_name: st.name,
-        designation: designation,
-        payment_mode: pMode,
-        net_salary: net
-      }]);
-      
-      if (insertError) {
-        alert("Error saving voucher: " + insertError.message);
-        return;
-      }
-      loadSalaryVouchersHistory();
-    } catch(e) {}
-
-    window.printSalaryVoucherSlip(nextVoucherNumber, st.name, designation, day, month, year, earnList, dedList, pMode, net);
-  }
-
-  async function loadMenuList() {
-    let { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
-    if (data) menuItemsCache = data;
-    var menuList = document.getElementById("menuTableList");
-    if(!menuList) return;
-    let html = "";
-    menuItemsCache.forEach((r, index) => {
-      let currentStockStatus = r.status ? String(r.status).trim() : "In Stock";
-      let stockBtnClass = (currentStockStatus === "Out of Stock") ? "outstock-toggle-btn" : "instock-toggle-btn";
-      let stockBtnText = (currentStockStatus === "Out of Stock") ? "🔴 Out of Stock" : "🟢 In Stock";
-
-      html += `<tr id="prod_row_${r.id}">
-        <td><b>${index + 1}</b></td>
-        <td>
-          <span id="prod_name_txt_${r.id}"><b>${r.name || ''}</b></span>
-          <input type="text" id="prod_name_input_${r.id}" value="${r.name || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
-        </td>
-        <td>
-          <span id="prod_price_txt_${r.id}" style="color:#1976D2; font-weight:bold;">Rs. ${r.price || 0}</span>
-          <input type="number" id="prod_price_input_${r.id}" value="${r.price || 0}" style="display:none; width:80px; padding:6px; border:1px solid #ccc; border-radius:4px;">
-        </td>
-        <td>
-          <span id="prod_unit_txt_${r.id}"><b>${r.unit || '-'}</b></span>
-          <input type="text" id="prod_unit_input_${r.id}" value="${r.unit || ''}" style="display:none; width:90px; padding:6px; border:1px solid #ccc; border-radius:4px;">
-        </td>
-        <td>
-          <span id="prod_img_txt_${r.id}">${r.image ? `<img src="${r.image}" class="menu-thumb">` : 'No Image'}</span>
-          <input type="text" id="prod_img_input_${r.id}" value="${r.image || ''}" placeholder="Image URL" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px; margin-top:4px;">
-        </td>
-        <td>
-          <span id="prod_desc_txt_${r.id}">${r.description || ''}</span>
-          <input type="text" id="prod_desc_input_${r.id}" value="${r.description || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
-        </td>
-        <td>
-          <span id="prod_cat_txt_${r.id}"><b>${r.category || ''}</b></span>
-          <input type="text" id="prod_cat_input_${r.id}" value="${r.category || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
-        </td>
-        <td>
-          <button class="${stockBtnClass}" onclick="toggleStockStatus(${r.id}, '${currentStockStatus}')">${stockBtnText}</button>
-        </td>
-        <td style="white-space: nowrap;">
-          <button id="prod_edit_btn_${r.id}" class="editBtn" onclick="enableProductEdit(${r.id})">✏️ Edit</button>
-          <button id="prod_save_btn_${r.id}" class="saveBtn" style="display:none;" onclick="saveProductEdit(${r.id})">💾 Save</button>
-          <button class="removeBtn" onclick="deleteProduct(${r.id})" style="margin-left:5px;">❌ Delete</button>
-        </td>
-      </tr>`;
-    });
-    menuList.innerHTML = html;
-    loadInventoryDropdown();
-    loadStockAlerts();
-  };
-
-  function loadInventoryDropdown() {
-    let selectEl = document.getElementById("inventoryItemSelect");
-    if(!selectEl) return;
-    let html = `<option value="">-- Item ID छान्नुहोस् --</option>`;
-    menuItemsCache.forEach(r => {
-      html += `<option value="${r.id}">${r.id} - ${r.name}</option>`;
-    });
-    selectEl.innerHTML = html;
-  }
-
-  function handleInventorySelectChange() {
-    let id = document.getElementById("inventoryItemSelect").value;
-    if(!id) {
-      document.getElementById("invSelectedName").innerText = "-";
-      document.getElementById("invSelectedCategory").innerText = "-";
-      document.getElementById("invCurrentStockInput").value = "";
-      document.getElementById("invAlertLimitInput").value = "50";
-      return;
-    }
-    let item = menuItemsCache.find(r => String(r.id) === String(id));
-    if(item) {
-      document.getElementById("invSelectedName").innerText = item.name || "-";
-      document.getElementById("invSelectedCategory").innerText = item.category || "-";
-      document.getElementById("invCurrentStockInput").value = (item.stock !== undefined && item.stock !== null) ? item.stock : 0;
-      document.getElementById("invAlertLimitInput").value = (item.alert_limit !== undefined && item.alert_limit !== null) ? item.alert_limit : 50;
-    }
-  }
-
-  async function saveInventoryStock() {
-    let id = document.getElementById("inventoryItemSelect").value;
-    if(!id) { alert("कृपया Item छान्नुहोस्!"); return; }
-    let stockVal = parseInt(document.getElementById("invCurrentStockInput").value);
-    let limitVal = parseInt(document.getElementById("invAlertLimitInput").value);
-
-    if(isNaN(stockVal)) stockVal = 0;
-    if(isNaN(limitVal)) limitVal = 50;
-
-    let item = menuItemsCache.find(r => String(r.id) === String(id));
-    if(item) {
-      item.stock = stockVal;
-      item.alert_limit = limitVal;
-    }
-
-    let { error } = await supabaseClient.from('menu_items').update({
-      stock: stockVal,
-      alert_limit: limitVal
-    }).eq('id', id);
-
-    if(error) {
-      let { error: err2 } = await supabaseClient.from('menu_items').update({ stock: stockVal }).eq('id', id);
-      if(err2) {
-        alert("Error saving stock: " + err2.message);
-        return;
-      }
-    }
-
-    alert("✅ स्टक सफलतापूर्वक सेभ भयो!");
-    loadStockAlerts();
-  }
-
-  function loadStockAlerts() {
-    let tbody = document.getElementById("stockAlertsTableBody");
-    if(!tbody) return;
-
-    let lowStockItems = menuItemsCache.filter(r => {
-      let stk = (r.stock !== undefined && r.stock !== null) ? parseInt(r.stock) : 0;
-      let lim = (r.alert_limit !== undefined && r.alert_limit !== null) ? parseInt(r.alert_limit) : 50;
-      return stk <= lim;
-    });
-
-    let html = "";
-    lowStockItems.forEach(r => {
-      let stk = (r.stock !== undefined && r.stock !== null) ? r.stock : 0;
-      let lim = (r.alert_limit !== undefined && r.alert_limit !== null) ? r.alert_limit : 50;
-      html += `<tr>
-        <td><b>${r.id}</b></td>
-        <td style="text-align:left;"><b>${r.name || ''}</b></td>
-        <td>${r.category || '-'}</td>
-        <td style="color:red; font-weight:bold;">${stk}</td>
-        <td>${lim}</td>
-        <td><span class="lowstock-badge">🔴 Low Stock</span></td>
-      </tr>`;
-    });
-
-    if(html === "") {
-      html = `<tr><td colspan="6" style="padding:15px; color:#666;">No low stock items.</td></tr>`;
-    }
-    tbody.innerHTML = html;
-  }
-
-  async function toggleStockStatus(id, currentStatus) {
-    let newStatus = (currentStatus === "Out of Stock") ? "In Stock" : "Out of Stock";
-    let { error } = await supabaseClient.from('menu_items').update({ status: newStatus }).eq('id', id);
-    if (error) {
-      alert("Error: " + error.message);
-    } else {
-      loadMenuList();
-    }
-  }
-
-  function enableProductEdit(id) {
-    document.getElementById(`prod_name_txt_${id}`).style.display = 'none';
-    document.getElementById(`prod_price_txt_${id}`).style.display = 'none';
-    document.getElementById(`prod_unit_txt_${id}`).style.display = 'none';
-    document.getElementById(`prod_img_txt_${id}`).style.display = 'none';
-    document.getElementById(`prod_desc_txt_${id}`).style.display = 'none';
-    document.getElementById(`prod_cat_txt_${id}`).style.display = 'none';
-    document.getElementById(`prod_edit_btn_${id}`).style.display = 'none';
-
-    document.getElementById(`prod_name_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`prod_price_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`prod_unit_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`prod_img_input_${id}`).style.display = 'block';
-    document.getElementById(`prod_desc_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`prod_cat_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`prod_save_btn_${id}`).style.display = 'inline-block';
-  }
-
-  async function saveProductEdit(id) {
-    let name = document.getElementById(`prod_name_input_${id}`).value.trim();
-    let price = parseFloat(document.getElementById(`prod_price_input_${id}`).value);
-    let unit = document.getElementById(`prod_unit_input_${id}`).value.trim();
-    let image = document.getElementById(`prod_img_input_${id}`).value.trim();
-    let description = document.getElementById(`prod_desc_input_${id}`).value.trim();
-    let category = document.getElementById(`prod_cat_input_${id}`).value.trim();
-
-    if(!name || isNaN(price)) { alert("नाम र मूल्य सही भर्नुहोस्!"); return; }
-
-    let { error } = await supabaseClient.from('menu_items').update({
-      name: name,
-      price: price,
-      unit: unit,
-      image: image,
-      description: description,
-      category: category
-    }).eq('id', id);
-
-    if (error) {
-      alert("Error: " + error.message);
-    } else {
-      alert("✅ उत्पादन सफलतापूर्वक अपडेट भयो!");
-      loadMenuList();
-    }
-  }
-
-  async function createNewProduct() {
-    var name = document.getElementById("prodName").value.trim();
-    var price = parseFloat(document.getElementById("prodPrice").value) || 0;
-    var unit = document.getElementById("prodUnit").value.trim();
-    var image = document.getElementById("prodImg").value.trim();
-    var description = document.getElementById("prodDesc").value.trim();
-    var category = document.getElementById("prodCat").value.trim() || "Wholesale";
-
-    if(!name || !price) { alert("कृपया उत्पादनको नाम र मूल्य (Price) भर्नुहोस्!"); return; }
-
-    let { error } = await supabaseClient.from('menu_items').insert([{ 
-      name: name, 
-      price: price, 
-      unit: unit,
-      image: image, 
-      description: description, 
-      category: category,
-      status: "In Stock",
-      stock: 0,
-      alert_limit: 50
-    }]);
-
-    if (error) {
-      alert("Error: " + error.message);
-      return;
-    }
-
-    alert("✅ नयाँ उत्पादन सफलतापूर्वक थपियो!");
-    document.getElementById("prodName").value = "";
-    document.getElementById("prodPrice").value = "";
-    document.getElementById("prodUnit").value = "";
-    document.getElementById("prodImg").value = "";
-    document.getElementById("prodDesc").value = "";
-    document.getElementById("prodCat").value = "";
-    loadMenuList();
-  };
-
-  async function deleteProduct(rowId) {
-    if(confirm("के तपाइँ यो उत्पादन हटाउन चाहनुहुन्छ?")) {
-      await supabaseClient.from('menu_items').delete().eq('id', rowId);
-      loadMenuList();
-    }
-  };
-
-  function setupRoleDropdowns(currentLoggedInRole) {
-    let roleSelect = document.getElementById("staffRoleSelect");
-    if (!roleSelect) return;
-
-    let isManager = (String(currentLoggedInRole).toLowerCase() === "manager");
-    
-    if (isManager) {
-      roleSelect.innerHTML = `
-        <option value="Staff">Staff</option>
-        <option value="Marketing">Marketing</option>
-        <option value="Delivery">Delivery</option>
-      `;
-    } else {
-      roleSelect.innerHTML = `
-        <option value="Admin">Admin</option>
-        <option value="Manager">Manager</option>
-        <option value="Staff">Staff</option>
-        <option value="Marketing">Marketing</option>
-        <option value="Delivery">Delivery</option>
-      `;
-    }
-  }
-
-  async function loadStaffList() {
-    let tbody = document.getElementById("staffTableList");
-    let staffAccessSec = document.getElementById("staffAccessManagementSection");
-    let salarySectionContainer = document.getElementById("salarySectionContainer");
-    let duesMainSec = document.getElementById("outstandingDuesMainSection");
-    
-    let loggedInRole = sessionStorage.getItem("USER_ROLE") || "Admin";
-    let roleLower = String(loggedInRole).toLowerCase();
-    
-    let isManager = (roleLower === "manager");
-    let isAdminUser = (roleLower === "admin");
-    let isRestrictedStaff = (roleLower === "staff" || roleLower === "marketing" || roleLower === "delivery");
-    let isDeliveryStaff = (roleLower === "delivery");
-
-    if (isRestrictedStaff) {
-      if (staffAccessSec) staffAccessSec.style.display = "none";
-      if (salarySectionContainer) salarySectionContainer.style.display = "none";
-    } else {
-      if (staffAccessSec) staffAccessSec.style.display = "block";
-      if (salarySectionContainer) salarySectionContainer.style.display = "block";
-    }
-
-    if (duesMainSec) {
-      if (isDeliveryStaff) {
-        duesMainSec.style.display = "none";
-      } else {
-        duesMainSec.style.display = "block";
-      }
-    }
-
-    if(!tbody) return;
-
-    setupRoleDropdowns(loggedInRole);
-    document.getElementById("userRoleBadge").innerText = loggedInRole.toUpperCase();
-
-    try {
-      let { data, error } = await supabaseClient.from('admin').select('*').order('id', { ascending: true });
-      if (error || !data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">No staff members found.</td></tr>`;
-        return;
-      }
-
-      let filteredData = data;
-      if (isManager) {
-        filteredData = data.filter(s => {
-          let r = String(s.role || '').toLowerCase();
-          return r === 'staff' || r === 'marketing' || r === 'delivery';
-        });
-      }
-
-      if (filteredData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">No staff members found.</td></tr>`;
-        return;
-      }
-
-      let html = "";
-      filteredData.forEach((s, idx) => {
-        let currentRole = s.role || 'Staff';
-        
-        let roleDropdownOptions = isManager ? `
-          <option value="Staff" ${currentRole==='Staff'?'selected':''}>Staff</option>
-          <option value="Marketing" ${currentRole==='Marketing'?'selected':''}>Marketing</option>
-          <option value="Delivery" ${currentRole==='Delivery'?'selected':''}>Delivery</option>
-        ` : `
-          <option value="Admin" ${currentRole==='Admin'?'selected':''}>Admin</option>
-          <option value="Manager" ${currentRole==='Manager'?'selected':''}>Manager</option>
-          <option value="Staff" ${currentRole==='Staff'?'selected':''}>Staff</option>
-          <option value="Marketing" ${currentRole==='Marketing'?'selected':''}>Marketing</option>
-          <option value="Delivery" ${currentRole==='Delivery'?'selected':''}>Delivery</option>
-        `;
-
-        html += `<tr id="staff_row_${s.id}">
-          <td><b>${idx + 1}</b></td>
-          <td>
-            <span id="staff_name_txt_${s.id}"><b>${s.name || ''}</b></span>
-            <input type="text" id="staff_name_input_${s.id}" value="${s.name || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
-          </td>
-          <td>
-            <span id="staff_email_txt_${s.id}">${s.email || ''}</span>
-            <input type="text" id="staff_email_input_${s.id}" value="${s.email || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
-          </td>
-          <td>
-            <span id="staff_pass_txt_${s.id}">${s.password || ''}</span>
-            <input type="text" id="staff_pass_input_${s.id}" value="${s.password || ''}" style="display:none; width:90%; padding:6px; border:1px solid #ccc; border-radius:4px;">
-          </td>
-          <td>
-            <span id="staff_role_txt_${s.id}"><b>${currentRole}</b></span>
-            <select id="staff_role_input_${s.id}" style="display:none; padding:6px; border:1px solid #ccc; border-radius:4px;">
-              ${roleDropdownOptions}
-            </select>
-          </td>
-          <td style="white-space: nowrap;">
-            <button id="staff_edit_btn_${s.id}" class="editBtn" onclick="enableStaffEdit(${s.id})">✏️ Edit</button>
-            <button id="staff_save_btn_${s.id}" class="saveBtn" style="display:none;" onclick="saveStaffEdit(${s.id})">💾 Save</button>
-            <button class="removeBtn" onclick="deleteStaff(${s.id})" style="margin-left:5px;">❌ Delete</button>
-          </td>
-        </tr>`;
-      });
-      tbody.innerHTML = html;
-      
-      if (!isRestrictedStaff) {
-        loadSalarySheet();
-      }
-    } catch(e) {
-      tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; color:#666;">Error loading staff.</td></tr>`;
-    }
-  }
-
-  function enableStaffEdit(id) {
-    document.getElementById(`staff_name_txt_${id}`).style.display = 'none';
-    document.getElementById(`staff_email_txt_${id}`).style.display = 'none';
-    document.getElementById(`staff_pass_txt_${id}`).style.display = 'none';
-    document.getElementById(`staff_role_txt_${id}`).style.display = 'none';
-    document.getElementById(`staff_edit_btn_${id}`).style.display = 'none';
-
-    document.getElementById(`staff_name_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`staff_email_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`staff_pass_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`staff_role_input_${id}`).style.display = 'inline-block';
-    document.getElementById(`staff_save_btn_${id}`).style.display = 'inline-block';
-  }
-
-  async function saveStaffEdit(id) {
-    let name = document.getElementById(`staff_name_input_${id}`).value.trim();
-    let email = document.getElementById(`staff_email_input_${id}`).value.trim();
-    let password = document.getElementById(`staff_pass_input_${id}`).value.trim();
-    let role = document.getElementById(`staff_role_input_${id}`).value;
-
-    if(!name || !email || !password) {
-      alert("कृपया नाम, इमेल र पासवर्ड सबै भर्नुहोस्!");
-      return;
-    }
-
-    let { error } = await supabaseClient.from('admin').update({
-      name: name,
-      email: email,
-      password: password,
-      role: role
-    }).eq('id', id);
-
-    if(error) {
-      alert("Error updating staff: " + error.message);
-    } else {
-      alert("✅ स्टाफ सफलतापूर्वक अपडेट भयो!");
-      loadStaffList();
-      loadSalarySheet();
-    }
-  }
-
-  async function addNewStaff() {
-    let name = document.getElementById("staffNameInput").value.trim();
-    let email = document.getElementById("staffEmailInput").value.trim();
-    let password = document.getElementById("staffPassInput").value.trim();
-    let role = document.getElementById("staffRoleSelect").value;
-
-    if(!name || !email || !password) {
-      alert("कृपया नाम, इमेल र पासवर्ड सबै भर्नुहोस्!");
-      return;
-    }
-
-    let { error: adminError } = await supabaseClient.from('admin').insert([{
-      name: name,
-      email: email,
-      password: password,
-      role: role
-    }]);
-
-    if(adminError) {
-      alert("Error adding staff: " + adminError.message);
-      return;
-    }
-
-    let { error: staffError } = await supabaseClient.from('staff').insert([{
-      name: name,
-      role: role
-    }]);
-
-    if(staffError) {
-      console.log("Staff table insert warning: " + staffError.message);
-    }
-
-    alert("✅ नयाँ स्टाफ एडमिन र स्टाफ दुवै टेबलमा सफलतापूर्वक थपियो!");
-    document.getElementById("staffNameInput").value = "";
-    document.getElementById("staffEmailInput").value = "";
-    document.getElementById("staffPassInput").value = "";
-    loadStaffList();
-    loadSalarySheet();
-  }
-
-  async function deleteStaff(id) {
-    if(confirm("के तपाइँ यो स्टाफलाई हटाउन चाहनुहुन्छ?")) {
-      let { error } = await supabaseClient.from('admin').delete().eq('id', id);
-      if(error) {
-        alert("Error deleting staff: " + error.message);
-      } else {
-        loadStaffList();
-      }
-    }
-  }
-
-  async function loadAdminChatsList() {
-    try {
-      let { data, error } = await supabaseClient.from('chats').select('*').order('id', { ascending: true });
-      if(error || !data) return;
-
-      let sessionsMap = {};
-      data.forEach(m => {
-        if(!sessionsMap[m.session_id]) {
-          sessionsMap[m.session_id] = [];
-        }
-        sessionsMap[m.session_id].push(m);
-      });
-
-      let container = document.getElementById("chatListContainer");
-      if(!container) return;
-      let html = "";
-
-      Object.keys(sessionsMap).forEach(sessionId => {
-        let msgs = sessionsMap[sessionId];
-        let lastMsg = msgs[msgs.length - 1];
-        let isSelected = (currentSelectedChatSession === sessionId) ? "background:#e3f2fd;" : "";
-
-        if (lastAdminChatCount[sessionId] !== undefined && msgs.length > lastAdminChatCount[sessionId]) {
-          if (lastMsg.sender === "Customer") {
-            playTringTringBell();
-          }
-        }
-        lastAdminChatCount[sessionId] = msgs.length;
-
-        html += `<div onclick="selectChatSession('${sessionId}')" style="padding:10px; border-radius:8px; border:1px solid #e0e0e0; cursor:pointer; ${isSelected}">
-          <div style="font-weight:bold; color:#1976D2;">${sessionId}</div>
-          <div style="font-size:12px; color:#666; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${lastMsg ? lastMsg.message : ''}</div>
-        </div>`;
-      });
-
-      if(html === "") {
-        html = `<div style="padding:10px; color:#666;">No chats available.</div>`;
-      }
-      container.innerHTML = html;
-
-      if(currentSelectedChatSession) {
-        renderAdminChatMessages(sessionsMap[currentSelectedChatSession] || []);
-      }
-    } catch(e) {}
-  }
-
-  function selectChatSession(sessionId) {
-    currentSelectedChatSession = sessionId;
-    document.getElementById("activeChatTitle").innerText = `Chat: ${sessionId}`;
-    loadAdminChatsList();
-  }
-
-  function renderAdminChatMessages(msgs) {
-    let box = document.getElementById("chatMessagesBox");
-    if(!box) return;
-    let html = "";
-    msgs.forEach(m => {
-      let align = (m.sender === "Customer") ? "text-align:left;" : "text-align:right;";
-      let bg = (m.sender === "Customer") ? "#fff; border:1px solid #e0e0e0;" : "#1976D2; color:white;";
-      html += `<div style="${align} margin-bottom:8px;">
-        <span style="display:inline-block; padding:8px 12px; border-radius:8px; background:${bg}; max-width:80%; text-align:left;">
-          <small style="font-size:9px; opacity:0.8; display:block;">${m.sender} - ${m.time || ''}</small>
-          <div>${m.message}</div>
-        </span>
-      </div>`;
-    });
-    box.innerHTML = html;
-    box.scrollTop = box.scrollHeight;
-  }
-
-  async function sendAdminChat() {
-    if(!currentSelectedChatSession) { alert("Please select a chat first!"); return; }
-    let inputEl = document.getElementById("adminTestInput") || document.getElementById("adminChatInput");
-    let msg = inputEl.value.trim();
-    if(!msg) return;
-    inputEl.value = "";
-    try {
-      await supabaseClient.from('chats').insert([{
-        session_id: currentSelectedChatSession,
-        customer_name: "Admin",
-        support_type: "Support",
-        sender: "Admin",
-        message: msg,
-        time: new Date().toLocaleString()
-      }]);
-      loadAdminChatsList();
-    } catch(e) {}
-  }
-
-  function openImageViewer(imgUrl) {
-    document.getElementById("viewerTargetImage").src = imgUrl;
-    document.getElementById("imageViewerModal").style.display = "flex";
-  };
-
-  function closeImageViewer() {
-    document.getElementById("imageViewerModal").style.display = "none";
-  };
-
-  function showAdminPanel() {
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("adminContent").style.display = "block";
-    
-    let loggedInRole = sessionStorage.getItem("USER_ROLE") || "Admin";
-    let badgeEl = document.getElementById("userRoleBadge");
-    if (badgeEl) {
-      badgeEl.innerText = loggedInRole.toUpperCase();
-    }
-
-    let roleLower = String(loggedInRole).toLowerCase();
-    if (roleLower === "marketing" || roleLower === "delivery") {
-      let salesBox = document.getElementById("salesDashboardBox");
-      if(salesBox) salesBox.style.display = "none";
-
-      let charts = document.querySelectorAll(".chart-container");
-      charts.forEach(c => c.style.display = "none");
-
-      let reports = document.querySelectorAll(".report-section");
-      reports.forEach(r => r.style.display = "none");
-
-      let invoiceSec = document.querySelector(".invoice-section");
-      if(invoiceSec) invoiceSec.style.display = "none";
-
-      let menuSec = document.getElementById("menuManagementBox");
-      if(menuSec) menuSec.style.display = "none";
-
-      let invSec = document.querySelector(".inventory-section");
-      if(invSec) invSec.style.display = "none";
-
-      let staffSec = document.getElementById("staffAccessManagementSection");
-      if(staffSec) staffSec.style.display = "none";
-
-      let salarySec = document.getElementById("salaryAndExpenseMainSection");
-      if(salarySec) salarySec.style.display = "none";
-    }
-
-    loadDeliveryZones();
-    loadMenuList();
-    loadOrders();
-    loadStaffList();
-    loadExpenseList();
-    loadPurchaseList();
-    loadSalaryVouchersHistory();
-    loadExtraInvoicesHistory();
-    loadAdminChatsList();
-    loadSupplierDueReport();
-
-    setInterval(() => { 
-      loadOrders(); 
-      loadAdminChatsList();
-      loadStockAlerts();
-    }, 5000);
-  };
-
-  function logout() { sessionStorage.clear(); window.location.reload(); };
-
-  if (sessionStorage.getItem("ADMIN_LOGIN") === "true") {
-    showAdminPanel();
-  } else {
-    document.getElementById("loginScreen").style.display = "flex";
-  }
-</script>
-</body>
-</html>
+      dedRows[0].querySelector("button").disabled =I seem to be encountering an error. Can I try something else for you?
