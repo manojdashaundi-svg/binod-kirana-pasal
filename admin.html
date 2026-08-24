@@ -411,7 +411,7 @@
       <button onclick="savePurchaseRecord()" style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(76,175,80,0.3);">💾 खरिद बिल सेभ गर्नुहोस् र स्टकमा जोड्नुहोस्</button>
     </div>
 
-    <!-- 📊 Purchase Report Generator & Export (Selling Price Grand Total भन्दा दायाँतिर राखिएको सेक्सन) -->
+    <!-- 📊 Purchase Report Generator & Export -->
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-top:25px;">
       <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">📊 Purchase Report Generator & Export (सामान खरिद रिपोर्ट तथा निर्यात)</h3>
       <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
@@ -426,6 +426,60 @@
         <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
           <button onclick="exportPurchaseCSV()" style="flex:1; padding:11px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel (.CSV)</button>
           <button onclick="printPurchasePDF()" style="flex:1; padding:11px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print / Download PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         SUPPLIER DUE REPORT GENERATOR & EXPORT SECTION
+         ========================================== -->
+    <div class="card shadow-sm mb-4 mt-4" style="background:#fff; padding:20px; border-radius:10px; border:1px solid #e0e0e0;">
+      <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+        <h5 class="mb-0" style="margin:0; color:#b78103;">📋 सप्लायरलाई दिन बाँकी रकमको रिपोर्ट (Supplier Due Report)</h5>
+        <div>
+          <button class="btn btn-dark btn-sm" onclick="exportSupplierDueCSV()" style="background:#333; color:#fff; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer;">📥 CSV निर्यात गर्नुहोस्</button>
+          <button class="btn btn-outline-dark btn-sm" onclick="printSupplierDueReport()" style="background:#fff; color:#333; border:1px solid #333; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer; margin-left:5px;">🖨️ प्रिन्ट / PDF</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- फिल्टर तथा कन्ट्रोल अप्सनहरू -->
+        <div class="row mb-3" style="display:flex; gap:15px; flex-wrap:wrap; align-items:flex-end; margin-bottom:15px;">
+          <div class="col-md-4" style="flex:2; min-width:200px;">
+            <label for="filterSupplier" class="form-label" style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px; color:#555;">सप्लायर छान्नुहोस्:</label>
+            <select id="filterSupplier" class="form-select" onchange="loadSupplierDueReport()" style="width:100%; padding:10px;">
+              <option value="ALL">सबै सप्लायरहरू (All Suppliers)</option>
+              <!-- डाइनामिक रूपमा लोड हुन्छ -->
+            </select>
+          </div>
+          <div class="col-md-4 d-flex align-items-end" style="flex:1; min-width:180px;">
+            <button class="btn btn-primary w-100" onclick="loadSupplierDueReport()" style="width:100%; padding:10px; background:#1976D2; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🔄 रिपोर्ट रिफ्रेस गर्नुहोस्</button>
+          </div>
+        </div>
+
+        <!-- रिपोर्ट टेबल -->
+        <div class="table-responsive" style="overflow-x:auto;">
+          <table class="table table-bordered table-striped align-middle" id="supplierDueTable">
+            <thead class="table-dark">
+              <tr>
+                <th>सि.नं.</th>
+                <th>सप्लायरको नाम (Supplier Name)</th>
+                <th>सम्पर्क नम्बर</th>
+                <th>कुल खरिद रकम (Total Purchase)</th>
+                <th>भुक्तानी गरेको रकम (Paid Amount)</th>
+                <th>बाँकी तिर्नुपर्ने रकम (Due Balance)</th>
+                <th>स्थिति (Status)</th>
+              </tr>
+            </thead>
+            <tbody id="supplierDueTableBody">
+              <!-- डेटा यहाँ लोड हुनेछ -->
+            </tbody>
+            <tfoot class="table-secondary">
+              <tr>
+                <th colspan="5" class="text-end" style="text-align:right;">कुल बाँकी रकम (Total Due):</th>
+                <th colspan="2" id="totalDueAmount">RM 0.00</th>
+              </tr>
+            </tfoot>
+          </table>
         </div>
       </div>
     </div>
@@ -714,6 +768,86 @@
   var currentSelectedChatSession = null;
   var lastAdminChatCount = {};
   var activeProofOrderNo = null;
+
+  // पेज लोड हुँदा वा रिपोर्ट ओपेन गर्दा यो चलाउनुहोला
+  document.addEventListener("DOMContentLoaded", function() {
+    loadSupplierDueReport();
+  });
+
+  // सप्लायर ड्यू रिपोर्ट लोड गर्ने फंक्सन
+  function loadSupplierDueReport() {
+    const selectedSupplier = document.getElementById('filterSupplier').value;
+    
+    google.script.run
+      .withSuccessHandler(function(data) {
+        const tbody = document.getElementById('supplierDueTableBody');
+        tbody.innerHTML = '';
+        
+        let totalDueSum = 0;
+        let serialNo = 1;
+
+        if (!data || data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">कुनै डाटा फेला परेन।</td></tr>`;
+          document.getElementById('totalDueAmount').innerText = 'RM 0.00';
+          return;
+        }
+
+        data.forEach(row => {
+          // फिल्टर चेक
+          if (selectedSupplier !== 'ALL' && row.supplierName !== selectedSupplier) {
+            return;
+          }
+
+          let dueAmount = parseFloat(row.totalPurchase) - parseFloat(row.paidAmount);
+          totalDueSum += dueAmount;
+
+          let statusBadge = dueAmount > 0 
+            ? `<span class="badge bg-danger">तिर्न बाँकी (Due)</span>` 
+            : `<span class="badge bg-success">चुक्ता भयो (Paid)</span>`;
+
+          let tr = `<tr>
+            <td>${serialNo++}</td>
+            <td>${row.supplierName}</td>
+            <td>${row.phone || 'N/A'}</td>
+            <td>RM ${parseFloat(row.totalPurchase).toFixed(2)}</td>
+            <td>RM ${parseFloat(row.paidAmount).toFixed(2)}</td>
+            <td class="fw-bold text-danger">RM ${dueAmount.toFixed(2)}</td>
+            <td>${statusBadge}</td>
+          </tr>`;
+          tbody.innerHTML += tr;
+        });
+
+        document.getElementById('totalDueAmount').innerText = `RM ${totalDueSum.toFixed(2)}`;
+      })
+      .getSupplierDueDataServerSide();
+  }
+
+  // CSV मा फाइल Export गर्ने फंक्सन
+  function exportSupplierDueCSV() {
+    let table = document.getElementById("supplierDueTable");
+    let csv = [];
+    for (let i = 0; i < table.rows.length; i++) {
+      let row = [], cols = table.rows[i].querySelectorAll("td, th");
+      for (let j = 0; j < cols.length; j++) {
+        row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+      }
+      csv.push(row.join(","));
+    }
+    
+    let csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+    let downloadLink = document.createElement("a");
+    downloadLink.download = "Supplier_Due_Report.csv";
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  }
+
+  // प्रिन्ट गर्ने फंक्सन
+  function printSupplierDueReport() {
+    window.print();
+  }
 
   async function loadPurchaseList() {
     try {
