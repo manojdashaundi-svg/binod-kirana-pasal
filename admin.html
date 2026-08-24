@@ -346,7 +346,6 @@
       <div style="color:#388E3C; padding-top:6px; font-size:17px;">जम्मा Net Profit: <span id="summaryNetProfit" style="float:right;">Rs. 0.00</span></div>
     </div>
 
-    <!-- नयाँ खरिद र बिक्री लागत क्याल्कुलेटर सेक्सन -->
     <div class="inventory-section" style="border: 2px solid #1976D2; background: #fdfefe;">
       <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">🛒 Inventory Purchase & Costing Calculator (सामान खरिद तथा बिक्रीदर निर्धारण)</h3>
       
@@ -411,7 +410,6 @@
       <button onclick="savePurchaseRecord()" style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(76,175,80,0.3);">💾 खरिद बिल सेभ गर्नुहोस् र स्टकमा जोड्नुहोस्</button>
     </div>
 
-    <!-- 📊 Purchase Report Generator & Export -->
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-top:25px;">
       <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">📊 Purchase Report Generator & Export (सामान खरिद रिपोर्ट तथा निर्यात)</h3>
       <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
@@ -436,23 +434,27 @@
     <div class="card shadow-sm mb-4 mt-4" style="background:#fff; padding:20px; border-radius:10px; border:1px solid #e0e0e0;">
       <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
         <h5 class="mb-0" style="margin:0; color:#b78103;">📋 सप्लायरलाई दिन बाँकी रकमको रिपोर्ट (Supplier Due Report)</h5>
-        <div>
-          <button class="btn btn-dark btn-sm" onclick="exportSupplierDueCSV()" style="background:#333; color:#fff; border:none; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer;">📥 CSV निर्यात गर्नुहोस्</button>
-          <button class="btn btn-outline-dark btn-sm" onclick="printSupplierDueReport()" style="background:#fff; color:#333; border:1px solid #333; padding:8px 14px; border-radius:6px; font-weight:bold; cursor:pointer; margin-left:5px;">🖨️ प्रिन्ट / PDF</button>
-        </div>
       </div>
       <div class="card-body">
-        <!-- फिल्टर तथा कन्ट्रोल अप्सनहरू -->
-        <div class="row mb-3" style="display:flex; gap:15px; flex-wrap:wrap; align-items:flex-end; margin-bottom:15px;">
-          <div class="col-md-4" style="flex:2; min-width:200px;">
-            <label for="filterSupplier" class="form-label" style="display:block; font-weight:bold; font-size:13px; margin-bottom:4px; color:#555;">सप्लायर छान्नुहोस्:</label>
+        <!-- मिति फिल्टर तथा कन्ट्रोल अप्सनहरू -->
+        <div style="background:#f9fbfd; padding:18px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:15px; display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+          <div style="flex:1; min-width:180px;">
+            <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">Start Date:</label>
+            <input id="supplierDueReportStart" type="date" style="width:100%; padding:10px;">
+          </div>
+          <div style="flex:1; min-width:180px;">
+            <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">End Date:</label>
+            <input id="supplierDueReportEnd" type="date" style="width:100%; padding:10px;">
+          </div>
+          <div style="flex:1.5; min-width:200px;">
+            <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">सप्लायर छान्नुहोस्:</label>
             <select id="filterSupplier" class="form-select" onchange="loadSupplierDueReport()" style="width:100%; padding:10px;">
               <option value="ALL">सबै सप्लायरहरू (All Suppliers)</option>
-              <!-- डाइनामिक रूपमा लोड हुन्छ -->
             </select>
           </div>
-          <div class="col-md-4 d-flex align-items-end" style="flex:1; min-width:180px;">
-            <button class="btn btn-primary w-100" onclick="loadSupplierDueReport()" style="width:100%; padding:10px; background:#1976D2; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">🔄 रिपोर्ट रिफ्रेस गर्नुहोस्</button>
+          <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
+            <button onclick="exportSupplierDueCSV()" style="flex:1; padding:11px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel (.CSV)</button>
+            <button onclick="printSupplierDueReportPDF()" style="flex:1; padding:11px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print / Download PDF</button>
           </div>
         </div>
 
@@ -463,7 +465,6 @@
               <tr>
                 <th>सि.नं.</th>
                 <th>सप्लायरको नाम (Supplier Name)</th>
-                <th>सम्पर्क नम्बर</th>
                 <th>कुल खरिद रकम (Total Purchase)</th>
                 <th>भुक्तानी गरेको रकम (Paid Amount)</th>
                 <th>बाँकी तिर्नुपर्ने रकम (Due Balance)</th>
@@ -471,12 +472,12 @@
               </tr>
             </thead>
             <tbody id="supplierDueTableBody">
-              <!-- डेटा यहाँ लोड हुनेछ -->
+              <tr><td colspan="6" style="padding:15px; color:#666;">Loading Supplier Dues...</td></tr>
             </tbody>
             <tfoot class="table-secondary">
               <tr>
-                <th colspan="5" class="text-end" style="text-align:right;">कुल बाँकी रकम (Total Due):</th>
-                <th colspan="2" id="totalDueAmount">RM 0.00</th>
+                <th colspan="4" class="text-end" style="text-align:right;">कुल बाँकी रकम (Total Due):</th>
+                <th colspan="2" id="totalDueAmount" style="text-align:left; color:#C62828;">Rs. 0.00</th>
               </tr>
             </tfoot>
           </table>
@@ -679,7 +680,6 @@
 
   </div>
 
-  <!-- Outstanding Dues & Customer Balances Section -->
   <div id="outstandingDuesMainSection" class="staff-section" style="background:#fff; padding:25px; border-radius:12px; margin-top:30px; border:1px solid #e0e0e0;">
     <h3 style="color:#C62828; margin-bottom:15px;">📊 Outstanding Dues & Customer Balances (तिर्न बाँकी बक्यौता विवरण)</h3>
     <div style="background:#f9fbfd; padding:18px; border-radius:10px; margin-bottom:15px; border:1px solid #e0e0e0; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
@@ -769,84 +769,228 @@
   var lastAdminChatCount = {};
   var activeProofOrderNo = null;
 
-  // पेज लोड हुँदा वा रिपोर्ट ओपेन गर्दा यो चलाउनुहोला
   document.addEventListener("DOMContentLoaded", function() {
+    let now = new Date();
+    let todayStr = now.toISOString().split('T')[0];
+    
+    let dueStart = document.getElementById('supplierDueReportStart');
+    let dueEnd = document.getElementById('supplierDueReportEnd');
+    if(dueStart && !dueStart.value) dueStart.value = todayStr;
+    if(dueEnd && !dueEnd.value) dueEnd.value = todayStr;
+
     loadSupplierDueReport();
   });
 
-  // सप्लायर ड्यू रिपोर्ट लोड गर्ने फंक्सन
-  function loadSupplierDueReport() {
-    const selectedSupplier = document.getElementById('filterSupplier').value;
-    
-    google.script.run
-      .withSuccessHandler(function(data) {
-        const tbody = document.getElementById('supplierDueTableBody');
-        tbody.innerHTML = '';
-        
-        let totalDueSum = 0;
-        let serialNo = 1;
+  // Supabase बाट सप्लायर ड्यू रिपोर्ट लोड गर्ने फंक्सन
+  async function loadSupplierDueReport() {
+    let startDate = document.getElementById('supplierDueReportStart').value;
+    let endDate = document.getElementById('supplierDueReportEnd').value;
+    let selectedSupplier = document.getElementById('filterSupplier').value;
 
-        if (!data || data.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">कुनै डाटा फेला परेन।</td></tr>`;
-          document.getElementById('totalDueAmount').innerText = 'RM 0.00';
+    await loadPurchaseList();
+
+    let tbody = document.getElementById('supplierDueTableBody');
+    tbody.innerHTML = '';
+    
+    let start = startDate ? new Date(startDate) : null;
+    let end = endDate ? new Date(endDate) : null;
+    if(end) end.setHours(23, 59, 59, 999);
+
+    let supplierSummaryMap = {};
+    let supplierDropdownSet = new Set();
+
+    purchaseListCache.forEach(p => {
+      let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
+      supplierDropdownSet.add(supName);
+
+      if(start && end && p.bill_date) {
+        let pDate = new Date(p.bill_date);
+        if(!isNaN(pDate.getTime()) && (pDate < start || pDate > end)) {
           return;
         }
-
-        data.forEach(row => {
-          // फिल्टर चेक
-          if (selectedSupplier !== 'ALL' && row.supplierName !== selectedSupplier) {
-            return;
-          }
-
-          let dueAmount = parseFloat(row.totalPurchase) - parseFloat(row.paidAmount);
-          totalDueSum += dueAmount;
-
-          let statusBadge = dueAmount > 0 
-            ? `<span class="badge bg-danger">तिर्न बाँकी (Due)</span>` 
-            : `<span class="badge bg-success">चुक्ता भयो (Paid)</span>`;
-
-          let tr = `<tr>
-            <td>${serialNo++}</td>
-            <td>${row.supplierName}</td>
-            <td>${row.phone || 'N/A'}</td>
-            <td>RM ${parseFloat(row.totalPurchase).toFixed(2)}</td>
-            <td>RM ${parseFloat(row.paidAmount).toFixed(2)}</td>
-            <td class="fw-bold text-danger">RM ${dueAmount.toFixed(2)}</td>
-            <td>${statusBadge}</td>
-          </tr>`;
-          tbody.innerHTML += tr;
-        });
-
-        document.getElementById('totalDueAmount').innerText = `RM ${totalDueSum.toFixed(2)}`;
-      })
-      .getSupplierDueDataServerSide();
-  }
-
-  // CSV मा फाइल Export गर्ने फंक्सन
-  function exportSupplierDueCSV() {
-    let table = document.getElementById("supplierDueTable");
-    let csv = [];
-    for (let i = 0; i < table.rows.length; i++) {
-      let row = [], cols = table.rows[i].querySelectorAll("td, th");
-      for (let j = 0; j < cols.length; j++) {
-        row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
       }
-      csv.push(row.join(","));
+
+      if(!supplierSummaryMap[supName]) {
+        supplierSummaryMap[supName] = { totalPurchase: 0, paidAmount: 0 };
+      }
+      supplierSummaryMap[supName].totalPurchase += parseFloat(p.grand_total || 0);
+      supplierSummaryMap[supName].paidAmount += parseFloat(p.paid_amount || 0);
+    });
+
+    // ड्रपडाउन अपडेट गर्ने
+    let selectEl = document.getElementById('filterSupplier');
+    let currentSelVal = selectEl.value;
+    let dropdownHtml = `<option value="ALL">सबै सप्लायरहरू (All Suppliers)</option>`;
+    supplierDropdownSet.forEach(sup => {
+      dropdownHtml += `<option value="${sup}">${sup}</option>`;
+    });
+    selectEl.innerHTML = dropdownHtml;
+    selectEl.value = supplierDropdownSet.has(currentSelVal) ? currentSelVal : "ALL";
+
+    let totalDueSum = 0;
+    let serialNo = 1;
+    let rowsHtml = "";
+
+    Object.keys(supplierSummaryMap).forEach(supName => {
+      if (selectedSupplier !== 'ALL' && supName !== selectedSupplier) {
+        return;
+      }
+
+      let dataObj = supplierSummaryMap[supName];
+      let dueAmount = dataObj.totalPurchase - dataObj.paidAmount;
+      if(dueAmount < 0) dueAmount = 0;
+      totalDueSum += dueAmount;
+
+      let statusBadge = dueAmount > 0 
+        ? `<span class="badge" style="background:#ffebee; color:#c62828; padding:4px 8px; border-radius:4px; font-weight:bold;">तिर्न बाँकी (Due)</span>` 
+        : `<span class="badge" style="background:#e8f5e9; color:#2e7d32; padding:4px 8px; border-radius:4px; font-weight:bold;">चुक्ता भयो (Paid)</span>`;
+
+      rowsHtml += `<tr>
+        <td>${serialNo++}</td>
+        <td style="text-align:left;"><b>${supName}</b></td>
+        <td>Rs. ${dataObj.totalPurchase.toFixed(2)}</td>
+        <td>Rs. ${dataObj.paidAmount.toFixed(2)}</td>
+        <td class="fw-bold" style="color:#C62828; font-weight:bold;">Rs. ${dueAmount.toFixed(2)}</td>
+        <td>${statusBadge}</td>
+      </tr>`;
+    });
+
+    if(rowsHtml === "") {
+      rowsHtml = `<tr><td colspan="6" style="padding:15px; color:#666;">चयनित मिति वा सप्लायरभित्र कुनै डाटा फेला परेन।</td></tr>`;
     }
-    
-    let csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
-    let downloadLink = document.createElement("a");
-    downloadLink.download = "Supplier_Due_Report.csv";
-    downloadLink.href = window.URL.createObjectURL(csvFile);
-    downloadLink.style.display = "none";
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+
+    tbody.innerHTML = rowsHtml;
+    document.getElementById('totalDueAmount').innerText = `Rs. ${totalDueSum.toFixed(2)}`;
   }
 
-  // प्रिन्ट गर्ने फंक्सन
-  function printSupplierDueReport() {
-    window.print();
+  // सप्लायर ड्यू रिपोर्ट CSV निर्यात गर्ने फंक्सन
+  function exportSupplierDueCSV() {
+    let startDate = document.getElementById('supplierDueReportStart').value;
+    let endDate = document.getElementById('supplierDueReportEnd').value;
+    let selectedSupplier = document.getElementById('filterSupplier').value;
+
+    let start = startDate ? new Date(startDate) : null;
+    let end = endDate ? new Date(endDate) : null;
+    if(end) end.setHours(23, 59, 59, 999);
+
+    let supplierSummaryMap = {};
+    purchaseListCache.forEach(p => {
+      let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
+      if(start && end && p.bill_date) {
+        let pDate = new Date(p.bill_date);
+        if(!isNaN(pDate.getTime()) && (pDate < start || pDate > end)) return;
+      }
+      if(!supplierSummaryMap[supName]) {
+        supplierSummaryMap[supName] = { totalPurchase: 0, paidAmount: 0 };
+      }
+      supplierSummaryMap[supName].totalPurchase += parseFloat(p.grand_total || 0);
+      supplierSummaryMap[supName].paidAmount += parseFloat(p.paid_amount || 0);
+    });
+
+    let csvContent = "data:text/csv;charset=utf-8,Supplier Name,Total Purchase,Paid Amount,Balance Due,Status\n";
+    let hasData = false;
+
+    Object.keys(supplierSummaryMap).forEach(supName => {
+      if (selectedSupplier !== 'ALL' && supName !== selectedSupplier) return;
+      hasData = true;
+      let d = supplierSummaryMap[supName];
+      let due = d.totalPurchase - d.paidAmount;
+      if(due < 0) due = 0;
+      let status = due > 0 ? "Due" : "Paid";
+      csvContent += `"${supName}","${d.totalPurchase.toFixed(2)}","${d.paidAmount.toFixed(2)}","${due.toFixed(2)}","${status}"\n`;
+    });
+
+    if(!hasData) {
+      alert("निर्यात गर्नको लागि कुनै डाटा भेटिएन!");
+      return;
+    }
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "supplier_due_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // सप्लायर ड्यू रिपोर्ट PDF प्रिन्ट गर्ने फंक्सन
+  function printSupplierDueReportPDF() {
+    let startDate = document.getElementById('supplierDueReportStart').value;
+    let endDate = document.getElementById('supplierDueReportEnd').value;
+    let selectedSupplier = document.getElementById('filterSupplier').value;
+
+    let start = startDate ? new Date(startDate) : null;
+    let end = endDate ? new Date(endDate) : null;
+    if(end) end.setHours(23, 59, 59, 999);
+
+    let supplierSummaryMap = {};
+    purchaseListCache.forEach(p => {
+      let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
+      if(start && end && p.bill_date) {
+        let pDate = new Date(p.bill_date);
+        if(!isNaN(pDate.getTime()) && (pDate < start || pDate > end)) return;
+      }
+      if(!supplierSummaryMap[supName]) {
+        supplierSummaryMap[supName] = { totalPurchase: 0, paidAmount: 0 };
+      }
+      supplierSummaryMap[supName].totalPurchase += parseFloat(p.grand_total || 0);
+      supplierSummaryMap[supName].paidAmount += parseFloat(p.paid_amount || 0);
+    });
+
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
+    printWindow.document.write('<html><head><title>Supplier Due Report</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
+    printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;margin:0;}');
+    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #C62828;padding-bottom:5mm;margin-bottom:10px;}');
+    printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
+    printWindow.document.write('h2{margin:2px 0;color:#1976D2;font-size:16px;font-weight:700;}');
+    printWindow.document.write('h3{margin:2px 0;color:#333;font-size:13px;font-weight:600;}');
+    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
+    printWindow.document.write('th,td{border:2px solid #333;padding:7px 8px;text-align:center;font-size:12px;color:#000;font-weight:bold;}');
+    printWindow.document.write('th{background:#C62828;color:white;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('tr:nth-child(even){background-color:#fcf2f5;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('.total-box{text-align:right;margin-top:10px;font-size:14px;font-weight:bold;color:#C62828;}');
+    printWindow.document.write('.print-btn-bar{position:fixed;top:10px;right:10px;background:#C62828;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;z-index:9999;box-shadow:0 2px 5px rgba(0,0,0,0.3);display:block;}');
+    printWindow.document.write('@media print { .print-btn-bar { display: none !important; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<button class="print-btn-bar" onclick="window.print()">🖨️ Print Now / Save PDF</button>');
+    printWindow.document.write('<div class="header">');
+    printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
+    printWindow.document.write('<h2 style="color:#1976D2; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
+    printWindow.document.write('<h3>Supplier Due Report (' + (startDate || 'All') + ' to ' + (endDate || 'All') + ')</h3>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('<table><thead><tr><th>सि.नं.</th><th>सप्लायरको नाम</th><th>कुल खरिद रकम</th><th>भुक्तानी गरेको रकम</th><th>बाँकी तिर्नुपर्ने रकम</th><th>स्थिति</th></tr></thead><tbody>');
+    
+    let totalDueSum = 0;
+    let serialNo = 1;
+    let hasData = false;
+
+    Object.keys(supplierSummaryMap).forEach(supName => {
+      if (selectedSupplier !== 'ALL' && supName !== selectedSupplier) return;
+      hasData = true;
+      let d = supplierSummaryMap[supName];
+      let due = d.totalPurchase - d.paidAmount;
+      if(due < 0) due = 0;
+      totalDueSum += due;
+      let statusText = due > 0 ? "तिर्न बाँकी (Due)" : "चुक्ता भयो (Paid)";
+      printWindow.document.write(`<tr><td>${serialNo++}</td><td style="text-align:left;">${supName}</td><td>Rs. ${d.totalPurchase.toFixed(2)}</td><td>Rs. ${d.paidAmount.toFixed(2)}</td><td style="color:#C62828;">Rs. ${due.toFixed(2)}</td><td>${statusText}</td></tr>`);
+    });
+
+    if(!hasData) {
+      printWindow.document.write(`<tr><td colspan="6" style="padding:15px; color:#666;">No records found.</td></tr>`);
+    }
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<div class="total-box">Total Due Balance: Rs. ' + totalDueSum.toFixed(2) + '</div>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
   }
 
   async function loadPurchaseList() {
@@ -1182,6 +1326,7 @@
       calculatePurchaseTotals();
       loadMenuList();
       loadPurchaseList();
+      loadSupplierDueReport();
     }
   }
 
@@ -2797,7 +2942,6 @@
   }
 
   window.printSalaryVoucherSlip = function(vNo, name, desig, day, month, year, earnList, dedList, payMode, netTotal) {
-    
     function getVoucherCard(copyLabel) {
       let earnRowsHtml = "";
       earnList.forEach((e, idx) => {
@@ -3607,6 +3751,8 @@
     loadSalaryVouchersHistory();
     loadExtraInvoicesHistory();
     loadAdminChatsList();
+    loadSupplierDueReport();
+
     setInterval(() => { 
       loadOrders(); 
       loadAdminChatsList();
