@@ -8,7 +8,7 @@
     <!-- Favicon / Tab Logo -->
     <link rel="icon" type="image/png" href="https://pujaexportandimport.com/logo.png">
     
-    <!-- Social Media Preview Meta Tags -->
+    <!-- Social Media Preview Meta Tags (नयाँ १२२०x६३० ब्यानरसहित) -->
     <meta property="og:title" content="PUJA EXPORT AND IMPORT PVT. LTD.">
     <meta property="og:description" content="Your trusted partner for international trade, imports, exports, and wholesale distribution.">
     <meta property="og:image" content="https://pujaexportandimport.com/logo.png">
@@ -23,25 +23,10 @@
 *{ margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
 body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflow-x: hidden; }
 
-.header{ background:#1976D2; color:#fff; padding:30px 15px; text-align:center; border-radius:0 0 25px 25px; box-shadow:0 5px 15px rgba(0,0,0,.15); width: 100%; position: relative; }
+.header{ background:#1976D2; color:#fff; padding:30px 15px; text-align:center; border-radius:0 0 25px 25px; box-shadow:0 5px 15px rgba(0,0,0,.15); width: 100%; }
 .restaurant-logo{ width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:10px; border:2px solid #fff; box-shadow:0 3px 8px rgba(0,0,0,0.2); background:#fff; }
 .header h1{ font-size:24px; margin-bottom:8px; line-height: 1.3; }
 .header p{ font-size:15px; opacity:.9; }
-
-/* ℹ️ About Us Button Style in Footer */
-.footer-about-btn { background: #1976D2; color: #fff; border: none; padding: 10px 20px; border-radius: 20px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: 0.2s; margin-top: 10px; display: inline-block; }
-.footer-about-btn:hover { background: #1565C0; }
-
-/* 🪟 Modal Popup Styles */
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99999; justify-content: center; align-items: center; padding: 15px; }
-.modal-content { background: #fff; width: 100%; max-width: 600px; max-height: 85vh; border-radius: 16px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); display: flex; flex-direction: column; overflow: hidden; animation: fadeIn 0.3s ease; }
-.modal-header { background: #1976D2; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: bold; }
-.modal-close { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; }
-.modal-body { padding: 20px; overflow-y: auto; font-size: 15px; line-height: 1.6; color: #444; text-align: left; }
-.modal-body h3 { color: #1976D2; margin-top: 15px; margin-bottom: 5px; font-size: 17px; }
-.modal-body ul { margin-left: 20px; margin-top: 5px; }
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
 .container{ width:100%; max-width:600px; padding: 0 12px; margin: auto; }
 .search-box{ margin:15px auto; padding: 0 2px; width: 100%; }
@@ -90,39 +75,6 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     <p>Global Trade • Quality Products • Fast Delivery</p>
 </div>
 
-<!-- ℹ️ About Us Modal Popup Box -->
-<div id="aboutModal" class="modal-overlay" onclick="window.closeAboutModal(event)">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <span>About Us</span>
-            <button class="modal-close" onclick="window.closeAboutModalBtn()">✕</button>
-        </div>
-        <div class="modal-body">
-            <h3 style="margin-top:0;">PUJA EXPORT AND IMPORT PVT. LTD.</h3>
-            <p style="margin-bottom:12px;">Puja Export and Import Pvt. Ltd. is a Nepal-based trading and international business company established with the objective of providing reliable and quality products and services in the areas of import, export, wholesale distribution, and local trading.</p>
-            <p style="margin-bottom:12px;">The company is registered in Nepal and operates in accordance with the applicable laws, rules, and regulations of the Government of Nepal. Our business activities include the import and export of goods, wholesale and retail trading, and distribution of food, grocery, fruits, daily-use consumer products, and other permitted goods.</p>
-            <p style="margin-bottom:12px;">We are committed to building a trusted business network by providing quality products, competitive prices, reliable service, and transparent business practices. We aim to connect suppliers, customers, and business partners through efficient and dependable trading solutions.</p>
-
-            <h3>Our Vision</h3>
-            <p style="margin-bottom:12px;">To become a trusted and professional trading partner in Nepal and the international market by delivering quality products and reliable services.</p>
-
-            <h3>Our Mission</h3>
-            <ul style="margin-bottom:12px; padding-left:15px;">
-                <li>To provide quality products at competitive prices.</li>
-                <li>To develop reliable import, export, and distribution networks.</li>
-                <li>To maintain transparency and professionalism in every business transaction.</li>
-                <li>To build long-term relationships with customers, suppliers, and business partners.</li>
-                <li>To continuously expand our products and services according to market demand.</li>
-            </ul>
-
-            <h3>What We Do</h3>
-            <p style="margin-bottom:12px;">Import & Export | Trading | Wholesale Distribution | Food & Grocery | Fruits & Daily-use Products | Business Supply</p>
-
-            <p style="font-weight:bold; color:#1976D2; margin-top:15px;">At Puja Export and Import Pvt. Ltd., we believe that trust, quality, transparency, and customer satisfaction are the foundation of a successful business.</p>
-        </div>
-    </div>
-</div>
-
 <div class="container">
     <div class="search-box">
         <input id="searchFood" type="text" placeholder="🔍 Search products..." onkeyup="window.searchFood()">
@@ -135,6 +87,8 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         <button onclick="window.filterCategory('Trading', this)">📦 Trading</button>
         <button onclick="window.filterCategory('Wholesale', this)">📊 Wholesale</button>
     </div>
+
+    <div id="menu" style="text-align:center; font-size:18px; padding:20px; color:#666;">Loading Products...</div>
 
     <!-- 🛒 कार्ट र अर्डर सेक्सन -->
     <div class="customer cart-section">
@@ -154,6 +108,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
         <label style="font-weight: bold; font-size: 14px; color: #555; display: block; margin-top: 8px;">Select Delivery District (77 Districts):</label>
         <select id="deliveryZoneSelect" onchange="window.handleZoneChange()">
+          <!-- Supabase बाट ७७ जिल्लाहरू यहाँ लोड हुनेछन् -->
           <option value="0" data-name="Self-Pickup / अफिसबाटै लिने">📦 Self-Pickup / अफिसबाटै लिने (Rs. 0)</option>
         </select>
 
@@ -227,9 +182,9 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
 <div style="position:fixed; right:20px; bottom:100px; width:70px; height:70px; background:#2196F3; color:#fff; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:28px; cursor:pointer; box-shadow:0 6px 15px rgba(33,150,243,0.3); z-index:9998;" onclick="window.toggleCustomerChat()">💬</div>
 
-<!-- Footer Section with About Us Button -->
+<!-- Footer Section -->
 <footer style="background-color: #0d233a; color: #fff; padding: 50px 20px 20px 20px; font-family: Arial, sans-serif; border-top: 3px solid #1976D2; margin-top: 50px; width: 100%;">
-  <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px; align-items: center;">
+  <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 30px;">
     <div style="flex: 2; min-width: 280px;">
       <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
         <img src="https://pujaexportandimport.com/logo.png" alt="Puja Export Logo" style="width: 55px; height: 55px; object-fit: contain;">
@@ -238,9 +193,6 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
       <p style="color: #ccc; font-size: 14px; line-height: 1.6; max-width: 450px; margin-bottom: 20px;">
         Your trusted partner for international trade, imports, exports, and wholesale distribution.
       </p>
-    </div>
-    <div>
-      <button class="footer-about-btn" onclick="window.openAboutModal()">ℹ️ About Us</button>
     </div>
   </div>
   <div style="max-width: 1200px; margin: 40px auto 0 auto; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; font-size: 13px; color: #aaa;">
@@ -317,19 +269,6 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   window.selectedCategory = "All"; 
   window.base64SlipData = ""; 
   window.menuItemsCache = [];
-
-  // About Us Modal Functions
-  window.openAboutModal = function() {
-    document.getElementById("aboutModal").style.display = "flex";
-  };
-  window.closeAboutModal = function(e) {
-    if(e.target.id === "aboutModal") {
-      document.getElementById("aboutModal").style.display = "none";
-    }
-  };
-  window.closeAboutModalBtn = function() {
-    document.getElementById("aboutModal").style.display = "none";
-  };
 
   window.handleZoneChange = function() {
     let zoneSelect = document.getElementById("deliveryZoneSelect");
@@ -419,6 +358,8 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
             </div>
         </div>`;
     });
+    document.getElementById("menu").innerHTML = html; 
+    window.searchFood();
   };
 
   window.filterCategory = function(category, element){ 
@@ -595,68 +536,18 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     let progress = 25, color = "#FF9800";
     let s = order.status ? order.status.trim() : "Pending";
 
-    let step1 = "color:#ccc; font-weight:normal;";
-    let step2 = "color:#ccc; font-weight:normal;";
-    let step3 = "color:#ccc; font-weight:normal;";
-    let step4 = "color:#ccc; font-weight:normal;";
-    let step5 = "color:#ccc; font-weight:normal;";
-
-    if(s === "Pending" || s === "Order Received"){ 
-      progress = 25; color = "#FF9800"; 
-      step1 = "color:#4CAF50; font-weight:bold;";
-    }
-    else if(s === "Preparing" || s === "Processing"){ 
-      progress = 50; color = "#2196F3"; 
-      step1 = "color:#4CAF50; font-weight:bold;";
-      step2 = "color:#4CAF50; font-weight:bold;";
-    }
-    else if(s === "Ready"){ 
-      progress = 75; color = "#9C27B0"; 
-      step1 = "color:#4CAF50; font-weight:bold;";
-      step2 = "color:#4CAF50; font-weight:bold;";
-      step3 = "color:#4CAF50; font-weight:bold;";
-    }
-    else if(s === "Out for Delivery"){ 
-      progress = 90; color = "#00BCD4"; 
-      step1 = "color:#4CAF50; font-weight:bold;";
-      step2 = "color:#4CAF50; font-weight:bold;";
-      step3 = "color:#4CAF50; font-weight:bold;";
-      step4 = "color:#4CAF50; font-weight:bold;";
-    }
-    else if(s === "Delivered"){ 
-      progress = 100; color = "#4CAF50"; 
-      step1 = "color:#4CAF50; font-weight:bold;";
-      step2 = "color:#4CAF50; font-weight:bold;";
-      step3 = "color:#4CAF50; font-weight:bold;";
-      step4 = "color:#4CAF50; font-weight:bold;";
-      step5 = "color:#4CAF50; font-weight:bold;";
-    }
-
-    let proofHtml = "";
-    if (order.proof_img && order.proof_img !== "None" && order.proof_img.trim() !== "") {
-      proofHtml = `
-        <div style="margin-top:20px; padding-top:12px; border-top:1px dashed #ddd;">
-          <p style="font-size:18px; font-weight:bold; color:#333; margin-bottom:10px;">📷 डेलिभरी प्रुफ:</p>
-          <img src="${order.proof_img}" style="width:100%; max-height:220px; object-fit:contain; border-radius:8px; border:1px solid #ddd; margin-top:8px; background:#fafafa;" alt="Delivery Proof">
-        </div>`;
-    }
+    if(s === "Pending" || s === "Order Received"){ progress = 25; color = "#FF9800"; }
+    else if(s === "Preparing"){ progress = 50; color = "#2196F3"; }
+    else if(s === "Ready"){ progress = 75; color = "#9C27B0"; }
+    else if(s === "Out for Delivery"){ progress = 90; color = "#00BCD4"; }
+    else if(s === "Delivered"){ progress = 100; color = "#4CAF50"; }
 
     document.getElementById("trackResult").innerHTML = `
-    <div style="background:#fff; padding:24px; border-radius:18px; box-shadow:0 5px 18px rgba(0,0,0,.08); line-height:2.0; margin-top:15px; text-align:left; color:#333;">
-        <center><h3 style="color:#1976D2; font-size:22px; margin-bottom:15px;">📦 Order Tracking</h3></center>
-        <p style="font-size:17px; margin-bottom:6px;"><b>Order No :</b> ${order.order_no}</p>
-        <p style="font-size:17px; margin-bottom:10px;"><b>Status :</b> <span style="background:${color}; color:white; padding:5px 14px; border-radius:20px; font-weight:bold; font-size:15px;">${s}</span></p>
-        <div style="width:100%; height:20px; background:#eee; border-radius:10px; overflow:hidden; margin:15px 0;"><div style="width:${progress}%; height:100%; background:${color}; text-align:center; color:white; font-size:13px; font-weight:bold; line-height:20px;">${progress}%</div></div>
-        
-        <div style="margin-top:20px;">
-          <p style="font-weight:bold; color:#1976D2; font-size:19px; margin-bottom:12px;">🚚 Order Journey</p>
-          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step1}">✅ Order Received</p>
-          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step2}">✅ Processing / Preparing</p>
-          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step3}">✅ Ready for Dispatch</p>
-          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step4}">✅ Out for Delivery</p>
-          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step5}">✅ Delivered Successfully</p>
-        </div>
-        ${proofHtml}
+    <div style="background:#fff; padding:22px; border-radius:18px; box-shadow:0 5px 18px rgba(0,0,0,.08); line-height:1.8; margin-top:15px; text-align:left; color:#333;">
+        <center><h3 style="color:#1976D2; margin-bottom:15px;">📦 Order Tracking</h3></center>
+        <p><b>Order No :</b> ${order.order_no}</p>
+        <p><b>Status :</b> <span style="background:${color}; color:white; padding:4px 12px; border-radius:20px; font-weight:bold; font-size:14px;">${s}</span></p>
+        <div style="width:100%; height:18px; background:#eee; border-radius:10px; overflow:hidden; margin:12px 0;"><div style="width:${progress}%; height:100%; background:${color}; text-align:center; color:white; font-size:12px; font-weight:bold; line-height:18px;">${progress}%</div></div>
     </div>`;
   };
 
