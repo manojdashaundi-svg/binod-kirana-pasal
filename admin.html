@@ -789,8 +789,11 @@
 
     let supplierDropdownSet = new Set();
     purchaseListCache.forEach(p => {
-      let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
-      supplierDropdownSet.add(supName);
+      let due = parseFloat(p.due_amount) || (parseFloat(p.grand_total || 0) - parseFloat(p.paid_amount || 0));
+      if (due > 0.01) {
+        let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
+        supplierDropdownSet.add(supName);
+      }
     });
 
     let selectEl = document.getElementById('filterSupplier');
@@ -888,8 +891,12 @@
     if(end) end.setHours(23, 59, 59, 999);
 
     return purchaseListCache.filter(p => {
-      let due = parseFloat(p.due_amount) || 0;
-      if (due <= 0) return false;
+      let gt = parseFloat(p.grand_total) || 0;
+      let paid = parseFloat(p.paid_amount) || 0;
+      let due = parseFloat(p.due_amount) || (gt - paid);
+      
+      // पेमेन्ट चुक्ता भइसकेपछि (Due <= 0 भएमा) स्वतः लिस्टबाट हटाउने
+      if (due <= 0.01) return false;
 
       if (selectedSupplier !== "ALL") {
         let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
@@ -2122,7 +2129,6 @@
 
     printWindow.document.write('</tbody></table>');
     printWindow.document.write('<div class="total-box">Total Revenue: Rs. ' + totalSum.toFixed(2) + '</div>');
-    printWindow.document.write('</body></html>');
     printWindow.document.close();
   }
 
@@ -3724,7 +3730,7 @@
       if(menuSec) menuSec.style.display = "none";
 
       let invSec = document.querySelector(".inventory-section");
-      if(invSec) invSec.style.display = "none";
+      if(invSec) invSec.style.defualt = "none";
 
       let staffSec = document.getElementById("staffAccessManagementSection");
       if(staffSec) staffSec.style.display = "none";
