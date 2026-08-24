@@ -269,36 +269,39 @@ body{ background:#f5f5f5; color:#333; width: 100%; overflow-x: hidden; }
 </footer>
 
 <script>
-  // 🔊 चर्को टिक आवाज उत्पन्न गर्ने ग्लोबल फंक्सन
-  function playLoudClickSound() {
+  // 🎶 अति मीठो मेलोडियस प्लक/चाइम साउन्ड (Melodic Chime Tone)
+  function playMelodicChime() {
     try {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const now = audioCtx.currentTime;
 
-      // उच्च फ्रिक्वेन्सी र चर्को भोल्युम भएको तीव्र टिक साउन्ड
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
+      // मेलोडियस नोटहरूको फ्रिक्वेन्सी (उदा. C6 र E6 को मिठो संयोजन)
+      const notes = [1046.50, 1318.51]; 
+      
+      notes.forEach((freq, index) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
 
-      osc.type = 'triangle'; // चर्को र कडा आवाजको लागि
-      osc.frequency.setValueAtTime(1200, now);
-      osc.frequency.exponentialRampToValueAtTime(300, now + 0.08);
+        osc.type = 'sine'; // सफਾ र मीठो साउन्डको लागि
+        osc.frequency.setValueAtTime(freq, now + (index * 0.04));
 
-      gain.gain.setValueAtTime(0.8, now); // उच्च भोल्युम
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        gain.gain.setValueAtTime(0.3, now + (index * 0.04));
+        gain.gain.exponentialRampToValueAtTime(0.001, now + (index * 0.04) + 0.25);
 
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
 
-      osc.start(now);
-      osc.stop(now + 0.08);
+        osc.start(now + (index * 0.04));
+        osc.stop(now + (index * 0.04) + 0.25);
+      });
     } catch(e) {
       console.error("Audio error:", e);
     }
   }
 
-  // 🌐 स्क्रिनको जुनसुकै ठाउँमा क्लिक गर्दा चर्को टिक आवाज बजाउने इभेन्ट लिसनर
+  // 🌐 स्क्रिनको जुनसुकै ठाउँमा क्लिक गर्दा मीठो धुन बजाउने इभेन्ट लिसनर
   document.addEventListener("click", function(e) {
-    playLoudClickSound();
+    playMelodicChime();
   }, true);
 
   const SUPABASE_URL = 'https://odhdrhvvgemwgiphipgv.supabase.co';
