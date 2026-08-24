@@ -8,7 +8,7 @@
     <!-- Favicon / Tab Logo -->
     <link rel="icon" type="image/png" href="https://pujaexportandimport.com/logo.png">
     
-    <!-- Social Media Preview Meta Tags (नयाँ १२२०x६३० ब्यानरसहित) -->
+    <!-- Social Media Preview Meta Tags -->
     <meta property="og:title" content="PUJA EXPORT AND IMPORT PVT. LTD.">
     <meta property="og:description" content="Your trusted partner for international trade, imports, exports, and wholesale distribution.">
     <meta property="og:image" content="https://pujaexportandimport.com/logo.png">
@@ -37,6 +37,11 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 .category-tabs::-webkit-scrollbar { display: none; }
 .category-tabs button{ background:#fff; border:none; padding:10px 20px; border-radius:30px; cursor:pointer; font-size:14px; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.06); transition:.25s; white-space:nowrap; }
 .category-tabs button:hover, .category-tabs button.active{ background:#1976D2; color:#fff; }
+
+/* 🔄 Top Featured Slider Styles */
+.slider-container { width: 100%; overflow: hidden; position: relative; margin-bottom: 20px; border-radius: 16px; box-shadow: 0 3px 12px rgba(0,0,0,0.06); background: #fff; }
+.slider-track { display: flex; transition: transform 0.5s ease-in-out; width: 100%; }
+.slide-item { min-width: 100%; box-sizing: border-box; }
 
 #menu{ display:grid; grid-template-columns:1fr; gap:16px; padding: 0 2px; width: 100%; }
 .food-card{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 3px 12px rgba(0,0,0,0.06); position:relative; width: 100%; margin: 0; }
@@ -88,6 +93,14 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         <button onclick="window.filterCategory('Wholesale', this)">📊 Wholesale</button>
     </div>
 
+    <!-- 🔄 माथि स्लाइड हुने सेक्सन (Featured Auto Slider) -->
+    <div class="slider-container">
+        <div id="sliderTrack" class="slider-track">
+            <div style="text-align:center; font-size:18px; padding:20px; color:#666; width:100%;">Loading Featured...</div>
+        </div>
+    </div>
+
+    <!-- 📦 तल सबै उत्पादनहरू सिरियल बाई देखिने ग्रिड मेनु (Grid Menu) -->
     <div id="menu" style="text-align:center; font-size:18px; padding:20px; color:#666;">Loading Products...</div>
 
     <!-- 🛒 कार्ट र अर्डर सेक्सन -->
@@ -108,7 +121,6 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
         <label style="font-weight: bold; font-size: 14px; color: #555; display: block; margin-top: 8px;">Select Delivery District (77 Districts):</label>
         <select id="deliveryZoneSelect" onchange="window.handleZoneChange()">
-          <!-- Supabase बाट ७७ जिल्लाहरू यहाँ लोड हुनेछन् -->
           <option value="0" data-name="Self-Pickup / अफिसबाटै लिने">📦 Self-Pickup / अफिसबाटै लिने (Rs. 0)</option>
         </select>
 
@@ -269,6 +281,8 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   window.selectedCategory = "All"; 
   window.base64SlipData = ""; 
   window.menuItemsCache = [];
+  let currentSlideIndex = 0;
+  let slideInterval = null;
 
   window.handleZoneChange = function() {
     let zoneSelect = document.getElementById("deliveryZoneSelect");
@@ -324,7 +338,9 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   }
 
   window.showMenu = function(data){
-    let html = "";
+    let menuHtml = "";
+    let sliderHtml = "";
+    
     data.forEach(row => {
         const itemPrice = parseFloat(row.price) || 0;
         const itemUnit = row.unit ? String(row.unit).trim() : "";
@@ -342,7 +358,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
         let unitDisplayHtml = itemUnit ? `<span class="food-unit">${itemUnit}</span>` : "";
 
-        html += `<div class="food-card" data-category="${row.category || 'General'}">
+        let cardHtml = `<div class="food-card" data-category="${row.category || 'General'}">
             <img src="${imgUrl}" alt="${rawName}" onerror="this.src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500'">
             <div class="food-info">
                 <h3>${rawName}</h3>
@@ -357,10 +373,31 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
                 </div>
             </div>
         </div>`;
+
+        menuHtml += cardHtml;
+        sliderHtml += `<div class="slide-item">${cardHtml}</div>`;
     });
-    document.getElementById("menu").innerHTML = html; 
+
+    document.getElementById("menu").innerHTML = menuHtml; 
+    document.getElementById("sliderTrack").innerHTML = sliderHtml;
+
+    startAutoSlide();
     window.searchFood();
   };
+
+  function startAutoSlide() {
+    if (slideInterval) clearInterval(slideInterval);
+    const track = document.getElementById("sliderTrack");
+    if(!track) return;
+    const slides = track.querySelectorAll(".slide-item");
+    if(slides.length <= 1) return;
+
+    currentSlideIndex = 0;
+    slideInterval = setInterval(() => {
+      currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+      track.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+    }, 3500); // हरेक ३.५ सेकेन्डमा अर्को स्लाइड हुनेछ
+  }
 
   window.filterCategory = function(category, element){ 
     window.selectedCategory = category; 
@@ -371,7 +408,9 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
   window.searchFood = function(){ 
     const keyword = document.getElementById("searchFood").value.toLowerCase(); 
-    const cards = document.querySelectorAll(".food-card"); 
+    
+    // Filter regular Grid Menu cards
+    const cards = document.querySelectorAll("#menu .food-card"); 
     cards.forEach(card => { 
         const h3El = card.querySelector("h3");
         const food = h3El ? h3El.innerText.toLowerCase() : ""; 
@@ -536,18 +575,68 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     let progress = 25, color = "#FF9800";
     let s = order.status ? order.status.trim() : "Pending";
 
-    if(s === "Pending" || s === "Order Received"){ progress = 25; color = "#FF9800"; }
-    else if(s === "Preparing"){ progress = 50; color = "#2196F3"; }
-    else if(s === "Ready"){ progress = 75; color = "#9C27B0"; }
-    else if(s === "Out for Delivery"){ progress = 90; color = "#00BCD4"; }
-    else if(s === "Delivered"){ progress = 100; color = "#4CAF50"; }
+    let step1 = "color:#ccc; font-weight:normal;";
+    let step2 = "color:#ccc; font-weight:normal;";
+    let step3 = "color:#ccc; font-weight:normal;";
+    let step4 = "color:#ccc; font-weight:normal;";
+    let step5 = "color:#ccc; font-weight:normal;";
+
+    if(s === "Pending" || s === "Order Received"){ 
+      progress = 25; color = "#FF9800"; 
+      step1 = "color:#4CAF50; font-weight:bold;";
+    }
+    else if(s === "Preparing" || s === "Processing"){ 
+      progress = 50; color = "#2196F3"; 
+      step1 = "color:#4CAF50; font-weight:bold;";
+      step2 = "color:#4CAF50; font-weight:bold;";
+    }
+    else if(s === "Ready"){ 
+      progress = 75; color = "#9C27B0"; 
+      step1 = "color:#4CAF50; font-weight:bold;";
+      step2 = "color:#4CAF50; font-weight:bold;";
+      step3 = "color:#4CAF50; font-weight:bold;";
+    }
+    else if(s === "Out for Delivery"){ 
+      progress = 90; color = "#00BCD4"; 
+      step1 = "color:#4CAF50; font-weight:bold;";
+      step2 = "color:#4CAF50; font-weight:bold;";
+      step3 = "color:#4CAF50; font-weight:bold;";
+      step4 = "color:#4CAF50; font-weight:bold;";
+    }
+    else if(s === "Delivered"){ 
+      progress = 100; color = "#4CAF50"; 
+      step1 = "color:#4CAF50; font-weight:bold;";
+      step2 = "color:#4CAF50; font-weight:bold;";
+      step3 = "color:#4CAF50; font-weight:bold;";
+      step4 = "color:#4CAF50; font-weight:bold;";
+      step5 = "color:#4CAF50; font-weight:bold;";
+    }
+
+    let proofHtml = "";
+    if (order.proof_img && order.proof_img !== "None" && order.proof_img.trim() !== "") {
+      proofHtml = `
+        <div style="margin-top:20px; padding-top:12px; border-top:1px dashed #ddd;">
+          <p style="font-size:18px; font-weight:bold; color:#333; margin-bottom:10px;">📷 डेलिभरी प्रुफ:</p>
+          <img src="${order.proof_img}" style="width:100%; max-height:220px; object-fit:contain; border-radius:8px; border:1px solid #ddd; margin-top:8px; background:#fafafa;" alt="Delivery Proof">
+        </div>`;
+    }
 
     document.getElementById("trackResult").innerHTML = `
-    <div style="background:#fff; padding:22px; border-radius:18px; box-shadow:0 5px 18px rgba(0,0,0,.08); line-height:1.8; margin-top:15px; text-align:left; color:#333;">
-        <center><h3 style="color:#1976D2; margin-bottom:15px;">📦 Order Tracking</h3></center>
-        <p><b>Order No :</b> ${order.order_no}</p>
-        <p><b>Status :</b> <span style="background:${color}; color:white; padding:4px 12px; border-radius:20px; font-weight:bold; font-size:14px;">${s}</span></p>
-        <div style="width:100%; height:18px; background:#eee; border-radius:10px; overflow:hidden; margin:12px 0;"><div style="width:${progress}%; height:100%; background:${color}; text-align:center; color:white; font-size:12px; font-weight:bold; line-height:18px;">${progress}%</div></div>
+    <div style="background:#fff; padding:24px; border-radius:18px; box-shadow:0 5px 18px rgba(0,0,0,.08); line-height:2.0; margin-top:15px; text-align:left; color:#333;">
+        <center><h3 style="color:#1976D2; font-size:22px; margin-bottom:15px;">📦 Order Tracking</h3></center>
+        <p style="font-size:17px; margin-bottom:6px;"><b>Order No :</b> ${order.order_no}</p>
+        <p style="font-size:17px; margin-bottom:10px;"><b>Status :</b> <span style="background:${color}; color:white; padding:5px 14px; border-radius:20px; font-weight:bold; font-size:15px;">${s}</span></p>
+        <div style="width:100%; height:20px; background:#eee; border-radius:10px; overflow:hidden; margin:15px 0;"><div style="width:${progress}%; height:100%; background:${color}; text-align:center; color:white; font-size:13px; font-weight:bold; line-height:20px;">${progress}%</div></div>
+        
+        <div style="margin-top:20px;">
+          <p style="font-weight:bold; color:#1976D2; font-size:19px; margin-bottom:12px;">🚚 Order Journey</p>
+          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step1}">✅ Order Received</p>
+          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step2}">✅ Processing / Preparing</p>
+          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step3}">✅ Ready for Dispatch</p>
+          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step4}">✅ Out for Delivery</p>
+          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step5}">✅ Delivered Successfully</p>
+        </div>
+        ${proofHtml}
     </div>`;
   };
 
