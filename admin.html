@@ -411,7 +411,7 @@
       <button onclick="savePurchaseRecord()" style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(76,175,80,0.3);">💾 खरिद बिल सेभ गर्नुहोस् र स्टकमा जोड्नुहोस्</button>
     </div>
 
-    <!-- 📊 Purchase Report Generator & Export (Selling Price सहित अपडेट गरिएको सेक्सन) -->
+    <!-- 📊 Purchase Report Generator & Export (Selling Price Grand Total भन्दा दायाँतिर राखिएको सेक्सन) -->
     <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-top:25px;">
       <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">📊 Purchase Report Generator & Export (सामान खरिद रिपोर्ट तथा निर्यात)</h3>
       <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
@@ -750,7 +750,7 @@
       return;
     }
 
-    let csvContent = "data:text/csv;charset=utf-8,Bill Date,Bill No,Supplier Name,Item Name,Rate,Qty,Item Desc,Selling Price,Transport,Labor,Grand Total,Paid Amount,Due Amount,Profit %\n";
+    let csvContent = "data:text/csv;charset=utf-8,Bill Date,Bill No,Supplier Name,Item Name,Rate,Qty,Item Desc,Transport,Labor,Grand Total,Selling Price,Paid Amount,Due Amount,Profit %\n";
     
     filtered.forEach(p => {
       let items = [];
@@ -764,10 +764,10 @@
 
       if (items.length > 0) {
         items.forEach(it => {
-          csvContent += `"${p.bill_date || ''}","${p.bill_no || ''}","${p.supplier_name || ''}","${it.name || ''}","${it.price || 0}","${it.qty || 0}","${it.description || ''}","${sellingPriceVal}","${p.transport || 0}","${p.labor || 0}","${p.grand_total || 0}","${p.paid_amount || 0}","${p.due_amount || 0}","${p.profit_pct || 0}"\n`;
+          csvContent += `"${p.bill_date || ''}","${p.bill_no || ''}","${p.supplier_name || ''}","${it.name || ''}","${it.price || 0}","${it.qty || 0}","${it.description || ''}","${p.transport || 0}","${p.labor || 0}","${p.grand_total || 0}","${sellingPriceVal}","${p.paid_amount || 0}","${p.due_amount || 0}","${p.profit_pct || 0}"\n`;
         });
       } else {
-        csvContent += `"${p.bill_date || ''}","${p.bill_no || ''}","${p.supplier_name || ''}","-","-","-","-","${sellingPriceVal}","${p.transport || 0}","${p.labor || 0}","${p.grand_total || 0}","${p.paid_amount || 0}","${p.due_amount || 0}","${p.profit_pct || 0}"\n`;
+        csvContent += `"${p.bill_date || ''}","${p.bill_no || ''}","${p.supplier_name || ''}","-","-","-","-","${p.transport || 0}","${p.labor || 0}","${p.grand_total || 0}","${sellingPriceVal}","${p.paid_amount || 0}","${p.due_amount || 0}","${p.profit_pct || 0}"\n`;
       }
     });
 
@@ -827,7 +827,7 @@
     printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
     printWindow.document.write('<h3>Detailed Purchase Report (' + startDate + ' to ' + endDate + ')</h3>');
     printWindow.document.write('</div>');
-    printWindow.document.write('<table><thead><tr><th>Bill Date</th><th>Bill No.</th><th>Supplier Name</th><th>Item Name</th><th>Rate</th><th>Qty</th><th>Sub Total</th><th>Selling Price</th><th>Transport</th><th>Labor</th><th>Grand Total</th><th>Paid</th><th>Due</th></tr></thead><tbody>');
+    printWindow.document.write('<table><thead><tr><th>Bill Date</th><th>Bill No.</th><th>Supplier Name</th><th>Item Name</th><th>Rate</th><th>Qty</th><th>Sub Total</th><th>Transport</th><th>Labor</th><th>Grand Total</th><th>Selling Price</th><th>Paid</th><th>Due</th></tr></thead><tbody>');
     
     let totalGrandSum = 0;
     filtered.forEach(p => {
@@ -851,14 +851,14 @@
           if(idx === 0) {
             printWindow.document.write(`<td rowspan="${items.length}">${p.bill_date || ''}</td><td rowspan="${items.length}"><b>${p.bill_no || ''}</b></td><td rowspan="${items.length}"><b>${p.supplier_name || ''}</b></td>`);
           }
-          printWindow.document.write(`<td style="text-align:left;">${it.name || ''} ${it.description ? '('+it.description+')' : ''}</td><td>Rs. ${parseFloat(it.price || 0).toFixed(2)}</td><td>${it.qty || 0}</td><td>Rs. ${itemTotal.toFixed(2)}</td><td style="color:#2E7D32; font-weight:bold;">Rs. ${sellingPriceVal.toFixed(2)}</td>`);
+          printWindow.document.write(`<td style="text-align:left;">${it.name || ''} ${it.description ? '('+it.description+')' : ''}</td><td>Rs. ${parseFloat(it.price || 0).toFixed(2)}</td><td>${it.qty || 0}</td><td>Rs. ${itemTotal.toFixed(2)}</td>`);
           if(idx === 0) {
-            printWindow.document.write(`<td rowspan="${items.length}">Rs. ${parseFloat(p.transport || 0).toFixed(2)}</td><td rowspan="${items.length}">Rs. ${parseFloat(p.labor || 0).toFixed(2)}</td><td rowspan="${items.length}"><b>Rs. ${gt.toFixed(2)}</b></td><td rowspan="${items.length}">Rs. ${pd.toFixed(2)}</td><td rowspan="${items.length}" style="color:red;">Rs. ${du.toFixed(2)}</td>`);
+            printWindow.document.write(`<td rowspan="${items.length}">Rs. ${parseFloat(p.transport || 0).toFixed(2)}</td><td rowspan="${items.length}">Rs. ${parseFloat(p.labor || 0).toFixed(2)}</td><td rowspan="${items.length}"><b>Rs. ${gt.toFixed(2)}</b></td><td rowspan="${items.length}" style="color:#2E7D32; font-weight:bold;">Rs. ${sellingPriceVal.toFixed(2)}</td><td rowspan="${items.length}">Rs. ${pd.toFixed(2)}</td><td rowspan="${items.length}" style="color:red;">Rs. ${du.toFixed(2)}</td>`);
           }
           printWindow.document.write(`</tr>`);
         });
       } else {
-        printWindow.document.write(`<tr><td>${p.bill_date || ''}</td><td><b>${p.bill_no || ''}</b></td><td>${p.supplier_name || ''}</td><td colspan="4">-</td><td style="color:#2E7D32; font-weight:bold;">Rs. ${sellingPriceVal.toFixed(2)}</td><td>Rs. ${parseFloat(p.transport || 0).toFixed(2)}</td><td>Rs. ${parseFloat(p.labor || 0).toFixed(2)}</td><td><b>Rs. ${gt.toFixed(2)}</b></td><td>Rs. ${pd.toFixed(2)}</td><td style="color:red;">Rs. ${du.toFixed(2)}</td></tr>`);
+        printWindow.document.write(`<tr><td>${p.bill_date || ''}</td><td><b>${p.bill_no || ''}</b></td><td>${p.supplier_name || ''}</td><td colspan="4">-</td><td>Rs. ${parseFloat(p.transport || 0).toFixed(2)}</td><td>Rs. ${parseFloat(p.labor || 0).toFixed(2)}</td><td><b>Rs. ${gt.toFixed(2)}</b></td><td style="color:#2E7D32; font-weight:bold;">Rs. ${sellingPriceVal.toFixed(2)}</td><td>Rs. ${pd.toFixed(2)}</td><td style="color:red;">Rs. ${du.toFixed(2)}</td></tr>`);
       }
     });
 
