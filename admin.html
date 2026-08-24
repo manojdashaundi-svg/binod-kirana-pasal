@@ -428,9 +428,7 @@
       </div>
     </div>
 
-    <!-- ========================================================
-        SUPPLIED DUE & PAYMENT REPORT (Requested Feature Added Back)
-        ======================================================== -->
+    <!-- SUPPLIER DUE & PAYMENT REPORT -->
     <div class="card shadow-sm mb-4 mt-4" style="background:#fff; padding:18px; border-radius:10px; border:2px solid #b78103;">
       <div class="card-header" style="margin-bottom:12px;">
         <h5 class="mb-0" style="margin:0; color:#b78103; font-size:16px; font-weight:bold;">📋 सप्लायरलाई दिन बाँकी रकमको रिपोर्ट (Supplier Due & Payment Management)</h5>
@@ -677,22 +675,52 @@
 
   </div>
 
-  <div id="outstandingDuesMainSection" class="staff-section" style="background:#fff; padding:20px; border-radius:12px; margin-top:25px; border:1px solid #e0e0e0;">
-    <h3 style="color:#C62828; margin-bottom:12px;">📊 Outstanding Dues & Customer Balances (तिर्न बाँकी बक्यौता विवरण)</h3>
-    <div style="background:#f9fbfd; padding:15px; border-radius:10px; margin-bottom:12px; border:1px solid #e0e0e0; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-      <input type="text" id="duesSearchInput" placeholder="🔍 Search Customer Name / Invoice No..." style="flex:2; min-width:180px; padding:9px; border-radius:8px; border:1px solid #ccc; display:none;">
-      
-      <div style="display:flex; align-items:center; gap:5px; flex:1; min-width:130px;">
-        <label style="font-size:12px; font-weight:bold; color:#555;">Start:</label>
-        <input id="duesReportStart" type="date" style="width:100%; padding:7px;">
+  <!-- OUTSTANDING DUES & CUSTOMER BALANCES (WITH INSTALLMENT REPAYMENT MANAGEMENT) -->
+  <div id="outstandingDuesMainSection" class="staff-section" style="background:#fff; padding:20px; border-radius:12px; margin-top:25px; border:2px solid #C62828;">
+    <h3 style="color:#C62828; margin-bottom:12px;">📊 Outstanding Dues & Customer Balances (तिर्न बाँकी बक्यौता तथा किस्ता भुक्तानी)</h3>
+    
+    <div style="background:#f9fbfd; padding:15px; border-radius:10px; margin-bottom:12px; border:1px solid #e0e0e0; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <div style="flex:1; min-width:160px;">
+        <label style="display:block; font-weight:bold; margin-bottom:3px; font-size:13px; color:#555;">Start Date:</label>
+        <input id="duesReportStart" type="date" style="width:100%; padding:9px;">
       </div>
-      <div style="display:flex; align-items:center; gap:5px; flex:1; min-width:130px;">
-        <label style="font-size:12px; font-weight:bold; color:#555;">End:</label>
-        <input id="duesReportEnd" type="date" style="width:100%; padding:7px;">
+      <div style="flex:1; min-width:160px;">
+        <label style="display:block; font-weight:bold; margin-bottom:3px; font-size:13px; color:#555;">End Date:</label>
+        <input id="duesReportEnd" type="date" style="width:100%; padding:9px;">
       </div>
+      <div style="flex:2; min-width:220px;">
+        <label style="display:block; font-weight:bold; margin-bottom:3px; font-size:13px; color:#555;">ग्राहक छान्नुहोस् (Customer):</label>
+        <select id="chooseCustomerDueSelect" style="width:100%; padding:9px; font-size:13.5px;">
+          <option value="ALL">सबै ग्राहकहरू (All Customers)</option>
+        </select>
+      </div>
+      <div style="flex:2; min-width:250px; display:flex; gap:8px; margin-top:18px;">
+        <button onclick="exportOutstandingDuesCSV()" style="flex:1; padding:10px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel</button>
+        <button onclick="printOutstandingDuesPDF()" style="flex:1; padding:10px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print Report</button>
+      </div>
+    </div>
 
-      <button onclick="exportOutstandingDuesCSV()" style="padding:9px 16px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel</button>
-      <button onclick="printOutstandingDuesPDF()" style="padding:9px 16px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print Report</button>
+    <div style="text-align: right; margin-bottom: 8px;">
+      <button onclick="handleChooseCustomerDue()" style="padding:9px 20px; background:#1976D2; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13.5px; box-shadow:0 2px 5px rgba(25,118,210,0.3);">🔍 बक्यौता रिपोर्ट हेर्नुहोस्</button>
+    </div>
+
+    <div style="overflow-x: auto; max-height: 280px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
+      <table>
+        <thead>
+          <tr style="position:sticky; top:0; z-index:10; background:#C62828; color:#fff;">
+            <th>Date</th>
+            <th>Invoice No.</th>
+            <th>Customer Name</th>
+            <th>Total Amount</th>
+            <th>Paid Amount</th>
+            <th>Balance Due</th>
+            <th>Action (पेमेन्ट / किस्ता तिर्ने)</th>
+          </tr>
+        </thead>
+        <tbody id="outstandingDuesTableBody">
+          <tr><td colspan="7" style="padding:15px; color:#666;">कृपया मिति र ग्राहक छानेर रिपोर्ट हेर्नुहोस्।</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
@@ -774,7 +802,6 @@
     await loadPurchaseList();
   }
 
-  // सप्लायर ड्रपडाउन अपडेट गर्ने फंक्सन (All Suppliers सहित)
   function updateChooseRepayDropdown() {
     let selectEl = document.getElementById('chooseRepaySupplierSelect');
     if(!selectEl) return;
@@ -794,7 +821,6 @@
     if(supplierSet.has(currentVal) || currentVal === "ALL") selectEl.value = currentVal;
   }
 
-  // फिल्टर अनुसार सप्लायर रिपोर्ट देखाउने फंक्सन
   function handleChooseSupplierRepay() {
     let chosenSup = document.getElementById('chooseRepaySupplierSelect').value;
     let startDate = document.getElementById('supplierDueStart').value;
@@ -850,7 +876,6 @@
     tbody.innerHTML = html;
   }
 
-  // Export Excel for Supplier Due Report
   function exportSupplierDueCSV() {
     let chosenSup = document.getElementById('chooseRepaySupplierSelect').value;
     let startDate = document.getElementById('supplierDueStart').value;
@@ -900,7 +925,6 @@
     document.body.removeChild(link);
   }
 
-  // Print PDF for Supplier Due Report
   function printSupplierDuePDF() {
     let chosenSup = document.getElementById('chooseRepaySupplierSelect').value;
     let startDate = document.getElementById('supplierDueStart').value;
@@ -976,7 +1000,6 @@
     printWindow.document.close();
   }
 
-  // किस्ता तिर्ने र अपडेट गर्ने फंक्सन
   async function paySupplierInstallment(purchaseId, maxDue, isRepaySection = false) {
     let inputAmt = prompt(`यस बिलको तिर्न बाँकी रकम: Rs. ${maxDue.toFixed(2)}\nकति रकम भुक्तानी (Payment) गर्ने हो, रकम प्रविष्ट गर्नुहोस्:`, maxDue);
     if(inputAmt === null) return;
@@ -1017,6 +1040,120 @@
       if (isRepaySection) {
         handleChooseSupplierRepay();
       }
+    }
+  }
+
+  // ==========================================
+  // CUSTOMER OUTSTANDING DUES & INSTALLMENT REPAYMENT FUNCTIONS
+  // ==========================================
+  function updateChooseCustomerDueDropdown() {
+    let selectEl = document.getElementById('chooseCustomerDueSelect');
+    if(!selectEl) return;
+
+    let customerSet = new Set();
+    extraInvoicesCache.forEach(inv => {
+      let custName = inv.customer_name ? String(inv.customer_name).trim() : "";
+      if(custName) customerSet.add(custName);
+    });
+
+    let currentVal = selectEl.value;
+    let html = `<option value="ALL">सबै ग्राहकहरू (All Customers)</option>`;
+    customerSet.forEach(cust => {
+      html += `<option value="${cust}">${cust}</option>`;
+    });
+    selectEl.innerHTML = html;
+    if(customerSet.has(currentVal) || currentVal === "ALL") selectEl.value = currentVal;
+  }
+
+  function handleChooseCustomerDue() {
+    let chosenCust = document.getElementById('chooseCustomerDueSelect').value;
+    let startDate = document.getElementById('duesReportStart').value;
+    let endDate = document.getElementById('duesReportEnd').value;
+    let tbody = document.getElementById('outstandingDuesTableBody');
+    if(!tbody) return;
+
+    let start = startDate ? new Date(startDate) : null;
+    let end = endDate ? new Date(endDate) : null;
+    if(end) end.setHours(23, 59, 59, 999);
+
+    let filteredList = extraInvoicesCache.filter(inv => {
+      let tot = parseFloat(inv.total || 0);
+      let paid = parseFloat(inv.paid || 0);
+      let due = tot - paid;
+      if(due <= 0.01) return false;
+
+      let custName = inv.customer_name ? String(inv.customer_name).trim() : "";
+      if(chosenCust !== "ALL" && custName !== chosenCust) return false;
+
+      if(start && end && inv.date) {
+        let invDate = new Date(inv.date);
+        if(!isNaN(invDate.getTime())) {
+          if(invDate < start || invDate > end) return false;
+        }
+      }
+      return true;
+    });
+
+    if(filteredList.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="padding:15px; color:#666;">चयनित मिति वा ग्राहकको कुनै बाँकी बक्यौता भेटिएन।</td></tr>`;
+      return;
+    }
+
+    let html = "";
+    filteredList.forEach(inv => {
+      let tot = parseFloat(inv.total || 0);
+      let paid = parseFloat(inv.paid || 0);
+      let due = tot - paid;
+
+      html += `<tr>
+        <td>${inv.date || ''}</td>
+        <td><b>${inv.invoice_no || ''}</b></td>
+        <td><b>${inv.customer_name || ''}</b></td>
+        <td>RM ${tot.toFixed(2)}</td>
+        <td>RM ${paid.toFixed(2)}</td>
+        <td style="color:red; font-weight:bold;">RM ${due.toFixed(2)}</td>
+        <td>
+          <button onclick="payCustomerInstallment(${inv.id}, ${due})" style="background:#4CAF50; color:white; border:none; padding:5px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">💸 पेमेन्ट / किस्ता तिर्ने</button>
+        </td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+  }
+
+  async function payCustomerInstallment(invoiceId, maxDue) {
+    let inputAmt = prompt(`यस इनभ्वाइसको उठाउन बाँकी रकम: RM ${maxDue.toFixed(2)}\nग्राहकबाट कति रकम किस्ता (Payment) प्राप्त भयो, रकम प्रविष्ट गर्नुहोस्:`, maxDue);
+    if(inputAmt === null) return;
+
+    let payVal = parseFloat(inputAmt);
+    if(isNaN(payVal) || payVal <= 0) {
+      alert("कृपया मान्य रकम (Positive Amount) राख्नुहोस्!");
+      return;
+    }
+
+    if(payVal > maxDue + 0.01) {
+      alert("⚠️ उठाउनुपर्ने बाँकी रकमभन्दा बढी रकम राख्न मिल्दैन!");
+      return;
+    }
+
+    let targetInv = extraInvoicesCache.find(i => i.id === invoiceId);
+    if(!targetInv) {
+      alert("इनभ्वाइस रेकर्ड फेला परेन!");
+      return;
+    }
+
+    let currentPaid = parseFloat(targetInv.paid || 0);
+    let newPaid = currentPaid + payVal;
+
+    let { error } = await supabaseClient.from('invoices').update({
+      paid: newPaid
+    }).eq('id', invoiceId);
+
+    if(error) {
+      alert("Error updating customer payment: " + error.message);
+    } else {
+      alert(`✅ RM ${payVal.toFixed(2)} सफलतापूर्वक ग्राहकबाट प्राप्त भुक्तानी रेकर्ड गरियो!`);
+      await loadExtraInvoicesHistory();
+      handleChooseCustomerDue();
     }
   }
 
@@ -1581,6 +1718,7 @@
       let { data, error } = await supabaseClient.from('invoices').select('*').order('id', { ascending: false });
       if (!error && data) {
         extraInvoicesCache = data;
+        updateChooseCustomerDueDropdown();
       }
     } catch(e) {
       extraInvoicesCache = [];
@@ -1588,27 +1726,31 @@
   }
 
   async function exportOutstandingDuesCSV() {
-    await loadExtraInvoicesHistory();
+    let chosenCust = document.getElementById('chooseCustomerDueSelect').value;
     let startDate = document.getElementById("duesReportStart").value;
     let endDate = document.getElementById("duesReportEnd").value;
 
-    let filtered = extraInvoicesCache.filter(inv => {
+    let start = startDate ? new Date(startDate) : null;
+    let end = endDate ? new Date(endDate) : null;
+    if(end) end.setHours(23, 59, 59, 999);
+
+    let duesList = extraInvoicesCache.filter(inv => {
       let tot = parseFloat(inv.total || 0);
       let paid = parseFloat(inv.paid || 0);
-      let hasDue = (tot - paid) > 0.01;
-      if(!hasDue) return false;
+      let due = tot - paid;
+      if(due <= 0.01) return false;
 
-      if(startDate && endDate && inv.date) {
+      let custName = inv.customer_name ? String(inv.customer_name).trim() : "";
+      if(chosenCust !== "ALL" && custName !== chosenCust) return false;
+
+      if(start && end && inv.date) {
         let d = new Date(inv.date);
-        let start = new Date(startDate);
-        let end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
-        return (d >= start && d <= end);
+        if(!isNaN(d.getTime())) {
+          if(d < start || d > end) return false;
+        }
       }
       return true;
     });
-
-    let duesList = filtered;
 
     if(duesList.length === 0) {
       alert("चयनित मिति वा फिल्टरभित्र कुनै बाँकी बक्यौता रेकर्ड भेटिएन!");
@@ -1633,27 +1775,31 @@
   }
 
   async function printOutstandingDuesPDF() {
-    await loadExtraInvoicesHistory();
+    let chosenCust = document.getElementById('chooseCustomerDueSelect').value;
     let startDate = document.getElementById("duesReportStart").value;
     let endDate = document.getElementById("duesReportEnd").value;
 
-    let filtered = extraInvoicesCache.filter(inv => {
+    let start = startDate ? new Date(startDate) : null;
+    let end = endDate ? new Date(endDate) : null;
+    if(end) end.setHours(23, 59, 59, 999);
+
+    let duesList = extraInvoicesCache.filter(inv => {
       let tot = parseFloat(inv.total || 0);
       let paid = parseFloat(inv.paid || 0);
-      let hasDue = (tot - paid) > 0.01;
-      if(!hasDue) return false;
+      let due = tot - paid;
+      if(due <= 0.01) return false;
 
-      if(startDate && endDate && inv.date) {
+      let custName = inv.customer_name ? String(inv.customer_name).trim() : "";
+      if(chosenCust !== "ALL" && custName !== chosenCust) return false;
+
+      if(start && end && inv.date) {
         let d = new Date(inv.date);
-        let start = new Date(startDate);
-        let end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
-        return (d >= start && d <= end);
+        if(!isNaN(d.getTime())) {
+          if(d < start || d > end) return false;
+        }
       }
       return true;
     });
-
-    let duesList = filtered;
 
     let printWindow = window.open('', '_blank', 'height=700,width=900');
     if (!printWindow) { alert("Popup blocked!"); return; }
@@ -1681,7 +1827,7 @@
     printWindow.document.write('<h2 style="color:#1976D2; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
     printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>');
     printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
-    printWindow.document.write('<h3>Outstanding Dues Report (तिर्न बाँकी बक्यौता विवरण)</h3>');
+    printWindow.document.write('<h3>Outstanding Dues & Customer Balances Report (Customer: ' + chosenCust + ')</h3>');
     printWindow.document.write('</div>');
     printWindow.document.write('<table><thead><tr><th>Date</th><th>Invoice No.</th><th>Customer Name</th><th>Total Amount</th><th>Paid Amount</th><th>Balance Due</th></tr></thead><tbody>');
     
@@ -1691,7 +1837,7 @@
       let paid = parseFloat(inv.paid || 0);
       let due = tot - paid;
       totalDuesSum += due;
-      printWindow.document.write(`<tr><td>${inv.date || ''}</td><td><b>${inv.invoice_no || ''}</b></td><td>${inv.customer_name || ''}</td><td>RM ${tot.toFixed(2)}</td><td>RM ${paid.toFixed(2)}</td><td>RM ${due.toFixed(2)}</td></tr>`);
+      printWindow.document.write(`<tr><td>${inv.date || ''}</td><td><b>${inv.invoice_no || ''}</b></td><td>${inv.customer_name || ''}</td><td>RM ${tot.toFixed(2)}</td><td>RM ${paid.toFixed(2)}</td><td style="color:red;">RM ${due.toFixed(2)}</td></tr>`);
     });
 
     if(duesList.length === 0) {
@@ -2751,6 +2897,11 @@
       let supDueEnd = document.getElementById("supplierDueEnd");
       if(supDueStart && !supDueStart.value) supDueStart.value = todayStr;
       if(supDueEnd && !supDueEnd.value) supDueEnd.value = todayStr;
+
+      let duesStart = document.getElementById("duesReportStart");
+      let duesEnd = document.getElementById("duesReportEnd");
+      if(duesStart && !duesStart.value) duesStart.value = todayStr;
+      if(duesEnd && !duesEnd.value) duesEnd.value = todayStr;
 
       data.forEach((s, idx) => {
         selectHtml += `<option value="${s.id}">${s.name} (${s.role || 'Staff'})</option>`;
