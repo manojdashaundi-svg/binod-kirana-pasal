@@ -269,6 +269,38 @@ body{ background:#f5f5f5; color:#333; width: 100%; overflow-x: hidden; }
 </footer>
 
 <script>
+  // 🔊 चर्को टिक आवाज उत्पन्न गर्ने ग्लोबल फंक्सन
+  function playLoudClickSound() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const now = audioCtx.currentTime;
+
+      // उच्च फ्रिक्वेन्सी र चर्को भोल्युम भएको तीव्र टिक साउन्ड
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'triangle'; // चर्को र कडा आवाजको लागि
+      osc.frequency.setValueAtTime(1200, now);
+      osc.frequency.exponentialRampToValueAtTime(300, now + 0.08);
+
+      gain.gain.setValueAtTime(0.8, now); // उच्च भोल्युम
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.08);
+    } catch(e) {
+      console.error("Audio error:", e);
+    }
+  }
+
+  // 🌐 स्क्रिनको जुनसुकै ठाउँमा क्लिक गर्दा चर्को टिक आवाज बजाउने इभेन्ट लिसनर
+  document.addEventListener("click", function(e) {
+    playLoudClickSound();
+  }, true);
+
   const SUPABASE_URL = 'https://odhdrhvvgemwgiphipgv.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_r78VgArizXeDFSTb3ltlqQ_ujdRRA1k';
 
