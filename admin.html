@@ -20,7 +20,7 @@
     .automation-badge { display: inline-block; background: #e8f5e9; border: 1px solid #4CAF50; color: #2e7d32; font-size: 12px; font-weight: bold; padding: 4px 12px; border-radius: 20px; margin-left: 12px; vertical-align: middle; }
     
     table { width:100%; border-collapse:collapse; background:#fff; margin-top:0; box-shadow:0 2px 5px rgba(0,0,0,0.05); border-radius: 6px; overflow: hidden; }
-    th{ background:linear-gradient(135deg, #1976D2, #1565C0); color:#fff; padding:10px 12px; font-size:13px; text-align:center; font-weight: 600; letter-spacing: 0.5px; }
+    th{ background:linear-gradient(135deg, #1976D2, #1565C0); color:#fff; padding:10px 12px; font-size:13px; text-align:center; font-weight: 600; letter-spacing: 0.5px; position: sticky !important; top: 0 !important; z-index: 10 !important; }
     td{ padding:8px 10px; border:1px solid #bbb; text-align:center; font-size:12.5px; vertical-align:middle; color: #222; font-weight: 500; }
     tr:hover { background-color: #f9fbfd; }
 
@@ -61,6 +61,10 @@
 
     .chart-container { background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin:25px 0; border:1px solid #e0e0e0; width:100%; height: 300px; display:block; }
     .menu-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
+    
+    div[style*="overflow-y: auto"] {
+      position: relative;
+    }
   </style>
 </head>
 <body>
@@ -143,7 +147,7 @@
     <div style="overflow-x: auto; width:100%; max-height:480px; overflow-y:auto; border:1px solid #e0e0e0; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.03);">
       <table>
         <thead>
-          <tr style="position:sticky; top:0; z-index:10;">
+          <tr>
             <th>Order Date & Time</th>
             <th>Order No.</th>
             <th>Customer & Items</th>
@@ -176,10 +180,10 @@
     <div style="overflow-x: auto; max-height: 240px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
       <table>
         <thead>
-          <tr style="position:sticky; top:0; z-index:10;">
-            <th style="background:#1976D2; color:#fff;">District Name (जिल्ला)</th>
-            <th style="background:#1976D2; color:#fff;">Delivery Rate (Rs.)</th>
-            <th style="background:#1976D2; color:#fff;">Action</th>
+          <tr>
+            <th>District Name (जिल्ला)</th>
+            <th>Delivery Rate (Rs.)</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody id="deliveryZonesTableList">
@@ -210,7 +214,7 @@
     <div style="overflow-x: auto; width:100%; max-height:300px; overflow-y:auto; border:1px solid #e0e0e0; border-radius:8px;">
       <table>
         <thead>
-          <tr style="position:sticky; top:0; z-index:10;">
+          <tr>
             <th>ID</th>
             <th>Product Name</th>
             <th>Price</th>
@@ -256,7 +260,7 @@
     <div style="overflow-x:auto; max-height:220px; overflow-y:auto; border:1px solid #e0e0e0; border-radius:8px;">
       <table>
         <thead>
-          <tr style="position:sticky; top:0; z-index:10; background:linear-gradient(135deg, #e91e63, #c2185b); color:#fff;">
+          <tr>
             <th>ItemID</th>
             <th>ItemName</th>
             <th>Category</th>
@@ -293,7 +297,7 @@
     <div style="overflow-x:auto; max-height: 200px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; margin-bottom:25px;">
       <table>
         <thead>
-          <tr style="position:sticky; top:0; z-index:10; background:#1976D2; color:#fff;">
+          <tr>
             <th>ID</th>
             <th>Staff Name</th>
             <th>Email / Username</th>
@@ -462,7 +466,7 @@
         <div style="overflow-x: auto; max-height: 280px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
           <table>
             <thead>
-              <tr style="position:sticky; top:0; z-index:10; background:#388E3C; color:#fff;">
+              <tr>
                 <th>Bill Date</th>
                 <th>Bill No.</th>
                 <th>Supplier Name</th>
@@ -497,7 +501,7 @@
         <div style="overflow-x:auto; max-height: 200px; overflow-y: auto; border:1px solid #e0e0e0; border-radius:8px; background:#fff;">
           <table>
             <thead>
-              <tr style="position:sticky; top:0; z-index:10; background:#e91e63; color:#fff;">
+              <tr>
                 <th>ID</th>
                 <th>Full Name</th>
                 <th>Designation</th>
@@ -707,7 +711,7 @@
     <div style="overflow-x: auto; max-height: 280px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
       <table>
         <thead>
-          <tr style="position:sticky; top:0; z-index:10; background:#C62828; color:#fff;">
+          <tr>
             <th>Date</th>
             <th>Invoice No.</th>
             <th>Customer Name</th>
