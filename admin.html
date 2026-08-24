@@ -411,6 +411,25 @@
       <button onclick="savePurchaseRecord()" style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(76,175,80,0.3);">💾 खरिद बिल सेभ गर्नुहोस् र स्टकमा जोड्नुहोस्</button>
     </div>
 
+    <!-- 📊 Purchase Report Generator & Export (नयाँ थपिएको सेक्सन) -->
+    <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-top:25px;">
+      <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">📊 Purchase Report Generator & Export (सामान खरिद रिपोर्ट तथा निर्यात)</h3>
+      <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">Start Date:</label>
+          <input id="purchaseReportStart" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">End Date:</label>
+          <input id="purchaseReportEnd" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
+          <button onclick="exportPurchaseCSV()" style="flex:1; padding:11px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel (.CSV)</button>
+          <button onclick="printPurchasePDF()" style="flex:1; padding:11px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print / Download PDF</button>
+        </div>
+      </div>
+    </div>
+
     <div id="salarySectionContainer">
       <div style="background:#f9fbfd; padding:20px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:20px;">
         <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">💰 Staff Salary Sheet & Voucher System</h3>
@@ -689,11 +708,129 @@
   var menuItemsCache = [];
   var staffListCache = [];
   var expenseListCache = [];
+  var purchaseListCache = [];
   var salaryVoucherHistoryCache = [];
   var extraInvoicesCache = [];
   var currentSelectedChatSession = null;
   var lastAdminChatCount = {};
   var activeProofOrderNo = null;
+
+  async function loadPurchaseList() {
+    try {
+      let { data, error } = await supabaseClient.from('inventory_purchases').select('*').order('id', { ascending: false });
+      if (!error && data) {
+        purchaseListCache = data;
+      }
+    } catch(e) {
+      purchaseListCache = [];
+    }
+  }
+
+  function exportPurchaseCSV() {
+    let startDate = document.getElementById("purchaseReportStart").value;
+    let endDate = document.getElementById("purchaseReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = purchaseListCache.filter(p => {
+      if(!p.bill_date) return false;
+      let pDate = new Date(p.bill_date);
+      if(isNaN(pDate.getTime())) return false;
+      return (pDate >= start && pDate <= end);
+    });
+
+    if(filtered.length === 0) {
+      alert("चयनित मितिभित्र कुनै खरिद रेकर्ड भेटिएन!");
+      return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,Bill Date,Bill No,Supplier Name,Sub Total,Transport,Labor,Grand Total,Paid Amount,Due Amount,Profit %\n";
+    filtered.forEach(p => {
+      csvContent += `"${p.bill_date || ''}","${p.bill_no || ''}","${p.supplier_name || ''}","${p.sub_total || 0}","${p.transport || 0}","${p.labor || 0}","${p.grand_total || 0}","${p.paid_amount || 0}","${p.due_amount || 0}","${p.profit_pct || 0}"\n`;
+    });
+
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "purchase_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function printPurchasePDF() {
+    let startDate = document.getElementById("purchaseReportStart").value;
+    let endDate = document.getElementById("purchaseReportEnd").value;
+    if(!startDate || !endDate) {
+      alert("कृपया Start Date र End Date छान्नुहोस्!");
+      return;
+    }
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filtered = purchaseListCache.filter(p => {
+      if(!p.bill_date) return false;
+      let pDate = new Date(p.bill_date);
+      if(isNaN(pDate.getTime())) return false;
+      return (pDate >= start && pDate <= end);
+    });
+
+    let printWindow = window.open('', '_blank', 'height=700,width=900');
+    if (!printWindow) { alert("Popup blocked!"); return; }
+
+    printWindow.document.write('<html><head><title>Purchase Report</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
+    printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;margin:0;}');
+    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #1976D2;padding-bottom:5mm;margin-bottom:10px;}');
+    printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
+    printWindow.document.write('h2{margin:2px 0;color:#1976D2;font-size:16px;font-weight:700;}');
+    printWindow.document.write('h3{margin:2px 0;color:#333;font-size:13px;font-weight:600;}');
+    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
+    printWindow.document.write('th,td{border:2px solid #333;padding:7px 8px;text-align:center;font-size:12px;color:#000;font-weight:bold;}');
+    printWindow.document.write('th{background:#1976D2;color:white;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('tr:nth-child(even){background-color:#f4f8fb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
+    printWindow.document.write('.total-box{text-align:right;margin-top:10px;font-size:14px;font-weight:bold;color:#1976D2;}');
+    printWindow.document.write('.print-btn-bar{position:fixed;top:10px;right:10px;background:#1976D2;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;z-index:9999;box-shadow:0 2px 5px rgba(0,0,0,0.3);display:block;}');
+    printWindow.document.write('@media print { .print-btn-bar { display: none !important; } }');
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<button class="print-btn-bar" onclick="window.print()">🖨️ Print Now / Save PDF</button>');
+    printWindow.document.write('<div class="header">');
+    printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
+    printWindow.document.write('<h2 style="color:#1976D2; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>');
+    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
+    printWindow.document.write('<h3>Purchase Report (' + startDate + ' to ' + endDate + ')</h3>');
+    printWindow.document.write('</div>');
+    printWindow.document.write('<table><thead><tr><th>Bill Date</th><th>Bill No.</th><th>Supplier Name</th><th>Grand Total</th><th>Paid</th><th>Due</th></tr></thead><tbody>');
+    
+    let totalGrandSum = 0;
+    filtered.forEach(p => {
+      let gt = parseFloat(p.grand_total) || 0;
+      let pd = parseFloat(p.paid_amount) || 0;
+      let du = parseFloat(p.due_amount) || 0;
+      totalGrandSum += gt;
+      printWindow.document.write(`<tr><td>${p.bill_date || ''}</td><td><b>${p.bill_no || ''}</b></td><td>${p.supplier_name || ''}</td><td>Rs. ${gt.toFixed(2)}</td><td>Rs. ${pd.toFixed(2)}</td><td>Rs. ${du.toFixed(2)}</td></tr>`);
+    });
+
+    if(filtered.length === 0) {
+      printWindow.document.write(`<tr><td colspan="6" style="padding:15px; color:#666;">No purchase records found.</td></tr>`);
+    }
+
+    printWindow.document.write('</tbody></table>');
+    printWindow.document.write('<div class="total-box">Total Purchase Grand Total: Rs. ' + totalGrandSum.toFixed(2) + '</div>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+  }
 
   function addPurchaseItemRow() {
     let container = document.getElementById("purchaseItemsContainer");
@@ -808,7 +945,6 @@
     let avgCostPerUnit = totalQtyAll > 0 ? (grandTotal / totalQtyAll) : 0;
     let finalAutoSellingPrice = avgCostPerUnit + (avgCostPerUnit * (profitPct / 100));
 
-    // १. inventory_purchases टेबलमा बिलको मुख्य रेकर्ड selling_price सहित सेभ गर्ने
     let { error: purError } = await supabaseClient.from('inventory_purchases').insert([{
       supplier_name: supplierName,
       bill_date: date,
@@ -828,7 +964,6 @@
       console.log("Purchase insert error: " + purError.message);
     }
 
-    // २. menu_items मा उत्पादन सेभ गरी स्टकमा जोड्ने
     for(let item of itemsArray) {
       let itemBase = item.price * item.qty;
       let shareOfExtra = subTotForShare > 0 ? (itemBase / subTotForShare) * (transport + labor) : 0;
@@ -852,7 +987,6 @@
     if(itemsSaved > 0) {
       alert("✅ खरिद बिल, Auto Selling Price सहित सफलतापूर्वक Supabase मा सेभ भयो!");
       
-      // बक्सहरू खाली गर्ने (Reset Form)
       document.getElementById("purSupplierName").value = "";
       document.getElementById("purBillNo").value = "";
       document.getElementById("purTransport").value = "0";
@@ -873,6 +1007,7 @@
       `;
       calculatePurchaseTotals();
       loadMenuList();
+      loadPurchaseList();
     }
   }
 
@@ -2267,6 +2402,11 @@
       if(incStart && !incStart.value) incStart.value = todayStr;
       if(incEnd && !incEnd.value) incEnd.value = todayStr;
 
+      let purStart = document.getElementById("purchaseReportStart");
+      let purEnd = document.getElementById("purchaseReportEnd");
+      if(purStart && !purStart.value) purStart.value = todayStr;
+      if(purEnd && !purEnd.value) purEnd.value = todayStr;
+
       data.forEach((s, idx) => {
         selectHtml += `<option value="${s.id}">${s.name} (${s.role || 'Staff'})</option>`;
 
@@ -3289,6 +3429,7 @@
     loadOrders();
     loadStaffList();
     loadExpenseList();
+    loadPurchaseList();
     loadSalaryVouchersHistory();
     loadExtraInvoicesHistory();
     loadAdminChatsList();
