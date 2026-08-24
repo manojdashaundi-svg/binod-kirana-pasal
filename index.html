@@ -576,26 +576,26 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
     let proofHtml = "";
     if (order.proof_img && order.proof_img !== "None" && order.proof_img.trim() !== "") {
       proofHtml = `
-        <div style="margin-top:15px; padding-top:10px; border-top:1px dashed #ddd;">
-          <p><b>📷 डेलिभरी प्रुफ:</b></p>
+        <div style="margin-top:20px; padding-top:12px; border-top:1px dashed #ddd;">
+          <p style="font-size:18px; font-weight:bold; color:#333; margin-bottom:10px;">📷 डेलिभरी प्रुफ:</p>
           <img src="${order.proof_img}" style="width:100%; max-height:220px; object-fit:contain; border-radius:8px; border:1px solid #ddd; margin-top:8px; background:#fafafa;" alt="Delivery Proof">
         </div>`;
     }
 
     document.getElementById("trackResult").innerHTML = `
-    <div style="background:#fff; padding:22px; border-radius:18px; box-shadow:0 5px 18px rgba(0,0,0,.08); line-height:1.8; margin-top:15px; text-align:left; color:#333;">
-        <center><h3 style="color:#1976D2; margin-bottom:15px;">📦 Order Tracking</h3></center>
-        <p><b>Order No :</b> ${order.order_no}</p>
-        <p><b>Status :</b> <span style="background:${color}; color:white; padding:4px 12px; border-radius:20px; font-weight:bold; font-size:14px;">${s}</span></p>
-        <div style="width:100%; height:18px; background:#eee; border-radius:10px; overflow:hidden; margin:12px 0;"><div style="width:${progress}%; height:100%; background:${color}; text-align:center; color:white; font-size:12px; font-weight:bold; line-height:18px;">${progress}%</div></div>
+    <div style="background:#fff; padding:24px; border-radius:18px; box-shadow:0 5px 18px rgba(0,0,0,.08); line-height:2.0; margin-top:15px; text-align:left; color:#333;">
+        <center><h3 style="color:#1976D2; font-size:22px; margin-bottom:15px;">📦 Order Tracking</h3></center>
+        <p style="font-size:17px; margin-bottom:6px;"><b>Order No :</b> ${order.order_no}</p>
+        <p style="font-size:17px; margin-bottom:10px;"><b>Status :</b> <span style="background:${color}; color:white; padding:5px 14px; border-radius:20px; font-weight:bold; font-size:15px;">${s}</span></p>
+        <div style="width:100%; height:20px; background:#eee; border-radius:10px; overflow:hidden; margin:15px 0;"><div style="width:${progress}%; height:100%; background:${color}; text-align:center; color:white; font-size:13px; font-weight:bold; line-height:20px;">${progress}%</div></div>
         
-        <div style="margin-top:15px; font-size:15px;">
-          <p style="font-weight:bold; color:#1976D2; margin-bottom:8px;">🚚 Order Journey</p>
-          <p style="${step1}">✅ Order Received</p>
-          <p style="${step2}">✅ Processing / Preparing</p>
-          <p style="${step3}">✅ Ready for Dispatch</p>
-          <p style="${step4}">✅ Out for Delivery</p>
-          <p style="${step5}">✅ Delivered Successfully</p>
+        <div style="margin-top:20px;">
+          <p style="font-weight:bold; color:#1976D2; font-size:19px; margin-bottom:12px;">🚚 Order Journey</p>
+          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step1}">✅ Order Received</p>
+          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step2}">✅ Processing / Preparing</p>
+          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step3}">✅ Ready for Dispatch</p>
+          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step4}">✅ Out for Delivery</p>
+          <p style="font-size:17px; font-weight:bold; margin:8px 0; ${step5}">✅ Delivered Successfully</p>
         </div>
         ${proofHtml}
     </div>`;
