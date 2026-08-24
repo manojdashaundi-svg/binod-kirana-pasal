@@ -695,7 +695,6 @@
   var lastAdminChatCount = {};
   var activeProofOrderNo = null;
 
-  // खरिद बिल आइटम थप्ने र क्याल्कुलेसन फंक्सनहरू
   function addPurchaseItemRow() {
     let container = document.getElementById("purchaseItemsContainer");
     let div = document.createElement("div");
@@ -779,44 +778,73 @@
     let transport = parseFloat(document.getElementById("purTransport").value) || 0;
     let labor = parseFloat(document.getElementById("purLabor").value) || 0;
     let profitPct = parseFloat(document.getElementById("purProfitPct").value) || 0;
+    let paidAmount = parseFloat(document.getElementById("purPaidAmount").value) || 0;
 
     let subTotForShare = 0;
-    rows.forEach(row => {
-      let p = parseFloat(row.querySelector(".pi-price").value) || 0;
-      let q = parseFloat(row.querySelector(".pi-qty").value) || 0;
-      subTotForShare += (p * q);
-    });
+    let itemsArray = [];
 
-    for(let row of rows) {
+    rows.forEach(row => {
       let name = row.querySelector(".pi-name").value.trim();
       let price = parseFloat(row.querySelector(".pi-price").value) || 0;
       let qty = parseFloat(row.querySelector(".pi-qty").value) || 0;
       let desc = row.querySelector(".pi-desc").value.trim();
-
       if(name && price > 0 && qty > 0) {
-        let itemBase = price * qty;
-        let shareOfExtra = subTotForShare > 0 ? (itemBase / subTotForShare) * (transport + labor) : 0;
-        let totalCostForItem = itemBase + shareOfExtra;
-        let unitCost = totalCostForItem / qty;
-        let sellingPrice = unitCost + (unitCost * (profitPct / 100));
-
-        // उत्पादनको रूपमा सेभ गरी स्टकमा जोड्ने
-        await supabaseClient.from('menu_items').insert([{
-          name: name + (desc ? " (" + desc + ")" : ""),
-          price: parseFloat(sellingPrice.toFixed(2)),
-          unit: qty + " Unit",
-          description: "Supplier: " + supplierName + " | Bill No: " + billNo + " | " + desc,
-          category: "Purchased Inventory",
-          status: "In Stock",
-          stock: qty,
-          alert_limit: 10
-        }]);
-        itemsSaved++;
+        subTotForShare += (price * qty);
+        itemsArray.push({ name, price, qty, description: desc });
       }
+    });
+
+    if(itemsArray.length === 0) {
+      alert("⚠️ कृपया कम्तीमा एउटा आइटमको नाम, मूल्य र परिमाण सही भर्नुहोस्!");
+      return;
+    }
+
+    let grandTotal = subTotForShare + transport + labor;
+    let dueAmount = grandTotal - paidAmount;
+    if(dueAmount < 0) dueAmount = 0;
+
+    // १. inventory_purchases टेबलमा बिलको मुख्य रेकर्ड सेभ गर्ने
+    let { error: purError } = await supabaseClient.from('inventory_purchases').insert([{
+      supplier_name: supplierName,
+      bill_date: date,
+      bill_no: billNo,
+      items_json: JSON.stringify(itemsArray),
+      sub_total: subTotForShare,
+      transport: transport,
+      labor: labor,
+      grand_total: grandTotal,
+      paid_amount: paidAmount,
+      due_amount: dueAmount,
+      profit_pct: profitPct
+    }]);
+
+    if(purError) {
+      console.log("Purchase insert error: " + purError.message);
+    }
+
+    // २. menu_items मा उत्पादन सेभ गरी स्टकमा जोड्ने
+    for(let item of itemsArray) {
+      let itemBase = item.price * item.qty;
+      let shareOfExtra = subTotForShare > 0 ? (itemBase / subTotForShare) * (transport + labor) : 0;
+      let totalCostForItem = itemBase + shareOfExtra;
+      let unitCost = totalCostForItem / item.qty;
+      let sellingPrice = unitCost + (unitCost * (profitPct / 100));
+
+      await supabaseClient.from('menu_items').insert([{
+        name: item.name + (item.description ? " (" + item.description + ")" : ""),
+        price: parseFloat(sellingPrice.toFixed(2)),
+        unit: item.qty + " Unit",
+        description: "Supplier: " + supplierName + " | Bill No: " + billNo + " | " + item.description,
+        category: "Purchased Inventory",
+        status: "In Stock",
+        stock: item.qty,
+        alert_limit: 10
+      }]);
+      itemsSaved++;
     }
 
     if(itemsSaved > 0) {
-      alert("✅ खरिद बिल सफलतापूर्वक सेभ भयो र स्टकमा जोडियो!");
+      alert("✅ खरिद बिल सफलतापूर्वक सेभ भयो र Supabase मा रेकर्ड राखियो!");
       
       // बक्सहरू खाली गर्ने (Reset Form)
       document.getElementById("purSupplierName").value = "";
@@ -839,8 +867,6 @@
       `;
       calculatePurchaseTotals();
       loadMenuList();
-    } else {
-      alert("⚠️ कृपया कम्तीमा एउटा आइटमको नाम, मूल्य र परिमाण सही भर्नुहोस्!");
     }
   }
 
