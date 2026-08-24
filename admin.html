@@ -283,7 +283,6 @@
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; align-items:center;">
         <select id="staffRoleSelect" style="flex:1; min-width:160px; padding:9px;">
-          <!-- गतिशील लोड हुनेछ -->
         </select>
         <button onclick="addNewStaff()" style="padding:9px 22px; background:#1976D2; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(25,118,210,0.3);">+ Add Staff</button>
       </div>
@@ -428,7 +427,6 @@
       </div>
     </div>
 
-    <!-- SUPPLIER DUE & PAYMENT REPORT -->
     <div class="card shadow-sm mb-4 mt-4" style="background:#fff; padding:18px; border-radius:10px; border:2px solid #b78103;">
       <div class="card-header" style="margin-bottom:12px;">
         <h5 class="mb-0" style="margin:0; color:#b78103; font-size:16px; font-weight:bold;">📋 सप्लायरलाई दिन बाँकी रकमको रिपोर्ट (Supplier Due & Payment Management)</h5>
@@ -675,7 +673,6 @@
 
   </div>
 
-  <!-- OUTSTANDING DUES & CUSTOMER BALANCES (WITH INSTALLMENT REPAYMENT MANAGEMENT) -->
   <div id="outstandingDuesMainSection" class="staff-section" style="background:#fff; padding:20px; border-radius:12px; margin-top:25px; border:2px solid #C62828;">
     <h3 style="color:#C62828; margin-bottom:12px;">📊 Outstanding Dues & Customer Balances (तिर्न बाँकी बक्यौता तथा किस्ता भुक्तानी)</h3>
     
@@ -724,8 +721,17 @@
     </div>
   </div>
 
+  <!-- Updated Live Support Chat Center with Pass buttons & role-based bell -->
   <div class="chat-section">
-    <h3 style="color: #1976D2; margin-bottom: 12px; font-size: 17px;">💬 Live Support Chat Center</h3>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+      <h3 style="color: #1976D2; margin: 0; font-size: 17px;">💬 Live Support Chat Center</h3>
+      <div id="passToContainer" style="display: flex; gap: 6px; align-items: center;">
+        <span style="font-size: 13px; font-weight: bold; color: #555;">Pass to:</span>
+        <button onclick="passChatTo('Manager')" style="background: #9C27B0; color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">👑 Manager</button>
+        <button onclick="passChatTo('Staff')" style="background: #FF9800; color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">📦 Staff</button>
+        <button onclick="passChatTo('Delivery')" style="background: #00BCD4; color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">🚚 Delivery</button>
+      </div>
+    </div>
     <div style="display: flex; gap: 18px; flex-wrap: wrap;">
       <div style="flex: 1; min-width: 260px; border-right: 1px solid #e0e0e0; padding-right: 10px;">
         <h4 style="margin-top:0; color:#444;">Active Chats</h4>
@@ -1043,9 +1049,6 @@
     }
   }
 
-  // ==========================================
-  // CUSTOMER OUTSTANDING DUES & INSTALLMENT REPAYMENT FUNCTIONS
-  // ==========================================
   function updateChooseCustomerDueDropdown() {
     let selectEl = document.getElementById('chooseCustomerDueSelect');
     if(!selectEl) return;
@@ -1575,7 +1578,7 @@
 
   function testBellSound() {
     playTringTringBell();
-    alert("🔔 नयाँ टोनको घण्टी (टिन-टिन, टिन-टिन) सफलतापूर्वक बज्यो!");
+    alert("🔔 नयाँ टोनको घण्टी सफलतापूर्वक बज्यो!");
   };
 
   async function handleLogin() {
@@ -3784,6 +3787,7 @@
     }
   }
 
+  // Updated Admin Chats List with Pass system & role-based bell ringing
   async function loadAdminChatsList() {
     try {
       let { data, error } = await supabaseClient.from('chats').select('*').order('id', { ascending: true });
@@ -3801,21 +3805,41 @@
       if(!container) return;
       let html = "";
 
+      let loggedInRole = (sessionStorage.getItem("USER_ROLE") || "admin").toLowerCase();
+
       Object.keys(sessionsMap).forEach(sessionId => {
         let msgs = sessionsMap[sessionId];
         let lastMsg = msgs[msgs.length - 1];
         let isSelected = (currentSelectedChatSession === sessionId) ? "background:#e3f2fd;" : "";
 
+        let badgeType = lastMsg.support_type || "General Info";
+        let badgeColor = "#2196F3";
+        if (badgeType === "Delivery Inquiry") badgeColor = "#00BCD4";
+        else if (badgeType === "Order Inquiry") badgeColor = "#FF9800";
+        else if (badgeType === "General Info") badgeColor = "#9C27B0";
+
+        // Role-based bell ringing rule
         if (lastAdminChatCount[sessionId] !== undefined && msgs.length > lastAdminChatCount[sessionId]) {
           if (lastMsg.sender === "Customer") {
-            playTringTringBell();
+            if (badgeType === "Delivery Inquiry" && (loggedInRole === "delivery" || loggedInRole === "admin")) {
+              playTringTringBell();
+            } else if (badgeType === "Order Inquiry" && (loggedInRole === "staff" || loggedInRole === "admin")) {
+              playTringTringBell();
+            } else if (badgeType === "General Info" && (loggedInRole === "manager" || loggedInRole === "admin")) {
+              playTringTringBell();
+            }
           }
         }
         lastAdminChatCount[sessionId] = msgs.length;
 
+        let badgeHtml = `<span style="display:inline-block; background:${badgeColor}; color:#fff; font-size:10px; font-weight:bold; padding:2px 6px; border-radius:4px; margin-top:3px;">${badgeType}</span>`;
+
         html += `<div onclick="selectChatSession('${sessionId}')" style="padding:10px; border-radius:8px; border:1px solid #e0e0e0; cursor:pointer; ${isSelected}">
-          <div style="font-weight:bold; color:#1976D2;">${sessionId}</div>
-          <div style="font-size:12px; color:#666; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${lastMsg ? lastMsg.message : ''}</div>
+          <div style="font-weight:bold; color:#1976D2; display:flex; justify-content:space-between; align-items:center;">
+            <span>${sessionId}</span>
+            ${badgeHtml}
+          </div>
+          <div style="font-size:12px; color:#666; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:3px;">${lastMsg ? lastMsg.message : ''}</div>
         </div>`;
       });
 
@@ -3856,14 +3880,15 @@
 
   async function sendAdminChat() {
     if(!currentSelectedChatSession) { alert("Please select a chat first!"); return; }
-    let inputEl = document.getElementById("adminTestInput") || document.getElementById("adminChatInput");
+    let inputEl = document.getElementById("adminChatInput");
     let msg = inputEl.value.trim();
     if(!msg) return;
     inputEl.value = "";
     try {
+      let currentUser = sessionStorage.getItem("LOGGED_IN_USER") || "Admin";
       await supabaseClient.from('chats').insert([{
         session_id: currentSelectedChatSession,
-        customer_name: "Admin",
+        customer_name: currentUser,
         support_type: "Support",
         sender: "Admin",
         message: msg,
@@ -3871,6 +3896,27 @@
       }]);
       loadAdminChatsList();
     } catch(e) {}
+  }
+
+  // Pass chat function to pass message to Manager, Staff, or Delivery
+  async function passChatTo(targetRole) {
+    if(!currentSelectedChatSession) { alert("कृपया पहिले एउटा च्याट छान्नुहोस्!"); return; }
+    let passMsg = `--- [System Notification] This chat has been passed to ${targetRole} for further assistance. ---`;
+    try {
+      let currentUser = sessionStorage.getItem("LOGGED_IN_USER") || "Admin";
+      await supabaseClient.from('chats').insert([{
+        session_id: currentSelectedChatSession,
+        customer_name: currentUser,
+        support_type: targetRole === 'Manager' ? 'General Info' : (targetRole === 'Delivery' ? 'Delivery Inquiry' : 'Order Inquiry'),
+        sender: "Admin",
+        message: passMsg,
+        time: new Date().toLocaleString()
+      }]);
+      alert(`✅ सफलतापूर्वक यो च्याट ${targetRole} लाई Pass गरियो!`);
+      loadAdminChatsList();
+    } catch(e) {
+      alert("Error passing chat: " + e.message);
+    }
   }
 
   function openImageViewer(imgUrl) {
@@ -3910,7 +3956,7 @@
       if(menuSec) menuSec.style.display = "none";
 
       let invSec = document.querySelector(".inventory-section");
-      if(invSec) invSec.style.defualt = "none";
+      if(invSec) invSec.style.display = "none";
 
       let staffSec = document.getElementById("staffAccessManagementSection");
       if(staffSec) staffSec.style.display = "none";
