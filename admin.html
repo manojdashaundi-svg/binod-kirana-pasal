@@ -458,12 +458,13 @@
           </div>
         </div>
 
-        <!-- रिपोर्ट टेबल -->
+        <!-- रिपोर्ट टेबल (खरिद मिति सहित) -->
         <div class="table-responsive" style="overflow-x:auto;">
           <table class="table table-bordered table-striped align-middle" id="supplierDueTable">
             <thead class="table-dark">
               <tr>
                 <th>सि.नं.</th>
+                <th>खरिद मिति (Purchase Date)</th>
                 <th>सप्लायरको नाम (Supplier Name)</th>
                 <th>कुल खरिद रकम (Total Purchase)</th>
                 <th>भुक्तानी गरेको रकम (Paid Amount)</th>
@@ -472,11 +473,11 @@
               </tr>
             </thead>
             <tbody id="supplierDueTableBody">
-              <tr><td colspan="6" style="padding:15px; color:#666;">Loading Supplier Dues...</td></tr>
+              <tr><td colspan="7" style="padding:15px; color:#666;">Loading Supplier Dues...</td></tr>
             </tbody>
             <tfoot class="table-secondary">
               <tr>
-                <th colspan="4" class="text-end" style="text-align:right;">कुल बाँकी रकम (Total Due):</th>
+                <th colspan="5" class="text-end" style="text-align:right;">कुल बाँकी रकम (Total Due):</th>
                 <th colspan="2" id="totalDueAmount" style="text-align:left; color:#C62828;">Rs. 0.00</th>
               </tr>
             </tfoot>
@@ -781,7 +782,7 @@
     loadSupplierDueReport();
   });
 
-  // Supabase बाट सप्लायर ड्यू रिपोर्ट लोड गर्ने फंक्सन
+  // Supabase बाट डाटा तानेर Supplier Due Report (खरिद मितিসহ) लोड गर्ने फंक्सन
   async function loadSupplierDueReport() {
     let startDate = document.getElementById('supplierDueReportStart').value;
     let endDate = document.getElementById('supplierDueReportEnd').value;
@@ -796,8 +797,10 @@
     let end = endDate ? new Date(endDate) : null;
     if(end) end.setHours(23, 59, 59, 999);
 
-    let supplierSummaryMap = {};
     let supplierDropdownSet = new Set();
+    let totalDueSum = 0;
+    let serialNo = 1;
+    let rowsHtml = "";
 
     purchaseListCache.forEach(p => {
       let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
@@ -810,11 +813,29 @@
         }
       }
 
-      if(!supplierSummaryMap[supName]) {
-        supplierSummaryMap[supName] = { totalPurchase: 0, paidAmount: 0 };
+      if (selectedSupplier !== 'ALL' && supName !== selectedSupplier) {
+        return;
       }
-      supplierSummaryMap[supName].totalPurchase += parseFloat(p.grand_total || 0);
-      supplierSummaryMap[supName].paidAmount += parseFloat(p.paid_amount || 0);
+
+      let totalPurchase = parseFloat(p.grand_total || 0);
+      let paidAmount = parseFloat(p.paid_amount || 0);
+      let dueAmount = totalPurchase - paidAmount;
+      if(dueAmount < 0) dueAmount = 0;
+      totalDueSum += dueAmount;
+
+      let statusBadge = dueAmount > 0 
+        ? `<span class="badge" style="background:#ffebee; color:#c62828; padding:4px 8px; border-radius:4px; font-weight:bold;">तिर्न बाँकी (Due)</span>` 
+        : `<span class="badge" style="background:#e8f5e9; color:#2e7d32; padding:4px 8px; border-radius:4px; font-weight:bold;">चुक्ता भयो (Paid)</span>`;
+
+      rowsHtml += `<tr>
+        <td>${serialNo++}</td>
+        <td><b>${p.bill_date || '-'}</b></td>
+        <td style="text-align:left;"><b>${supName}</b></td>
+        <td>Rs. ${totalPurchase.toFixed(2)}</td>
+        <td>Rs. ${paidAmount.toFixed(2)}</td>
+        <td class="fw-bold" style="color:#C62828; font-weight:bold;">Rs. ${dueAmount.toFixed(2)}</td>
+        <td>${statusBadge}</td>
+      </tr>`;
     });
 
     // ड्रपडाउन अपडेट गर्ने
@@ -827,36 +848,8 @@
     selectEl.innerHTML = dropdownHtml;
     selectEl.value = supplierDropdownSet.has(currentSelVal) ? currentSelVal : "ALL";
 
-    let totalDueSum = 0;
-    let serialNo = 1;
-    let rowsHtml = "";
-
-    Object.keys(supplierSummaryMap).forEach(supName => {
-      if (selectedSupplier !== 'ALL' && supName !== selectedSupplier) {
-        return;
-      }
-
-      let dataObj = supplierSummaryMap[supName];
-      let dueAmount = dataObj.totalPurchase - dataObj.paidAmount;
-      if(dueAmount < 0) dueAmount = 0;
-      totalDueSum += dueAmount;
-
-      let statusBadge = dueAmount > 0 
-        ? `<span class="badge" style="background:#ffebee; color:#c62828; padding:4px 8px; border-radius:4px; font-weight:bold;">तिर्न बाँकी (Due)</span>` 
-        : `<span class="badge" style="background:#e8f5e9; color:#2e7d32; padding:4px 8px; border-radius:4px; font-weight:bold;">चुक्ता भयो (Paid)</span>`;
-
-      rowsHtml += `<tr>
-        <td>${serialNo++}</td>
-        <td style="text-align:left;"><b>${supName}</b></td>
-        <td>Rs. ${dataObj.totalPurchase.toFixed(2)}</td>
-        <td>Rs. ${dataObj.paidAmount.toFixed(2)}</td>
-        <td class="fw-bold" style="color:#C62828; font-weight:bold;">Rs. ${dueAmount.toFixed(2)}</td>
-        <td>${statusBadge}</td>
-      </tr>`;
-    });
-
     if(rowsHtml === "") {
-      rowsHtml = `<tr><td colspan="6" style="padding:15px; color:#666;">चयनित मिति वा सप्लायरभित्र कुनै डाटा फेला परेन।</td></tr>`;
+      rowsHtml = `<tr><td colspan="7" style="padding:15px; color:#666;">चयनित मिति वा सप्लायरभित्र कुनै डाटा फेला परेन।</td></tr>`;
     }
 
     tbody.innerHTML = rowsHtml;
@@ -873,31 +866,24 @@
     let end = endDate ? new Date(endDate) : null;
     if(end) end.setHours(23, 59, 59, 999);
 
-    let supplierSummaryMap = {};
+    let csvContent = "data:text/csv;charset=utf-8,Purchase Date,Supplier Name,Total Purchase,Paid Amount,Balance Due,Status\n";
+    let hasData = false;
+
     purchaseListCache.forEach(p => {
       let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
       if(start && end && p.bill_date) {
         let pDate = new Date(p.bill_date);
         if(!isNaN(pDate.getTime()) && (pDate < start || pDate > end)) return;
       }
-      if(!supplierSummaryMap[supName]) {
-        supplierSummaryMap[supName] = { totalPurchase: 0, paidAmount: 0 };
-      }
-      supplierSummaryMap[supName].totalPurchase += parseFloat(p.grand_total || 0);
-      supplierSummaryMap[supName].paidAmount += parseFloat(p.paid_amount || 0);
-    });
-
-    let csvContent = "data:text/csv;charset=utf-8,Supplier Name,Total Purchase,Paid Amount,Balance Due,Status\n";
-    let hasData = false;
-
-    Object.keys(supplierSummaryMap).forEach(supName => {
       if (selectedSupplier !== 'ALL' && supName !== selectedSupplier) return;
+
       hasData = true;
-      let d = supplierSummaryMap[supName];
-      let due = d.totalPurchase - d.paidAmount;
+      let totalPurchase = parseFloat(p.grand_total || 0);
+      let paidAmount = parseFloat(p.paid_amount || 0);
+      let due = totalPurchase - paidAmount;
       if(due < 0) due = 0;
       let status = due > 0 ? "Due" : "Paid";
-      csvContent += `"${supName}","${d.totalPurchase.toFixed(2)}","${d.paidAmount.toFixed(2)}","${due.toFixed(2)}","${status}"\n`;
+      csvContent += `"${p.bill_date || ''}","${supName}","${totalPurchase.toFixed(2)}","${paidAmount.toFixed(2)}","${due.toFixed(2)}","${status}"\n`;
     });
 
     if(!hasData) {
@@ -923,20 +909,6 @@
     let start = startDate ? new Date(startDate) : null;
     let end = endDate ? new Date(endDate) : null;
     if(end) end.setHours(23, 59, 59, 999);
-
-    let supplierSummaryMap = {};
-    purchaseListCache.forEach(p => {
-      let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
-      if(start && end && p.bill_date) {
-        let pDate = new Date(p.bill_date);
-        if(!isNaN(pDate.getTime()) && (pDate < start || pDate > end)) return;
-      }
-      if(!supplierSummaryMap[supName]) {
-        supplierSummaryMap[supName] = { totalPurchase: 0, paidAmount: 0 };
-      }
-      supplierSummaryMap[supName].totalPurchase += parseFloat(p.grand_total || 0);
-      supplierSummaryMap[supName].paidAmount += parseFloat(p.paid_amount || 0);
-    });
 
     let printWindow = window.open('', '_blank', 'height=700,width=900');
     if (!printWindow) { alert("Popup blocked!"); return; }
@@ -966,25 +938,32 @@
     printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
     printWindow.document.write('<h3>Supplier Due Report (' + (startDate || 'All') + ' to ' + (endDate || 'All') + ')</h3>');
     printWindow.document.write('</div>');
-    printWindow.document.write('<table><thead><tr><th>सि.नं.</th><th>सप्लायरको नाम</th><th>कुल खरिद रकम</th><th>भुक्तानी गरेको रकम</th><th>बाँकी तिर्नुपर्ने रकम</th><th>स्थिति</th></tr></thead><tbody>');
+    printWindow.document.write('<table><thead><tr><th>सि.नं.</th><th>खरिद मिति</th><th>सप्लायरको नाम</th><th>कुल खरिद रकम</th><th>भुक्तानी गरेको रकम</th><th>बाँकी तिर्नुपर्ने रकम</th><th>स्थिति</th></tr></thead><tbody>');
     
     let totalDueSum = 0;
     let serialNo = 1;
     let hasData = false;
 
-    Object.keys(supplierSummaryMap).forEach(supName => {
+    purchaseListCache.forEach(p => {
+      let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
+      if(start && end && p.bill_date) {
+        let pDate = new Date(p.bill_date);
+        if(!isNaN(pDate.getTime()) && (pDate < start || pDate > end)) return;
+      }
       if (selectedSupplier !== 'ALL' && supName !== selectedSupplier) return;
+
       hasData = true;
-      let d = supplierSummaryMap[supName];
-      let due = d.totalPurchase - d.paidAmount;
+      let totalPurchase = parseFloat(p.grand_total || 0);
+      let paidAmount = parseFloat(p.paid_amount || 0);
+      let due = totalPurchase - paidAmount;
       if(due < 0) due = 0;
       totalDueSum += due;
       let statusText = due > 0 ? "तिर्न बाँकी (Due)" : "चुक्ता भयो (Paid)";
-      printWindow.document.write(`<tr><td>${serialNo++}</td><td style="text-align:left;">${supName}</td><td>Rs. ${d.totalPurchase.toFixed(2)}</td><td>Rs. ${d.paidAmount.toFixed(2)}</td><td style="color:#C62828;">Rs. ${due.toFixed(2)}</td><td>${statusText}</td></tr>`);
+      printWindow.document.write(`<tr><td>${serialNo++}</td><td>${p.bill_date || ''}</td><td style="text-align:left;">${supName}</td><td>Rs. ${totalPurchase.toFixed(2)}</td><td>Rs. ${paidAmount.toFixed(2)}</td><td style="color:#C62828;">Rs. ${due.toFixed(2)}</td><td>${statusText}</td></tr>`);
     });
 
     if(!hasData) {
-      printWindow.document.write(`<tr><td colspan="6" style="padding:15px; color:#666;">No records found.</td></tr>`);
+      printWindow.document.write(`<tr><td colspan="7" style="padding:15px; color:#666;">No records found.</td></tr>`);
     }
 
     printWindow.document.write('</tbody></table>');
