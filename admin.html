@@ -94,6 +94,10 @@
     
     <div style="background:#f9fbfd; padding:18px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:15px; display:flex; gap:15px; flex-wrap:wrap;">
       <div style="flex:1; min-width:180px;">
+        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">सप्लायरको नाम (Supplier Name):</label>
+        <input id="purSupplierName" type="text" placeholder="Supplier Name" style="width:100%; padding:10px;">
+      </div>
+      <div style="flex:1; min-width:180px;">
         <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">बिल मिति (Bill Date):</label>
         <input id="purBillDate" type="date" style="width:100%; padding:10px;">
       </div>
@@ -133,12 +137,17 @@
         <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">मुनाफा प्रतिशत (Profit %):</label>
         <input id="purProfitPct" type="number" value="10" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
       </div>
+      <div style="flex:1; min-width:160px;">
+        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">तिरेको जम्मा रकम (Paid):</label>
+        <input id="purPaidAmount" type="number" value="0" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
+      </div>
     </div>
 
     <div style="background:#e8f5e9; border:1px solid #4CAF50; padding:15px; border-radius:8px; margin-bottom:15px; font-size:15px; font-weight:bold; color:#2e7d32; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
       <span>कुल खरिद रकम: <span id="purSubTotalDisplay">0.00</span></span>
       <span>थप खर्चसहित कुल लागत: <span id="purGrandTotalDisplay">0.00</span></span>
-      <span style="color:#1976D2;">सुझाव गरिएको बिक्रीदर (Auto Selling Price प्रति युनिट): <span id="purAutoSellingPriceDisplay">0.00</span></span>
+      <span style="color:#C62828;">तिर्न बाँकी रकम (Balance Due): <span id="purDueAmountDisplay">0.00</span></span>
+      <span style="color:#1976D2;">सुझाव गरिएको बिक्रीदर (Auto Selling Price): <span id="purAutoSellingPriceDisplay">0.00</span></span>
     </div>
 
     <button onclick="savePurchaseRecord()" style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(76,175,80,0.3);">💾 खरिद बिल सेभ गर्नुहोस् र स्टकमा जोड्नुहोस्</button>
@@ -739,21 +748,28 @@
     let transport = parseFloat(document.getElementById("purTransport").value) || 0;
     let labor = parseFloat(document.getElementById("purLabor").value) || 0;
     let profitPct = parseFloat(document.getElementById("purProfitPct").value) || 0;
+    let paidAmount = parseFloat(document.getElementById("purPaidAmount").value) || 0;
 
     let grandTotal = subTotal + transport + labor;
+    let dueAmount = grandTotal - paidAmount;
+    if(dueAmount < 0) dueAmount = 0;
+
     let avgCostPerUnit = totalQty > 0 ? (grandTotal / totalQty) : 0;
     let autoSellingPrice = avgCostPerUnit + (avgCostPerUnit * (profitPct / 100));
 
     document.getElementById("purSubTotalDisplay").innerText = subTotal.toFixed(2);
     document.getElementById("purGrandTotalDisplay").innerText = grandTotal.toFixed(2);
+    document.getElementById("purDueAmountDisplay").innerText = dueAmount.toFixed(2);
     document.getElementById("purAutoSellingPriceDisplay").innerText = autoSellingPrice.toFixed(2) + " प्रति युनिट";
   }
 
   async function savePurchaseRecord() {
+    let supplierName = document.getElementById("purSupplierName").value.trim();
     let date = document.getElementById("purBillDate").value;
     let billNo = document.getElementById("purBillNo").value.trim();
-    if(!date || !billNo) {
-      alert("कृपया बिल मिति र बिल नम्बर भर्नुहोस्!");
+    
+    if(!supplierName || !date || !billNo) {
+      alert("कृपया सप्लायरको नाम, बिल मिति र बिल नम्बर भर्नुहोस्!");
       return;
     }
 
@@ -789,7 +805,7 @@
           name: name + (desc ? " (" + desc + ")" : ""),
           price: parseFloat(sellingPrice.toFixed(2)),
           unit: qty + " Unit",
-          description: "Bill No: " + billNo + " | " + desc,
+          description: "Supplier: " + supplierName + " | Bill No: " + billNo + " | " + desc,
           category: "Purchased Inventory",
           status: "In Stock",
           stock: qty,
@@ -800,10 +816,28 @@
     }
 
     if(itemsSaved > 0) {
-      alert("✅ खरिद बिल सफलतापूर्वक सेभ भयो र उत्पादनहरूको बिक्रीदर निर्धारण गरी स्टकमा जोडियो!");
+      alert("✅ खरिद बिल सफलतापूर्वक सेभ भयो र स्टकमा जोडियो!");
+      
+      // बक्सहरू खाली गर्ने (Reset Form)
+      document.getElementById("purSupplierName").value = "";
       document.getElementById("purBillNo").value = "";
       document.getElementById("purTransport").value = "0";
       document.getElementById("purLabor").value = "0";
+      document.getElementById("purProfitPct").value = "10";
+      document.getElementById("purPaidAmount").value = "0";
+      
+      let container = document.getElementById("purchaseItemsContainer");
+      container.innerHTML = `
+        <div class="pur-item-row" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <input type="text" class="pi-name" placeholder="आइटम नाम (Item Name)" style="flex:2; min-width:160px; padding:9px;">
+          <input type="number" class="pi-price" placeholder="मूल्यदर (Rate)" style="flex:1; min-width:100px; padding:9px;" oninput="calculatePurchaseTotals()">
+          <input type="number" class="pi-qty" placeholder="परिमाण (Qty)" style="flex:1; min-width:90px; padding:9px;" oninput="calculatePurchaseTotals()">
+          <input type="text" class="pi-desc" placeholder="डिस्क्रिप्सन (Description)" style="flex:2; min-width:160px; padding:9px;">
+          <span class="pi-total-txt" style="font-weight:bold; color:#1976D2; min-width:90px;">जम्मा: 0</span>
+          <button type="button" onclick="removePurchaseItemRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+        </div>
+      `;
+      calculatePurchaseTotals();
       loadMenuList();
     } else {
       alert("⚠️ कृपया कम्तीमा एउटा आइटमको नाम, मूल्य र परिमाण सही भर्नुहोस्!");
