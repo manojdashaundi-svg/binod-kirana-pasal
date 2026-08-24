@@ -3599,7 +3599,7 @@
     let isManager = (roleLower === "manager");
     let isAdminUser = (roleLower === "admin");
     let isRestrictedStaff = (roleLower === "staff" || roleLower === "marketing" || roleLower === "delivery");
-    let isDeliveryStaff = (roleLower === "delivery");
+    let isDeliveryOrMarketingStaff = (roleLower === "delivery" || roleLower === "marketing");
 
     if (isRestrictedStaff) {
       if (staffAccessSec) staffAccessSec.style.display = "none";
@@ -3610,7 +3610,7 @@
     }
 
     if (duesMainSec) {
-      if (isDeliveryStaff) {
+      if (isDeliveryOrMarketingStaff) {
         duesMainSec.style.display = "none";
       } else {
         duesMainSec.style.display = "block";
