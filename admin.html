@@ -88,71 +88,6 @@
     <span id="emailAutomationStatusBadge" class="automation-badge" style="display: inline-block;">🟢 Active</span>
   </h2>
 
-  <!-- नयाँ खरिद र बिक्री लागत क्याल्कुलेटर सेक्सन -->
-  <div class="inventory-section" style="border: 2px solid #1976D2; background: #fdfefe;">
-    <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">🛒 Inventory Purchase & Costing Calculator (सामान खरिद तथा बिक्रीदर निर्धारण)</h3>
-    
-    <div style="background:#f9fbfd; padding:18px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:15px; display:flex; gap:15px; flex-wrap:wrap;">
-      <div style="flex:1; min-width:180px;">
-        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">सप्लायरको नाम (Supplier Name):</label>
-        <input id="purSupplierName" type="text" placeholder="Supplier Name" style="width:100%; padding:10px;">
-      </div>
-      <div style="flex:1; min-width:180px;">
-        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">बिल मिति (Bill Date):</label>
-        <input id="purBillDate" type="date" style="width:100%; padding:10px;">
-      </div>
-      <div style="flex:1; min-width:180px;">
-        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">बिल नं. (Bill No.):</label>
-        <input id="purBillNo" type="text" placeholder="Bill No." style="width:100%; padding:10px;">
-      </div>
-    </div>
-
-    <div style="margin-bottom:15px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-        <label style="font-weight:bold; font-size:14px; color:#333;">बिलका आइटमहरू (Bill Items List):</label>
-        <button type="button" onclick="addPurchaseItemRow()" style="background:#4CAF50; color:white; border:none; padding:6px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">+ आइटम थप्नुहोस्</button>
-      </div>
-      <div id="purchaseItemsContainer" style="display:flex; flex-direction:column; gap:8px;">
-        <div class="pur-item-row" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-          <input type="text" class="pi-name" placeholder="आइटम नाम (Item Name)" style="flex:2; min-width:160px; padding:9px;">
-          <input type="number" class="pi-price" placeholder="मूल्यदर (Rate)" style="flex:1; min-width:100px; padding:9px;" oninput="calculatePurchaseTotals()">
-          <input type="number" class="pi-qty" placeholder="परिमाण (Qty)" style="flex:1; min-width:90px; padding:9px;" oninput="calculatePurchaseTotals()">
-          <input type="text" class="pi-desc" placeholder="डिस्क्रिप्सन (Description)" style="flex:2; min-width:160px; padding:9px;">
-          <span class="pi-total-txt" style="font-weight:bold; color:#1976D2; min-width:90px;">जम्मा: 0</span>
-          <button type="button" onclick="removePurchaseItemRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
-        </div>
-      </div>
-    </div>
-
-    <div style="background:#f9fbfd; padding:18px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:15px; display:flex; gap:15px; flex-wrap:wrap;">
-      <div style="flex:1; min-width:160px;">
-        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">ट्रान्सपोर्ट चार्ज (Transport):</label>
-        <input id="purTransport" type="number" value="0" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
-      </div>
-      <div style="flex:1; min-width:160px;">
-        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">लेबर चार्ज (Labor):</label>
-        <input id="purLabor" type="number" value="0" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
-      </div>
-      <div style="flex:1; min-width:160px;">
-        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">मुनाफा प्रतिशत (Profit %):</label>
-        <input id="purProfitPct" type="number" value="10" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
-      </div>
-      <div style="flex:1; min-width:160px;">
-        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">तिरेको जम्मा रकम (Paid):</label>
-        <input id="purPaidAmount" type="number" value="0" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
-      </div>
-    </div>
-
-    <div style="background:#e8f5e9; border:1px solid #4CAF50; padding:15px; border-radius:8px; margin-bottom:15px; font-size:15px; font-weight:bold; color:#2e7d32; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-      <span>कुल खरिद रकम: <span id="purSubTotalDisplay">0.00</span></span>
-      <span>थप खर्चसहित कुल लागत: <span id="purGrandTotalDisplay">0.00</span></span>
-      <span style="color:#C62828;">तिर्न बाँकी रकम (Balance Due): <span id="purDueAmountDisplay">0.00</span></span>
-      <span style="color:#1976D2;">सुझाव गरिएको बिक्रीदर (Auto Selling Price): <span id="purAutoSellingPriceDisplay">0.00</span></span>
-    </div>
-
-    <button onclick="savePurchaseRecord()" style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(76,175,80,0.3);">💾 खरिद बिल सेभ गर्नुहोस् र स्टकमा जोड्नुहोस्</button>
-  </div>
-
   <div id="salesDashboardBox" style="display: flex; gap: 15px; margin: 25px 0; flex-wrap: wrap;">
     <div style="flex: 1; min-width: 140px; background: #fff; padding: 20px; border-radius: 12px; border-left: 6px solid #2196F3; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.04);">
       <span style="font-size: 13px; color: #666; font-weight: 600; text-transform: uppercase;">Total Orders</span>
@@ -409,6 +344,71 @@
       <div style="color:#1976D2; border-bottom:1px solid #f0f0f0; padding-bottom:6px;">जम्मा Total Revenue: <span id="summaryTotalRevenue" style="float:right;">Rs. 0.00</span></div>
       <div style="color:#D32F2F; border-bottom:1px solid #f0f0f0; padding:6px 0;">जम्मा Total Expense: <span id="summaryTotalExpense" style="float:right;">Rs. 0.00</span></div>
       <div style="color:#388E3C; padding-top:6px; font-size:17px;">जम्मा Net Profit: <span id="summaryNetProfit" style="float:right;">Rs. 0.00</span></div>
+    </div>
+
+    <!-- नयाँ खरिद र बिक्री लागत क्याल्कुलेटर सेक्सन -->
+    <div class="inventory-section" style="border: 2px solid #1976D2; background: #fdfefe;">
+      <h3 style="color:#1976D2; margin-top:0; margin-bottom:15px;">🛒 Inventory Purchase & Costing Calculator (सामान खरिद तथा बिक्रीदर निर्धारण)</h3>
+      
+      <div style="background:#f9fbfd; padding:18px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:15px; display:flex; gap:15px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">सप्लायरको नाम (Supplier Name):</label>
+          <input id="purSupplierName" type="text" placeholder="Supplier Name" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">बिल मिति (Bill Date):</label>
+          <input id="purBillDate" type="date" style="width:100%; padding:10px;">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">बिल नं. (Bill No.):</label>
+          <input id="purBillNo" type="text" placeholder="Bill No." style="width:100%; padding:10px;">
+        </div>
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <label style="font-weight:bold; font-size:14px; color:#333;">बिलका आइटमहरू (Bill Items List):</label>
+          <button type="button" onclick="addPurchaseItemRow()" style="background:#4CAF50; color:white; border:none; padding:6px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">+ आइटम थप्नुहोस्</button>
+        </div>
+        <div id="purchaseItemsContainer" style="display:flex; flex-direction:column; gap:8px;">
+          <div class="pur-item-row" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <input type="text" class="pi-name" placeholder="आइटम नाम (Item Name)" style="flex:2; min-width:160px; padding:9px;">
+            <input type="number" class="pi-price" placeholder="मूल्यदर (Rate)" style="flex:1; min-width:100px; padding:9px;" oninput="calculatePurchaseTotals()">
+            <input type="number" class="pi-qty" placeholder="परिमाण (Qty)" style="flex:1; min-width:90px; padding:9px;" oninput="calculatePurchaseTotals()">
+            <input type="text" class="pi-desc" placeholder="डिस्क्रिप्सन (Description)" style="flex:2; min-width:160px; padding:9px;">
+            <span class="pi-total-txt" style="font-weight:bold; color:#1976D2; min-width:90px;">जम्मा: 0</span>
+            <button type="button" onclick="removePurchaseItemRow(this)" style="background:#f44336; color:white; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" disabled>❌</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#f9fbfd; padding:18px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:15px; display:flex; gap:15px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:160px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">ट्रान्सपोर्ट चार्ज (Transport):</label>
+          <input id="purTransport" type="number" value="0" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
+        </div>
+        <div style="flex:1; min-width:160px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">लेबर चार्ज (Labor):</label>
+          <input id="purLabor" type="number" value="0" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
+        </div>
+        <div style="flex:1; min-width:160px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">मुनाफा प्रतिशत (Profit %):</label>
+          <input id="purProfitPct" type="number" value="10" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
+        </div>
+        <div style="flex:1; min-width:160px;">
+          <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">तिरेको जम्मा रकम (Paid):</label>
+          <input id="purPaidAmount" type="number" value="0" style="width:100%; padding:10px;" oninput="calculatePurchaseTotals()">
+        </div>
+      </div>
+
+      <div style="background:#e8f5e9; border:1px solid #4CAF50; padding:15px; border-radius:8px; margin-bottom:15px; font-size:15px; font-weight:bold; color:#2e7d32; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+        <span>कुल खरिद रकम: <span id="purSubTotalDisplay">0.00</span></span>
+        <span>थप खर्चसहित कुल लागत: <span id="purGrandTotalDisplay">0.00</span></span>
+        <span style="color:#C62828;">तिर्न बाँकी रकम (Balance Due): <span id="purDueAmountDisplay">0.00</span></span>
+        <span style="color:#1976D2;">सुझाव गरिएको बिक्रीदर (Auto Selling Price): <span id="purAutoSellingPriceDisplay">0.00</span></span>
+      </div>
+
+      <button onclick="savePurchaseRecord()" style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(76,175,80,0.3);">💾 खरिद बिल सेभ गर्नुहोस् र स्टकमा जोड्नुहोस्</button>
     </div>
 
     <div id="salarySectionContainer">
