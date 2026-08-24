@@ -33,6 +33,7 @@
     .proofBtn { background:#3F51B5; }
     .deliveredBtn { background:#4CAF50; cursor:default; }
     .cancelBtn { background:#f44336; }
+    .payDueBtn { background:#ff9800; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px; }
     .viewReasonBtn { background:#FF9800; color:white; border:none; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; display:inline-block; margin-top:5px; font-size:12px; }
 
     .editBtn { background:#FF9800; color:white; border:none; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer; }
@@ -429,33 +430,52 @@
     </div>
 
     <!-- ==========================================
-        SUPPLIER DUE REPORT GENERATOR & EXPORT SECTION
+        SUPPLIER DUE REPORT & PAY DUE SECTION
         ========================================== -->
     <div class="card shadow-sm mb-4 mt-4" style="background:#fff; padding:20px; border-radius:10px; border:1px solid #e0e0e0;">
       <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
         <h5 class="mb-0" style="margin:0; color:#b78103;">📋 सप्लायरलाई दिन बाँकी रकमको रिपोर्ट (Supplier Due Report)</h5>
       </div>
       <div class="card-body">
-        <!-- मिति फिल्टर तथा कन्ट्रोल अप्सनहरू -->
         <div style="background:#f9fbfd; padding:18px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:15px; display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
-          <div style="flex:1; min-width:180px;">
+          <div style="flex:1; min-width:160px;">
             <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">Start Date:</label>
             <input id="supplierDueReportStart" type="date" style="width:100%; padding:10px;">
           </div>
-          <div style="flex:1; min-width:180px;">
+          <div style="flex:1; min-width:160px;">
             <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">End Date:</label>
             <input id="supplierDueReportEnd" type="date" style="width:100%; padding:10px;">
           </div>
-          <div style="flex:1.5; min-width:200px;">
+          <div style="flex:1.5; min-width:180px;">
             <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:13px; color:#555;">सप्लायर छान्नुहोस्:</label>
-            <select id="filterSupplier" class="form-select" onchange="loadSupplierDueReport()" style="width:100%; padding:10px;">
+            <select id="filterSupplier" class="form-select" onchange="renderSupplierDueTable()" style="width:100%; padding:10px;">
               <option value="ALL">सबै सप्लायरहरू (All Suppliers)</option>
             </select>
           </div>
-          <div style="flex:2; min-width:280px; display:flex; gap:10px; margin-top:20px;">
-            <button onclick="exportSupplierDueCSV()" style="flex:1; padding:11px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel (.CSV)</button>
-            <button onclick="printSupplierDueReportPDF()" style="flex:1; padding:11px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print / Download PDF</button>
+          <div style="flex:2; min-width:260px; display:flex; gap:8px; margin-top:20px;">
+            <button onclick="exportSupplierDueCSV()" style="flex:1; padding:11px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel</button>
+            <button onclick="printSupplierDueReportPDF()" style="flex:1; padding:11px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print PDF</button>
           </div>
+        </div>
+
+        <!-- सप्लायर ड्यु लिस्ट टेबल -->
+        <div style="overflow-x:auto; border:1px solid #e0e0e0; border-radius:8px; margin-top:15px;">
+          <table>
+            <thead>
+              <tr style="background:#b78103; color:#fff;">
+                <th>Bill Date</th>
+                <th>Bill No.</th>
+                <th>Supplier Name</th>
+                <th>Grand Total</th>
+                <th>Paid Amount</th>
+                <th>Balance Due</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="supplierDueTableBody">
+              <tr><td colspan="7" style="padding:15px; color:#666;">Loading Dues...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -757,33 +777,10 @@
   });
 
   async function loadSupplierDueReport() {
-    let startDate = document.getElementById('supplierDueReportStart').value;
-    let endDate = document.getElementById('supplierDueReportEnd').value;
-    let selectedSupplier = document.getElementById('filterSupplier').value;
-
     await loadPurchaseList();
-
-    let start = startDate ? new Date(startDate) : null;
-    let end = endDate ? new Date(endDate) : null;
-    if(end) end.setHours(23, 59, 59, 999);
-
-    let supplierDropdownSet = new Set();
-    purchaseListCache.forEach(p => {
-      let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
-      supplierDropdownSet.add(supName);
-    });
-
-    let selectEl = document.getElementById('filterSupplier');
-    let currentSelVal = selectEl.value;
-    let dropdownHtml = `<option value="ALL">सबै सप्लायरहरू (All Suppliers)</option>`;
-    supplierDropdownSet.forEach(sup => {
-      dropdownHtml += `<option value="${sup}">${sup}</option>`;
-    });
-    selectEl.innerHTML = dropdownHtml;
-    selectEl.value = supplierDropdownSet.has(currentSelVal) ? currentSelVal : "ALL";
+    renderSupplierDueTable();
   }
 
-  // फिल्टर गरिएको डाटा तान्ने हेल्पर फंक्सन
   function getFilteredSupplierDues() {
     let startDate = document.getElementById('supplierDueReportStart').value;
     let endDate = document.getElementById('supplierDueReportEnd').value;
@@ -794,8 +791,10 @@
     if(end) end.setHours(23, 59, 59, 999);
 
     return purchaseListCache.filter(p => {
-      let due = parseFloat(p.due_amount) || 0;
-      if (due <= 0) return false; // तिर्न बाँकी रकम नभएकाहरू नदेखाउने
+      let gt = parseFloat(p.grand_total) || 0;
+      let pd = parseFloat(p.paid_amount) || 0;
+      let due = parseFloat(p.due_amount) || (gt - pd);
+      if (due <= 0.01) return false;
 
       if (selectedSupplier !== "ALL") {
         let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
@@ -810,6 +809,93 @@
       }
       return true;
     });
+  }
+
+  function renderSupplierDueTable() {
+    let startDate = document.getElementById('supplierDueReportStart').value;
+    let endDate = document.getElementById('supplierDueReportEnd').value;
+    let selectEl = document.getElementById('filterSupplier');
+    let currentSelVal = selectEl.value;
+
+    let supplierDropdownSet = new Set();
+    purchaseListCache.forEach(p => {
+      let supName = p.supplier_name ? String(p.supplier_name).trim() : "Unknown";
+      supplierDropdownSet.add(supName);
+    });
+
+    let dropdownHtml = `<option value="ALL">सबै सप्लायरहरू (All Suppliers)</option>`;
+    supplierDropdownSet.forEach(sup => {
+      dropdownHtml += `<option value="${sup}">${sup}</option>`;
+    });
+    selectEl.innerHTML = dropdownHtml;
+    selectEl.value = supplierDropdownSet.has(currentSelVal) ? currentSelVal : "ALL";
+
+    let duesList = getFilteredSupplierDues();
+    let tbody = document.getElementById('supplierDueTableBody');
+    if(!tbody) return;
+
+    if(duesList.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="padding:15px; color:#666;">No outstanding supplier dues found.</td></tr>`;
+      return;
+    }
+
+    let html = "";
+    duesList.forEach(p => {
+      let gt = parseFloat(p.grand_total) || 0;
+      let pd = parseFloat(p.paid_amount) || 0;
+      let du = parseFloat(p.due_amount) || (gt - pd);
+
+      html += `<tr>
+        <td>${p.bill_date || ''}</td>
+        <td><b>${p.bill_no || ''}</b></td>
+        <td><b>${p.supplier_name || ''}</b></td>
+        <td>Rs. ${gt.toFixed(2)}</td>
+        <td>Rs. ${pd.toFixed(2)}</td>
+        <td style="color:red; font-weight:bold;">Rs. ${du.toFixed(2)}</td>
+        <td>
+          <button class="payDueBtn" onclick="paySupplierDue(${p.id}, ${du})">💵 Pay Due</button>
+        </td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+  }
+
+  async function paySupplierDue(purchaseId, currentDue) {
+    let payInput = prompt(`तिर्न बाँकी रकम: Rs. ${currentDue.toFixed(2)}\nकति रकम तिर्दै हुनुहुन्छ (Pay Amount)?`, currentDue);
+    if(payInput === null) return;
+
+    let payAmount = parseFloat(payInput);
+    if(isNaN(payAmount) || payAmount <= 0) {
+      alert("कृपया सही रकम राख्नुहोस्!");
+      return;
+    }
+
+    let targetPurchase = purchaseListCache.find(p => p.id === purchaseId);
+    if(!targetPurchase) {
+      alert("रेकर्ड फेला परेन!");
+      return;
+    }
+
+    let oldPaid = parseFloat(targetPurchase.paid_amount) || 0;
+    let grandTotal = parseFloat(targetPurchase.grand_total) || 0;
+    let newPaidAmount = oldPaid + payAmount;
+    let newDueAmount = grandTotal - newPaidAmount;
+    if(newDueAmount < 0) newDueAmount = 0;
+
+    let { error } = await supabaseClient
+      .from('inventory_purchases')
+      .update({
+        paid_amount: newPaidAmount,
+        due_amount: newDueAmount
+      })
+      .eq('id', purchaseId);
+
+    if(error) {
+      alert("Error updating payment: " + error.message);
+    } else {
+      alert("✅ भुक्तानी सफलतापूर्वक अपडेट भयो! बाँकी रकम समायोजन गरियो।");
+      loadSupplierDueReport();
+    }
   }
 
   function exportSupplierDueCSV() {
@@ -1224,7 +1310,6 @@
       `;
       calculatePurchaseTotals();
       loadMenuList();
-      loadPurchaseList();
       loadSupplierDueReport();
     }
   }
