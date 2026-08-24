@@ -781,6 +781,7 @@
     let paidAmount = parseFloat(document.getElementById("purPaidAmount").value) || 0;
 
     let subTotForShare = 0;
+    let totalQtyAll = 0;
     let itemsArray = [];
 
     rows.forEach(row => {
@@ -790,6 +791,7 @@
       let desc = row.querySelector(".pi-desc").value.trim();
       if(name && price > 0 && qty > 0) {
         subTotForShare += (price * qty);
+        totalQtyAll += qty;
         itemsArray.push({ name, price, qty, description: desc });
       }
     });
@@ -803,7 +805,10 @@
     let dueAmount = grandTotal - paidAmount;
     if(dueAmount < 0) dueAmount = 0;
 
-    // १. inventory_purchases टेबलमा बिलको मुख्य रेकर्ड सेभ गर्ने
+    let avgCostPerUnit = totalQtyAll > 0 ? (grandTotal / totalQtyAll) : 0;
+    let finalAutoSellingPrice = avgCostPerUnit + (avgCostPerUnit * (profitPct / 100));
+
+    // १. inventory_purchases टेबलमा बिलको मुख्य रेकर्ड selling_price सहित सेभ गर्ने
     let { error: purError } = await supabaseClient.from('inventory_purchases').insert([{
       supplier_name: supplierName,
       bill_date: date,
@@ -815,7 +820,8 @@
       grand_total: grandTotal,
       paid_amount: paidAmount,
       due_amount: dueAmount,
-      profit_pct: profitPct
+      profit_pct: profitPct,
+      selling_price: parseFloat(finalAutoSellingPrice.toFixed(2))
     }]);
 
     if(purError) {
@@ -844,7 +850,7 @@
     }
 
     if(itemsSaved > 0) {
-      alert("✅ खरिद बिल सफलतापूर्वक सेभ भयो र Supabase मा रेकर्ड राखियो!");
+      alert("✅ खरिद बिल, Auto Selling Price सहित सफलतापूर्वक Supabase मा सेभ भयो!");
       
       // बक्सहरू खाली गर्ने (Reset Form)
       document.getElementById("purSupplierName").value = "";
