@@ -433,7 +433,7 @@
         ========================================== -->
     <div class="card shadow-sm mb-4 mt-4" style="background:#fff; padding:20px; border-radius:10px; border:1px solid #e0e0e0;">
       <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
-        <h5 class="mb-0" style="margin:0; color:#b78103;">📋 सप्लायरलाई दिन बाँकी रकमको रिपोर्ट (Supplier Due Report)</h5>
+        <h5 class="mb-0" style="margin:0; color:#b78103;">📋 सप्लायरलाई दिन बाँकी रकमको रिपोर्ट (Supplier Due & Payment Management)</h5>
       </div>
       <div class="card-body">
         <!-- मिति फिल्टर तथा कन्ट्रोल अप्सनहरू -->
@@ -456,6 +456,26 @@
             <button onclick="exportSupplierDueCSV()" style="flex:1; padding:11px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel (.CSV)</button>
             <button onclick="printSupplierDueReportPDF()" style="flex:1; padding:11px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print / Download PDF</button>
           </div>
+        </div>
+
+        <!-- सप्लायर बाँकी रिपोर्ट टेबल (किस्ता तिर्ने बटनसहित) -->
+        <div style="overflow-x: auto; max-height: 320px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
+          <table>
+            <thead>
+              <tr style="position:sticky; top:0; z-index:10; background:#b78103; color:#fff;">
+                <th>Bill Date</th>
+                <th>Bill No.</th>
+                <th>Supplier Name</th>
+                <th>Grand Total</th>
+                <th>Paid Amount</th>
+                <th>Balance Due</th>
+                <th>Action (पेमेन्ट / किस्ता तिर्ने)</th>
+              </tr>
+            </thead>
+            <tbody id="supplierDueTableBody">
+              <tr><td colspan="7" style="padding:15px; color:#666;">Loading Supplier Dues...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -781,6 +801,82 @@
     });
     selectEl.innerHTML = dropdownHtml;
     selectEl.value = supplierDropdownSet.has(currentSelVal) ? currentSelVal : "ALL";
+
+    renderSupplierDueTable();
+  }
+
+  // सप्लायर Due टेबल रेन्डर गर्ने र किस्ता/पेमेन्ट बटन जोड्ने फंक्सन
+  function renderSupplierDueTable() {
+    let tbody = document.getElementById('supplierDueTableBody');
+    if(!tbody) return;
+
+    let duesList = getFilteredSupplierDues();
+    if(duesList.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="padding:15px; color:#666;">No supplier dues found.</td></tr>`;
+      return;
+    }
+
+    let html = "";
+    duesList.forEach(p => {
+      let gt = parseFloat(p.grand_total) || 0;
+      let paid = parseFloat(p.paid_amount) || 0;
+      let due = parseFloat(p.due_amount) || (gt - paid);
+
+      html += `<tr>
+        <td>${p.bill_date || ''}</td>
+        <td><b>${p.bill_no || ''}</b></td>
+        <td><b>${p.supplier_name || ''}</b></td>
+        <td>Rs. ${gt.toFixed(2)}</td>
+        <td>Rs. ${paid.toFixed(2)}</td>
+        <td style="color:red; font-weight:bold;">Rs. ${due.toFixed(2)}</td>
+        <td>
+          <button onclick="paySupplierInstallment(${p.id}, ${due})" style="background:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">💸 पेमेन्ट / किस्ता तिर्नुहोस्</button>
+        </td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+  }
+
+  // सप्लायरलाई किस्ता वा पूरा रकम तिर्ने फंक्सन
+  async function paySupplierInstallment(purchaseId, maxDue) {
+    let inputAmt = prompt(`यस बिलको तिर्न बाँकी रकम: Rs. ${maxDue.toFixed(2)}\nकति रकम भुक्तानी (Payment) गर्ने हो, रकम प्रविष्ट गर्नुहोस्:`, maxDue);
+    if(inputAmt === null) return;
+
+    let payVal = parseFloat(inputAmt);
+    if(isNaN(payVal) || payVal <= 0) {
+      alert("कृपया मान्य रकम (Positive Amount) राख्नुहोस्!");
+      return;
+    }
+
+    if(payVal > maxDue + 0.01) {
+      alert("⚠️ तिर्नुपर्ने बाँकी रकमभन्दा बढी रकम तिर्न मिल्दैन!");
+      return;
+    }
+
+    // databaseबाट उक्त खरिद रेकर्ड तानेर Paid र Due अपडेट गर्ने
+    let targetPur = purchaseListCache.find(p => p.id === purchaseId);
+    if(!targetPur) {
+      alert("रेकर्ड फेला परेन!");
+      return;
+    }
+
+    let currentPaid = parseFloat(targetPur.paid_amount) || 0;
+    let grandTot = parseFloat(targetPur.grand_total) || 0;
+    let newPaid = currentPaid + payVal;
+    let newDue = grandTot - newPaid;
+    if(newDue < 0) newDue = 0;
+
+    let { error } = await supabaseClient.from('inventory_purchases').update({
+      paid_amount: newPaid,
+      due_amount: newDue
+    }).eq('id', purchaseId);
+
+    if(error) {
+      alert("Error updating payment: " + error.message);
+    } else {
+      alert(`✅ रु. ${payVal.toFixed(2)} सफलतापूर्वक सप्लायरलाई भुक्तानी गरियो! बाँकी बक्यौता: रु. ${newDue.toFixed(2)}`);
+      loadSupplierDueReport();
+    }
   }
 
   // फिल्टर गरिएको डाटा तान्ने हेल्पर फंक्सन
@@ -897,6 +993,7 @@
       let { data, error } = await supabaseClient.from('inventory_purchases').select('*').order('id', { ascending: false });
       if (!error && data) {
         purchaseListCache = data;
+        renderSupplierDueTable();
       }
     } catch(e) {
       purchaseListCache = [];
@@ -3660,7 +3757,7 @@
 
   function logout() { sessionStorage.clear(); window.location.reload(); };
 
-  if (sessionStorage.getItem("ADMIN_LOGIN") === "true") {
+  if (sessionStorage.ADMIN_LOGIN === "true") {
     showAdminPanel();
   } else {
     document.getElementById("loginScreen").style.display = "flex";
