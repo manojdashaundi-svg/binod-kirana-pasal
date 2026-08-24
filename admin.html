@@ -721,7 +721,6 @@
     </div>
   </div>
 
-  <!-- Updated Live Support Chat Center with Pass buttons & role-based bell -->
   <div class="chat-section">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
       <h3 style="color: #1976D2; margin: 0; font-size: 17px;">💬 Live Support Chat Center</h3>
@@ -3787,7 +3786,6 @@
     }
   }
 
-  // Updated Admin Chats List with Pass system & role-based bell ringing
   async function loadAdminChatsList() {
     try {
       let { data, error } = await supabaseClient.from('chats').select('*').order('id', { ascending: true });
@@ -3818,7 +3816,6 @@
         else if (badgeType === "Order Inquiry") badgeColor = "#FF9800";
         else if (badgeType === "General Info") badgeColor = "#9C27B0";
 
-        // Role-based bell ringing rule
         if (lastAdminChatCount[sessionId] !== undefined && msgs.length > lastAdminChatCount[sessionId]) {
           if (lastMsg.sender === "Customer") {
             if (badgeType === "Delivery Inquiry" && (loggedInRole === "delivery" || loggedInRole === "admin")) {
@@ -3898,7 +3895,6 @@
     } catch(e) {}
   }
 
-  // Pass chat function to pass message to Manager, Staff, or Delivery
   async function passChatTo(targetRole) {
     if(!currentSelectedChatSession) { alert("कृपया पहिले एउटा च्याट छान्नुहोस्!"); return; }
     let passMsg = `--- [System Notification] This chat has been passed to ${targetRole} for further assistance. ---`;
