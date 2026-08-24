@@ -429,56 +429,6 @@
     </div>
 
     <!-- ========================================================
-        SUPPLIER DUE REPORT & COMPACT PAYMENT MANAGEMENT SECTION
-        ======================================================== -->
-    <div class="card shadow-sm mb-4 mt-4" style="background:#fff; padding:18px; border-radius:10px; border:1px solid #e0e0e0;">
-      <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-        <h5 class="mb-0" style="margin:0; color:#b78103; font-size:16px;">📋 सप्लायरलाई दिन बाँकी रकमको रिपोर्ट (Supplier Due & Payment Management)</h5>
-      </div>
-      <div class="card-body">
-        <div style="background:#f9fbfd; padding:15px; border-radius:10px; border:1px solid #e0e0e0; margin-bottom:12px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-          <div style="flex:1; min-width:150px;">
-            <label style="display:block; font-weight:bold; margin-bottom:3px; font-size:12.5px; color:#555;">Start Date:</label>
-            <input id="supplierDueReportStart" type="date" onchange="loadSupplierDueReport()" style="width:100%; padding:8px; font-size:13px;">
-          </div>
-          <div style="flex:1; min-width:150px;">
-            <label style="display:block; font-weight:bold; margin-bottom:3px; font-size:12.5px; color:#555;">End Date:</label>
-            <input id="supplierDueReportEnd" type="date" onchange="loadSupplierDueReport()" style="width:100%; padding:8px; font-size:13px;">
-          </div>
-          <div style="flex:1.5; min-width:180px;">
-            <label style="display:block; font-weight:bold; margin-bottom:3px; font-size:12.5px; color:#555;">सप्लायर छान्नुहोस्:</label>
-            <select id="filterSupplier" class="form-select" onchange="loadSupplierDueReport()" style="width:100%; padding:8px; font-size:13px;">
-              <option value="ALL">सबै सप्लायरहरू (All Suppliers)</option>
-            </select>
-          </div>
-          <div style="flex:2; min-width:260px; display:flex; gap:8px; margin-top:18px;">
-            <button onclick="exportSupplierDueCSV()" style="flex:1; padding:9px; background:#2E7D32; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:12.5px; box-shadow:0 2px 5px rgba(46,125,50,0.3);">📥 Export Excel</button>
-            <button onclick="printSupplierDueReportPDF()" style="flex:1; padding:9px; background:#C62828; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:12.5px; box-shadow:0 2px 5px rgba(198,40,40,0.3);">🖨️ Print / PDF</button>
-          </div>
-        </div>
-
-        <div style="overflow-x: auto; max-height: 260px; overflow-y: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
-          <table>
-            <thead>
-              <tr style="position:sticky; top:0; z-index:10; background:#b78103; color:#fff;">
-                <th>Bill Date</th>
-                <th>Bill No.</th>
-                <th>Supplier Name</th>
-                <th>Grand Total</th>
-                <th>Paid Amount</th>
-                <th>Balance Due</th>
-                <th>Action (पेमेन्ट / किस्ता तिर्ने)</th>
-              </tr>
-            </thead>
-            <tbody id="supplierDueTableBody">
-              <tr><td colspan="7" style="padding:15px; color:#666;">Loading Supplier Dues...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========================================================
         NEW: SUPPLIER DUE & REPAYMENT SECTION (Requested Feature)
         ======================================================== -->
     <div class="card shadow-sm mb-4 mt-4" style="background:#fff; padding:18px; border-radius:10px; border:2px solid #b78103;">
@@ -811,63 +761,6 @@
     await loadPurchaseList();
   }
 
-  // प्रथम सेक्सनको टेबल रेन्डर गर्ने
-  function renderSupplierDueTable() {
-    let tbody = document.getElementById('supplierDueTableBody');
-    if(!tbody) return;
-
-    let duesList = getFilteredSupplierDues();
-    if(duesList.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="padding:15px; color:#666;">No supplier dues found.</td></tr>`;
-      return;
-    }
-
-    let html = "";
-    duesList.forEach(p => {
-      let gt = parseFloat(p.grand_total) || 0;
-      let paid = parseFloat(p.paid_amount) || 0;
-      let due = parseFloat(p.due_amount) || (gt - paid);
-
-      html += `<tr>
-        <td>${p.bill_date || ''}</td>
-        <td><b>${p.bill_no || ''}</b></td>
-        <td><b>${p.supplier_name || ''}</b></td>
-        <td>Rs. ${gt.toFixed(2)}</td>
-        <td>Rs. ${paid.toFixed(2)}</td>
-        <td style="color:red; font-weight:bold;">Rs. ${due.toFixed(2)}</td>
-        <td>
-          <button onclick="paySupplierInstallment(${p.id}, ${due}, false)" style="background:#4CAF50; color:white; border:none; padding:5px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11.5px;">💸 पेमेन्ट / किस्ता तिर्ने</button>
-        </td>
-      </tr>`;
-    });
-    tbody.innerHTML = html;
-  }
-
-  // नयाँ सेक्सन "Supplier Due & RePayment" को लागि ड्रपडाउन अपडेट गर्ने
-  function updateChooseRepayDropdown() {
-    let selectEl = document.getElementById('chooseRepaySupplierSelect');
-    if(!selectEl) return;
-
-    let supplierSet = new Set();
-    purchaseListCache.forEach(p => {
-      let gt = parseFloat(p.grand_total) || 0;
-      let paid = parseFloat(p.paid_amount) || 0;
-      let due = parseFloat(p.due_amount) || (gt - paid);
-      if(due > 0.01) {
-        let supName = p.supplier_name ? String(p.supplier_name).trim() : "";
-        if(supName) supplierSet.add(supName);
-      }
-    });
-
-    let currentVal = selectEl.value;
-    let html = `<option value="">-- सप्लायर छान्नुहोस् (Choose Supplier) --</option>`;
-    supplierSet.forEach(sup => {
-      html += `<option value="${sup}">${sup}</option>`;
-    });
-    selectEl.innerHTML = html;
-    if(supplierSet.has(currentVal)) selectEl.value = currentVal;
-  }
-
   // "Choose Supplier" बटन थिचेपछि विवरण देखाउने फंक्सन
   function handleChooseSupplierRepay() {
     let chosenSup = document.getElementById('chooseRepaySupplierSelect').value;
@@ -916,6 +809,31 @@
     tbody.innerHTML = html;
   }
 
+  // नयाँ सेक्सन "Supplier Due & RePayment" को लागि ड्रपडाउन अपडेट गर्ने
+  function updateChooseRepayDropdown() {
+    let selectEl = document.getElementById('chooseRepaySupplierSelect');
+    if(!selectEl) return;
+
+    let supplierSet = new Set();
+    purchaseListCache.forEach(p => {
+      let gt = parseFloat(p.grand_total) || 0;
+      let paid = parseFloat(p.paid_amount) || 0;
+      let due = parseFloat(p.due_amount) || (gt - paid);
+      if(due > 0.01) {
+        let supName = p.supplier_name ? String(p.supplier_name).trim() : "";
+        if(supName) supplierSet.add(supName);
+      }
+    });
+
+    let currentVal = selectEl.value;
+    let html = `<option value="">-- सप्लायर छान्नुहोस् (Choose Supplier) --</option>`;
+    supplierSet.forEach(sup => {
+      html += `<option value="${sup}">${sup}</option>`;
+    });
+    selectEl.innerHTML = html;
+    if(supplierSet.has(currentVal)) selectEl.value = currentVal;
+  }
+
   // किस्ता तिर्ने र अपडेट भएपछि पुन: पहिल्यकै अवस्थामा फर्काउने फंक्सन
   async function paySupplierInstallment(purchaseId, maxDue, isRepaySection = false) {
     let inputAmt = prompt(`यस बिलको तिर्न बाँकी रकम: Rs. ${maxDue.toFixed(2)}\nकति रकम भुक्तानी (Payment) गर्ने हो, रकम प्रविष्ट गर्नुहोस्:`, maxDue);
@@ -957,7 +875,7 @@
       // डाटा पुनः लोड गर्ने
       await loadPurchaseList();
 
-      // यदि RePayment सेक्सનबाट पेमेन्ट गरिएको हो भने, सिस्टमलाई पूर्ण रूपमा पहिल्यकै अवस्थामा (Reset) फर्काउने
+      // यदि RePayment सेक्सनबाट पेमेन्ट गरिएको हो भने, सिस्टमलाई पूर्ण रूपमा पहिल्यकै अवस्थामा (Reset) फर्काउने
       if (isRepaySection) {
         document.getElementById('chooseRepaySupplierSelect').value = "";
         document.getElementById('supplierRepayTableBody').innerHTML = `<tr><td colspan="7" style="padding:15px; color:#666;">कृपया माथिबाट सप्लायर छानेर विवरण हेर्नुहोस्।</td></tr>`;
@@ -965,142 +883,11 @@
     }
   }
 
-  function getFilteredSupplierDues() {
-    let startDate = document.getElementById('supplierDueReportStart').value;
-    let endDate = document.getElementById('supplierDueReportEnd').value;
-    let selectedSupplier = document.getElementById('filterSupplier').value;
-
-    let start = startDate ? new Date(startDate) : null;
-    let end = endDate ? new Date(endDate) : null;
-    if(end) end.setHours(23, 59, 59, 999);
-
-    return purchaseListCache.filter(p => {
-      let gt = parseFloat(p.grand_total) || 0;
-      let paid = parseFloat(p.paid_amount) || 0;
-      let due = parseFloat(p.due_amount) || (gt - paid);
-      
-      if (due <= 0.01) return false;
-
-      if (selectedSupplier !== "ALL") {
-        let supName = p.supplier_name ? String(p.supplier_name).trim() : "";
-        if (supName !== selectedSupplier) return false;
-      }
-
-      if (start && end && p.bill_date) {
-        let pDate = new Date(p.bill_date);
-        if (!isNaN(pDate.getTime())) {
-          if (pDate < start || pDate > end) return false;
-        }
-      }
-      return true;
-    });
-  }
-
-  function exportSupplierDueCSV() {
-    let duesList = getFilteredSupplierDues();
-
-    if(duesList.length === 0) {
-      alert("निर्यात गर्नको लागि कुनै बाँकी बक्यौता डाटा उपलब्ध छैन!");
-      return;
-    }
-
-    let csvContent = "data:text/csv;charset=utf-8,Bill Date,Bill No,Supplier Name,Grand Total,Paid Amount,Balance Due (Rs.)\n";
-    duesList.forEach(p => {
-      let gt = parseFloat(p.grand_total || 0);
-      let paid = parseFloat(p.paid_amount || 0);
-      let due = parseFloat(p.due_amount || (gt - paid));
-      csvContent += `"${p.bill_date || ''}","${p.bill_no || ''}","${p.supplier_name || ''}","${gt.toFixed(2)}","${paid.toFixed(2)}","${due.toFixed(2)}"\n`;
-    });
-
-    let encodedUri = encodeURI(csvContent);
-    let link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "supplier_due_report.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-
-  function printSupplierDueReportPDF() {
-    let duesList = getFilteredSupplierDues();
-    let startDate = document.getElementById('supplierDueReportStart').value || "All";
-    let endDate = document.getElementById('supplierDueReportEnd').value || "All";
-
-    if(duesList.length === 0) {
-      alert("प्रिन्ट गर्नको लागि कुनै बाँकी बक्यौता डाटा उपलब्ध छैन!");
-      return;
-    }
-
-    let printWindow = window.open('', '_blank', 'height=700,width=900');
-    if (!printWindow) { alert("Popup blocked!"); return; }
-
-    printWindow.document.write('<html><head><title>Supplier Due Report</title>');
-    printWindow.document.write('<style>');
-    printWindow.document.write('@page { size: auto; margin: 5mm 10mm 5mm 10mm; }');
-    printWindow.document.write('body{font-family:Arial,sans-serif;padding:5px 15px;color:#111;margin:0;}');
-    printWindow.document.write('.header{text-align:center;border-bottom:2px solid #b78103;padding-bottom:5mm;margin-bottom:10px;}');
-    printWindow.document.write('img{max-width:100px;height:auto;margin-bottom:2px;}');
-    printWindow.document.write('h2{margin:2px 0;color:#1976D2;font-size:16px;font-weight:700;}');
-    printWindow.document.write('h3{margin:2px 0;color:#333;font-size:13px;font-weight:600;}');
-    printWindow.document.write('table{width:100%;border-collapse:collapse;margin-top:5px;}');
-    printWindow.document.write('th,td{border:2px solid #333;padding:7px 8px;text-align:center;font-size:12px;color:#000;font-weight:bold;}');
-    printWindow.document.write('th{background:#b78103;color:white;font-weight:bold;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
-    printWindow.document.write('tr:nth-child(even){background-color:#fdfaf0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}');
-    printWindow.document.write('.total-box{text-align:right;margin-top:10px;font-size:14px;font-weight:bold;color:#b78103;}');
-    printWindow.document.write('.print-btn-bar{position:fixed;top:10px;right:10px;background:#b78103;color:white;border:none;padding:10px 20px;border-radius:6px;font-weight:bold;cursor:pointer;z-index:9999;box-shadow:0 2px 5px rgba(0,0,0,0.3);display:block;}');
-    printWindow.document.write('@media print { .print-btn-bar { display: none !important; } }');
-    printWindow.document.write('</style>');
-    printWindow.document.write('</head><body>');
-    printWindow.document.write('<button class="print-btn-bar" onclick="window.print()">🖨️ Print Now / Save PDF</button>');
-    printWindow.document.write('<div class="header">');
-    printWindow.document.write('<img src="https://i.postimg.cc/Hn5Fwwb5/logo.png">');
-    printWindow.document.write('<h2 style="color:#1976D2; font-weight:bold;">PUJA EXPORT AND IMPORT PVT. LTD.</h2>');
-    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">Surkhet Nepal , PAN NO: 147195188</p>');
-    printWindow.document.write('<p style="margin:2px 0; font-size:10px; color:#333; font-weight:bold;">CONTACT NO: 9769338427, 9763930776</p>');
-    printWindow.document.write('<h3>Supplier Due Report (' + startDate + ' to ' + endDate + ')</h3>');
-    printWindow.document.write('</div>');
-    printWindow.document.write('<table><thead><tr><th>Bill Date</th><th>Bill No.</th><th>Supplier Name</th><th>Grand Total</th><th>Paid Amount</th><th>Balance Due</th></tr></thead><tbody>');
-    
-    let totalDueSum = 0;
-    duesList.forEach(p => {
-      let gt = parseFloat(p.grand_total) || 0;
-      let pd = parseFloat(p.paid_amount) || 0;
-      let du = parseFloat(p.due_amount) || (gt - pd);
-      totalDueSum += du;
-      printWindow.document.write(`<tr><td>${p.bill_date || ''}</td><td><b>${p.bill_no || ''}</b></td><td><b>${p.supplier_name || ''}</b></td><td>Rs. ${gt.toFixed(2)}</td><td>Rs. ${pd.toFixed(2)}</td><td style="color:red;">Rs. ${du.toFixed(2)}</td></tr>`);
-    });
-
-    printWindow.document.write('</tbody></table>');
-    printWindow.document.write('<div class="total-box">Total Supplier Due Balance: Rs. ' + totalDueSum.toFixed(2) + '</div>');
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-  }
-
   async function loadPurchaseList() {
     try {
       let { data, error } = await supabaseClient.from('inventory_purchases').select('*').order('id', { ascending: false });
       if (!error && data) {
         purchaseListCache = data;
-
-        let supplierDropdownSet = new Set();
-        purchaseListCache.forEach(p => {
-          let due = parseFloat(p.due_amount) || (parseFloat(p.grand_total || 0) - parseFloat(p.paid_amount || 0));
-          if (due > 0.01) {
-            let supName = p.supplier_name ? String(p.supplier_name).trim() : "";
-            if(supName) supplierDropdownSet.add(supName);
-          }
-        });
-
-        let selectEl = document.getElementById('filterSupplier');
-        let currentSelVal = selectEl.value;
-        let dropdownHtml = `<option value="ALL">सबै सप्लायरहरू (All Suppliers)</option>`;
-        supplierDropdownSet.forEach(sup => {
-          dropdownHtml += `<option value="${sup}">${sup}</option>`;
-        });
-        selectEl.innerHTML = dropdownHtml;
-        selectEl.value = supplierDropdownSet.has(currentSelVal) ? currentSelVal : "ALL";
-
-        renderSupplierDueTable();
         updateChooseRepayDropdown();
       }
     } catch(e) {
