@@ -23,10 +23,25 @@
 *{ margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
 body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflow-x: hidden; }
 
-.header{ background:#1976D2; color:#fff; padding:30px 15px; text-align:center; border-radius:0 0 25px 25px; box-shadow:0 5px 15px rgba(0,0,0,.15); width: 100%; }
+.header{ background:#1976D2; color:#fff; padding:30px 15px; text-align:center; border-radius:0 0 25px 25px; box-shadow:0 5px 15px rgba(0,0,0,.15); width: 100%; position: relative; }
 .restaurant-logo{ width:80px; height:80px; border-radius:50%; object-fit:cover; margin-bottom:10px; border:2px solid #fff; box-shadow:0 3px 8px rgba(0,0,0,0.2); background:#fff; }
 .header h1{ font-size:24px; margin-bottom:8px; line-height: 1.3; }
 .header p{ font-size:15px; opacity:.9; }
+
+/* ℹ️ About Us Button Style in Header */
+.about-btn { position: absolute; top: 15px; right: 15px; background: #fff; color: #1976D2; border: none; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: 0.2s; }
+.about-btn:hover { background: #e3f2fd; }
+
+/* 🪟 Modal Popup Styles */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 99999; justify-content: center; align-items: center; padding: 15px; }
+.modal-content { background: #fff; width: 100%; max-width: 600px; max-height: 85vh; border-radius: 16px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); display: flex; flex-direction: column; overflow: hidden; animation: fadeIn 0.3s ease; }
+.modal-header { background: #1976D2; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: bold; }
+.modal-close { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; }
+.modal-body { padding: 20px; overflow-y: auto; font-size: 15px; line-height: 1.6; color: #444; text-align: left; }
+.modal-body h3 { color: #1976D2; margin-top: 15px; margin-bottom: 5px; font-size: 17px; }
+.modal-body ul { margin-left: 20px; margin-top: 5px; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
 .container{ width:100%; max-width:600px; padding: 0 12px; margin: auto; }
 .search-box{ margin:15px auto; padding: 0 2px; width: 100%; }
@@ -37,11 +52,6 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 .category-tabs::-webkit-scrollbar { display: none; }
 .category-tabs button{ background:#fff; border:none; padding:10px 20px; border-radius:30px; cursor:pointer; font-size:14px; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.06); transition:.25s; white-space:nowrap; }
 .category-tabs button:hover, .category-tabs button.active{ background:#1976D2; color:#fff; }
-
-/* 🔄 Top Featured Slider Styles */
-.slider-container { width: 100%; overflow: hidden; position: relative; margin-bottom: 20px; border-radius: 16px; box-shadow: 0 3px 12px rgba(0,0,0,0.06); background: #fff; }
-.slider-track { display: flex; transition: transform 0.5s ease-in-out; width: 100%; }
-.slide-item { min-width: 100%; box-sizing: border-box; }
 
 #menu{ display:grid; grid-template-columns:1fr; gap:16px; padding: 0 2px; width: 100%; }
 .food-card{ background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 3px 12px rgba(0,0,0,0.06); position:relative; width: 100%; margin: 0; }
@@ -75,9 +85,43 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 <body>
 
 <div class="header">
+    <button class="about-btn" onclick="window.openAboutModal()">ℹ️ About Us</button>
     <img src="https://pujaexportandimport.com/logo.png" alt="Puja Export and Import Logo" class="restaurant-logo">
     <h1>📦 PUJA EXPORT AND IMPORT PVT. LTD.</h1>
     <p>Global Trade • Quality Products • Fast Delivery</p>
+</div>
+
+<!-- ℹ️ About Us Modal Popup Box -->
+<div id="aboutModal" class="modal-overlay" onclick="window.closeAboutModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <span>About Us</span>
+            <button class="modal-close" onclick="window.closeAboutModalBtn()">✕</button>
+        </div>
+        <div class="modal-body">
+            <h3 style="margin-top:0;">PUJA EXPORT AND IMPORT PVT. LTD.</h3>
+            <p style="margin-bottom:12px;">Puja Export and Import Pvt. Ltd. is a Nepal-based trading and international business company established with the objective of providing reliable and quality products and services in the areas of import, export, wholesale distribution, and local trading.</p>
+            <p style="margin-bottom:12px;">The company is registered in Nepal and operates in accordance with the applicable laws, rules, and regulations of the Government of Nepal. Our business activities include the import and export of goods, wholesale and retail trading, and distribution of food, grocery, fruits, daily-use consumer products, and other permitted goods.</p>
+            <p style="margin-bottom:12px;">We are committed to building a trusted business network by providing quality products, competitive prices, reliable service, and transparent business practices. We aim to connect suppliers, customers, and business partners through efficient and dependable trading solutions.</p>
+
+            <h3>Our Vision</h3>
+            <p style="margin-bottom:12px;">To become a trusted and professional trading partner in Nepal and the international market by delivering quality products and reliable services.</p>
+
+            <h3>Our Mission</h3>
+            <ul style="margin-bottom:12px; padding-left:15px;">
+                <li>To provide quality products at competitive prices.</li>
+                <li>To develop reliable import, export, and distribution networks.</li>
+                <li>To maintain transparency and professionalism in every business transaction.</li>
+                <li>To build long-term relationships with customers, suppliers, and business partners.</li>
+                <li>To continuously expand our products and services according to market demand.</li>
+            </ul>
+
+            <h3>What We Do</h3>
+            <p style="margin-bottom:12px;">Import & Export | Trading | Wholesale Distribution | Food & Grocery | Fruits & Daily-use Products | Business Supply</p>
+
+            <p style="font-weight:bold; color:#1976D2; margin-top:15px;">At Puja Export and Import Pvt. Ltd., we believe that trust, quality, transparency, and customer satisfaction are the foundation of a successful business.</p>
+        </div>
+    </div>
 </div>
 
 <div class="container">
@@ -92,16 +136,6 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
         <button onclick="window.filterCategory('Trading', this)">📦 Trading</button>
         <button onclick="window.filterCategory('Wholesale', this)">📊 Wholesale</button>
     </div>
-
-    <!-- 🔄 माथि स्लाइड हुने सेक्सन (Featured Auto Slider) -->
-    <div class="slider-container">
-        <div id="sliderTrack" class="slider-track">
-            <div style="text-align:center; font-size:18px; padding:20px; color:#666; width:100%;">Loading Featured...</div>
-        </div>
-    </div>
-
-    <!-- 📦 तल सबै उत्पादनहरू सिरियल बाई देखिने ग्रिड मेनु (Grid Menu) -->
-    <div id="menu" style="text-align:center; font-size:18px; padding:20px; color:#666;">Loading Products...</div>
 
     <!-- 🛒 कार्ट र अर्डर सेक्सन -->
     <div class="customer cart-section">
@@ -281,8 +315,19 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   window.selectedCategory = "All"; 
   window.base64SlipData = ""; 
   window.menuItemsCache = [];
-  let currentSlideIndex = 0;
-  let slideInterval = null;
+
+  // About Us Modal Functions
+  window.openAboutModal = function() {
+    document.getElementById("aboutModal").style.display = "flex";
+  };
+  window.closeAboutModal = function(e) {
+    if(e.target.id === "aboutModal") {
+      document.getElementById("aboutModal").style.display = "none";
+    }
+  };
+  window.closeAboutModalBtn = function() {
+    document.getElementById("aboutModal").style.display = "none";
+  };
 
   window.handleZoneChange = function() {
     let zoneSelect = document.getElementById("deliveryZoneSelect");
@@ -338,9 +383,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
   }
 
   window.showMenu = function(data){
-    let menuHtml = "";
-    let sliderHtml = "";
-    
+    let html = "";
     data.forEach(row => {
         const itemPrice = parseFloat(row.price) || 0;
         const itemUnit = row.unit ? String(row.unit).trim() : "";
@@ -358,7 +401,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
         let unitDisplayHtml = itemUnit ? `<span class="food-unit">${itemUnit}</span>` : "";
 
-        let cardHtml = `<div class="food-card" data-category="${row.category || 'General'}">
+        html += `<div class="food-card" data-category="${row.category || 'General'}">
             <img src="${imgUrl}" alt="${rawName}" onerror="this.src='https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500'">
             <div class="food-info">
                 <h3>${rawName}</h3>
@@ -373,31 +416,9 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
                 </div>
             </div>
         </div>`;
-
-        menuHtml += cardHtml;
-        sliderHtml += `<div class="slide-item">${cardHtml}</div>`;
     });
-
-    document.getElementById("menu").innerHTML = menuHtml; 
-    document.getElementById("sliderTrack").innerHTML = sliderHtml;
-
-    startAutoSlide();
-    window.searchFood();
+    // यदि तपाइँ मेनु पनि देखाउन चाहनुहुन्छ भने यसलाई प्रयोग गर्न सक्नुहुन्छ
   };
-
-  function startAutoSlide() {
-    if (slideInterval) clearInterval(slideInterval);
-    const track = document.getElementById("sliderTrack");
-    if(!track) return;
-    const slides = track.querySelectorAll(".slide-item");
-    if(slides.length <= 1) return;
-
-    currentSlideIndex = 0;
-    slideInterval = setInterval(() => {
-      currentSlideIndex = (currentSlideIndex + 1) % slides.length;
-      track.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
-    }, 3500); // हरेक ३.५ सेकेन्डमा अर्को स्लाइड हुनेछ
-  }
 
   window.filterCategory = function(category, element){ 
     window.selectedCategory = category; 
@@ -408,9 +429,7 @@ body{ background:#f5f5f5; color:#333; padding-bottom: 80px; width: 100%; overflo
 
   window.searchFood = function(){ 
     const keyword = document.getElementById("searchFood").value.toLowerCase(); 
-    
-    // Filter regular Grid Menu cards
-    const cards = document.querySelectorAll("#menu .food-card"); 
+    const cards = document.querySelectorAll(".food-card"); 
     cards.forEach(card => { 
         const h3El = card.querySelector("h3");
         const food = h3El ? h3El.innerText.toLowerCase() : ""; 
