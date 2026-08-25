@@ -46,13 +46,18 @@ async function loadMenu() {
     showMenu(data);
 }
 
-// मेनुलाई स्क्रिनमा देखाउने
+// मेनुलाई स्क्रिनमा देखाउने (सप्लायर र बिल नम्बर स्वचालित रूपमा लुकाउने फिल्टरसहित)
 window.showMenu = function(data) {
     let html = "";
     data.forEach(item => {
         const itemName = item.name || "Unnamed Item";
         const itemPrice = parseFloat(item.price) || 0;
-        const itemDesc = item.description || "";
+        
+        // 🔒 आन्तरिक विवरणहरू (Supplier, Bill No आदि) लाई स्वचालित रूपमा हटाउने फिल्टर
+        let rawDesc = item.description || "";
+        let cleanedDesc = rawDesc.replace(/Supplier:.*?(?=\||$)/gi, "").replace(/Bill No:.*?(?=\||$)/gi, "").replace(/\|/g, "").trim();
+        const itemDesc = cleanedDesc;
+
         const itemCategory = item.category || "All";
         const imgUrl = item.image || "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500";
         const stockStatus = item.status || "In Stock";
