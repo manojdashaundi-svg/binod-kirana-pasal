@@ -464,6 +464,11 @@ body{ background:#f5f5f5; color:#333; width: 100%; overflow-x: hidden; }
         const safeName = rawName.replace(/'/g, "\\'");
         const stockStatus = row.status ? String(row.status).trim() : "In Stock";
 
+        // 🔒 आन्तरिक विवरणहरू (Supplier, Bill No आदि) लाई स्वचालित रूपमा हटाउने फिल्टर
+        let rawDesc = row.description || "";
+        let cleanedDesc = rawDesc.replace(/Supplier:.*?(?=\||$)/gi, "").replace(/Bill No:.*?(?=\||$)/gi, "").replace(/\|/g, "").trim();
+        const itemDesc = cleanedDesc;
+
         let actionButtonHtml = '';
         if (stockStatus === "Out of Stock") {
             actionButtonHtml = `<span class="out-of-stock-badge">🚫 Out of Stock</span>`;
@@ -478,7 +483,7 @@ body{ background:#f5f5f5; color:#333; width: 100%; overflow-x: hidden; }
             <div class="food-info">
                 <h3>${rawName}</h3>
                 <div class="rating">⭐⭐⭐⭐⭐ (5.0)</div>
-                <p class="food-desc">${row.description || ""}</p>
+                <p class="food-desc">${itemDesc}</p>
                 <div class="food-bottom">
                     <div>
                         ${unitDisplayHtml}
