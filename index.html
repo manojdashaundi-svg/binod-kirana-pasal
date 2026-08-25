@@ -5,10 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PUJA EXPORT AND IMPORT PVT. LTD.</title>
+    
+    <!-- Meta Description Tag (Fixes Debugger Error) -->
+    <meta name="description" content="Your trusted partner for international trade, imports, exports, and wholesale distribution.">
+
     <!-- Favicon / Tab Logo -->
     <link rel="icon" type="image/png" href="https://www.pujaexportandimport.com/logo.png">
     
-    <!-- Social Media Preview Meta Tags (Custom 1200x630 Banner) -->
+    <!-- Social Media Preview Meta Tags -->
     <meta property="og:title" content="PUJA EXPORT AND IMPORT PVT. LTD.">
     <meta property="og:description" content="Your trusted partner for international trade, imports, exports, and wholesale distribution.">
     <meta property="og:image" content="https://i.postimg.cc/Rh1SrBr6/1200-x-630-pixels-ka-ba-ya-nara.png">
@@ -893,6 +897,7 @@ body{ background:#f5f5f5; color:#333; width: 100%; overflow-x: hidden; }
     if(!inputEl || !supabaseClient || !window.currentChatOrderNo) return;
     var msg = inputEl.value.trim();
     if(!msg) return;
+    inputError = "";
     inputEl.value = "";
     try {
       let { error: insErr } = await supabaseClient.from('chats').insert([{
