@@ -270,6 +270,21 @@ body{ background:#f5f5f5; color:#333; width: 100%; overflow-x: hidden; }
 </footer>
 
 <script>
+  // 🚫 राइट क्लिक र F12 सर्टकटहरू ब्लक गर्ने सुरक्षा कोड
+  document.addEventListener('contextmenu', event => event.preventDefault());
+
+  document.addEventListener('keydown', function(event) {
+    if (
+      event.key === 'F12' || 
+      (event.ctrlKey && event.shiftKey && (event.key === 'I' || event.key === 'J' || event.key === 'C')) || 
+      (event.ctrlKey && event.key === 'U') ||
+      (event.ctrlKey && event.key === 's')
+    ) {
+      event.preventDefault();
+      return false;
+    }
+  });
+
   // 🎵 एकैचोटि बज्ने मीठो र आकर्षक एकल धुन (Single Melodic Chime Tone)
   function playSingleMelodicChime() {
     try {
